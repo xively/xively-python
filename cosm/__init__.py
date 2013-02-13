@@ -3,6 +3,19 @@
 from urlparse import urljoin
 from requests.sessions import Session
 
+from requests.auth import AuthBase
+
+
+class KeyAuth(AuthBase):
+    """Attaches HTTP API Key Authentication to the given Request object."""
+    def __init__(self, key):
+        self.key = key
+
+    def __call__(self, r):
+        # modify and return the request
+        r.headers['X-ApiKey'] = self.key
+        return r
+
 
 class Client(Session):
     """A Cosm API Client object.
@@ -15,8 +28,8 @@ class Client(Session):
     BASE_URL = "http://api.cosm.com"
 
     def __init__(self, key):
-        self.key = key
         super(Client, self).__init__()
+        self.auth = KeyAuth(key)
 
     def request(self, method, url, *args, **kwargs):
         """Constructs and sends a Request to the Cosm API.

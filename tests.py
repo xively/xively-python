@@ -2,6 +2,8 @@
 
 import unittest
 
+import requests
+
 from mock import Mock, patch
 
 import cosm
@@ -25,6 +27,15 @@ class RequestsFixtureMixin(object):
     def request(self, *args, **kwargs):
         """Returns a new mock object by default. Override in implementors."""
         return Mock()
+
+
+class KeyAuthTest(unittest.TestCase):
+
+    def test_api_key_header(self):
+        request = requests.Request()
+        auth = cosm.KeyAuth("ABCDE")
+        auth(request)
+        self.assertEqual(request.headers['X-ApiKey'], "ABCDE")
 
 
 class ClientTest(RequestsFixtureMixin, unittest.TestCase):
