@@ -44,3 +44,28 @@ class ClientTest(RequestsFixtureMixin, unittest.TestCase):
         client = cosm.Client("API_KEY")
         client.request('GET', "http://example.com")
         self.session.assert_called_with('GET', "http://example.com")
+
+    def test_serialise_data(self):
+        """Tests data is serialised using __getstate__ when requested."""
+        class TestObject:
+            def __getstate__(self):
+                return self.__dict__
+        obj = TestObject()
+        obj.title = "This is an object"
+        obj.value = 42
+        client = cosm.Client("API_KEY")
+        client.request('POST', "/v2/feeds", data=obj)
+        self.session.assert_called_with(
+            'POST', "http://api.cosm.com/v2/feeds",
+            data={'title': "This is an object", "value": 42})
+
+
+class FeedTest(RequestsFixtureMixin, unittest.TestCase):
+
+    def setUp(self):
+        super(FeedTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
+
+    def test_create_feed(self):
+        feed = cosm.Feed(title="Feed Test")
+        self.client.post('/v2/feeds', data=feed)

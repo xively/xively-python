@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
-
 from urlparse import urljoin
 from requests.sessions import Session
 
@@ -28,7 +26,7 @@ class Client(Session):
         """
         full_url = urljoin(self.BASE_URL, url)
         if 'data' in kwargs and hasattr(kwargs['data'], '__getstate__'):
-            kwargs['data'] = json.dumps(kwargs['data'].__getstate__())
+            kwargs['data'] = kwargs['data'].__getstate__()
         return super(Client, self).request(method, full_url, *args, **kwargs)
 
 
