@@ -8,24 +8,13 @@ dependant on the given arguments to request.
 
 """
 
-from mock import patch
 from requests import Response
 
+from tests import RequestsFixtureMixin
 
-class Fixture(object):
+
+class Fixture(RequestsFixtureMixin):
     """A class to hold the mock request object and not pollute globals."""
-
-    def setup_test(self, test):
-        """Installs our own request handler."""
-        patcher = patch('cosm.Session.request')
-        self.mock_session = patcher.start()
-        self.mock_session.side_effect = self.request
-    setup_test.__test__ = False  # Don't test this method.
-
-    def teardown_test(self, test):
-        """Ensures the original request object is reinstated."""
-        self.mock_session.stop()
-    teardown_test.__test__ = False  # Don't test this method.
 
     def request(self, method, url, **kwargs):
         """
@@ -41,7 +30,8 @@ class Fixture(object):
             response.headers['Location'] = 'http://api.cosm.com/v2/feeds/504'
         return response
 
+
 # setup_test and teardown_test must live at the module level to be discovered.
 _fixture = Fixture()
-setup_test = _fixture.setup_test
-teardown_test = _fixture.teardown_test
+setup_test = _fixture.setUp
+teardown_test = _fixture.tearDown
