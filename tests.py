@@ -29,6 +29,10 @@ class RequestsFixtureMixin(object):
         return Mock()
 
 
+class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
+    pass
+
+
 class KeyAuthTest(unittest.TestCase):
 
     def test_api_key_header(self):
@@ -38,7 +42,7 @@ class KeyAuthTest(unittest.TestCase):
         self.assertEqual(request.headers['X-ApiKey'], "ABCDE")
 
 
-class ClientTest(RequestsFixtureMixin, unittest.TestCase):
+class ClientTest(BaseTestCase):
 
     def test_create(self):
         """Tests that we can create a client object."""
@@ -71,7 +75,7 @@ class ClientTest(RequestsFixtureMixin, unittest.TestCase):
             data={'title': "This is an object", "value": 42})
 
 
-class FeedTest(RequestsFixtureMixin, unittest.TestCase):
+class FeedTest(BaseTestCase):
 
     def setUp(self):
         super(FeedTest, self).setUp()
