@@ -56,6 +56,9 @@ class Base(object):
         self._data.clear()
         self._data.update(state)
 
+    def __getattr__(self, name):
+        return self._data[name]
+
 
 class Feed(Base):
     """Cosm Feed, which can contain a number of Datastreams."""
