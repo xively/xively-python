@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import StringIO
 import json
 import unittest
+
+try:
+    import StringIO
+except ImportError:
+    import io as StringIO
 
 import requests
 
