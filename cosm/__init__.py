@@ -30,6 +30,7 @@ class Client(Session):
     def __init__(self, key):
         super(Client, self).__init__()
         self.auth = KeyAuth(key)
+        self.base_url = self.BASE_URL
 
     def request(self, method, url, *args, **kwargs):
         """Constructs and sends a Request to the Cosm API.
@@ -37,7 +38,7 @@ class Client(Session):
         Objects that implement __getstate__  will be serialised.
 
         """
-        full_url = urljoin(self.BASE_URL, url)
+        full_url = urljoin(self.base_url, url)
         if 'data' in kwargs and hasattr(kwargs['data'], '__getstate__'):
             kwargs['data'] = kwargs['data'].__getstate__()
         return super(Client, self).request(method, full_url, *args, **kwargs)
