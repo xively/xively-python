@@ -53,10 +53,6 @@ class Base(object):
     def __getstate__(self):
         return self._data
 
-    def __setstate__(self, state):
-        self._data.clear()
-        self._data.update(state)
-
     def __getattr__(self, name):
         return self._data[name]
 

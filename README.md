@@ -1,4 +1,4 @@
-Cosm Python
+cosm-python
 ===========
 
 This is the official pythonic wrapper library for the Cosm V2 API.
