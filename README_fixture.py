@@ -16,6 +16,10 @@ from tests import RequestsFixtureMixin
 class Fixture(RequestsFixtureMixin):
     """A class to hold the mock request object and not pollute globals."""
 
+    def setUp(self, *args, **kwargs):
+        super(Fixture, self).setUp()
+        self.session.side_effect = self.request
+
     def request(self, method, url, **kwargs):
         """
         Returns a Response object that we would expect return from Cosm.

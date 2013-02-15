@@ -16,7 +16,6 @@ class RequestsFixtureMixin(object):
         """Installs our own request handler."""
         patcher = patch('cosm.Session.request')
         self.session = patcher.start()
-        self.session.side_effect = self.request
     setUp.__test__ = False  # Don't test this method.
 
     def tearDown(self, *args, **kwargs):
