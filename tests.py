@@ -4,9 +4,9 @@ import json
 import unittest
 
 try:
-    import StringIO
-except ImportError:
-    import io as StringIO
+    from io import BytesIO
+except TypeError:
+    from StringIO import StringIO as BytesIO
 
 import requests
 
@@ -133,7 +133,7 @@ class APIClientTest(BaseTestCase):
         """Tests a request is sent to list all feeds and return as json."""
         response = requests.Response()
         response.status_code = 200
-        response.raw = StringIO.StringIO('{"totalResults": 0, "results": []}')
+        response.raw = BytesIO(b'{"totalResults": 0, "results": []}')
         self.session.return_value = response
         result = self.client.feeds.list()
         self.assertEqual(self.session.call_args[0],
@@ -144,12 +144,12 @@ class APIClientTest(BaseTestCase):
         """Tests a request is sent to view a feed (by id) returning json."""
         response = requests.Response()
         response.status_code = 200
-        response.raw = StringIO.StringIO(FEED_JSON)
+        response.raw = BytesIO(FEED_JSON)
         self.session.return_value = response
         result = self.client.feeds.get(7021)
         self.assertEqual(self.session.call_args[0],
                          ('GET', 'http://api.cosm.com/v2/feeds/7021.json'))
-        self.assertEqual(result, json.loads(FEED_JSON))
+        self.assertEqual(result, json.loads(FEED_JSON.decode('utf8')))
 
     def test_delete_feed(self):
         """Tests a DELETE request is sent for a feed by its id."""
@@ -163,7 +163,7 @@ class APIClientTest(BaseTestCase):
 
 # Data used to return in the responses.
 
-FEED_JSON = '''
+FEED_JSON = b'''
 {
 "description" : "test of manual feed snapshotting",
 "feed" : "http://api.cosm.com/v2/feeds/504.json",
