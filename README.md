@@ -20,7 +20,7 @@ Let's create the feed on Cosm
     >>> client = cosm.Client("YOUR_API_KEY")
     >>> response = client.post('/v2/feeds.json', data=feed)
     >>> # Will give us the location of the Cosm feed including the ID.
-    >>> print response.headers['Location']
+    >>> print(response.headers['Location'])
     http://api.cosm.com/v2/feeds/504
 
 
