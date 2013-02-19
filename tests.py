@@ -36,7 +36,16 @@ class RequestsFixtureMixin(object):
 
 class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
     """Common base class for Cosm api tests."""
-    pass
+
+    def _create_feed(self, **data):
+        feed = cosm.Feed(**data)
+        api = cosm.api.Client(None)
+        api.client = self.client
+        feed._manager = cosm.api.FeedsManager(api)
+        if 'id' in data and 'feed' not in data:
+            feed_url = 'http://api.cosm.com/v2/feeds/{}'.format(data['id'])
+            feed._data['feed'] = feed_url
+        return feed
 
 
 class KeyAuthTest(unittest.TestCase):
@@ -154,17 +163,10 @@ class APIClientTest(BaseTestCase):
         """Tests a DELETE request is sent for a feed by its id."""
         response = requests.Response()
         response.status_code = 200
-        self.session.return_response = response
+        self.session.return_value = response
         self.api.feeds.delete(7021)
         self.session.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/7021')
-
-    def _create_feed(self, **data):
-        feed = cosm.Feed(**data)
-        if 'id' in data and 'feed' not in data:
-            feed_url = 'http://api.cosm.com/v2/feeds/{}'.format(data['id'])
-            feed._data['feed'] = feed_url
-        return feed
 
 
 # Data used to return in the responses.
