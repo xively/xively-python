@@ -42,7 +42,7 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         feed = cosm.Feed(**data)
         api = cosm.api.Client(None)
         api.client = self.client
-        feed._manager = cosm.api.FeedsManager(api)
+        feed._manager = cosm.api.FeedsManager(api.client)
         if 'id' in data and 'feed' not in data:
             feed_url = 'http://api.cosm.com/v2/feeds/{}'.format(data['id'])
             feed._data['feed'] = feed_url

@@ -22,7 +22,7 @@ class Client(object):
     def __init__(self, key):
         self.client = cosm.Client(key)
         self.client.base_url += '/{}/'.format(self.api_version)
-        self.feeds = FeedsManager(self)
+        self.feeds = FeedsManager(self.client)
 
 
 class RESTBase(object):
@@ -49,13 +49,13 @@ class RESTBase(object):
 
 class FeedsManager(RESTBase):
 
-    def __init__(self, api):
-        self.api = api
-        self.base_url = api.client.base_url + 'feeds'
+    def __init__(self, client):
+        self.client = client
+        self.base_url = urljoin(client.base_url, 'feeds')
 
     def create(self, title, **kwargs):
         data = dict(title=title, **kwargs)
-        response = self.api.client.post(self.base_url, data=data)
+        response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
         feed = cosm.Feed(**data)
         feed._manager = self
@@ -65,12 +65,12 @@ class FeedsManager(RESTBase):
     def update(self, id_or_url, **kwargs):
         url = self._url(id_or_url)
         payload = json.dumps(kwargs)
-        response = self.api.client.put(url, data=payload)
+        response = self.client.put(url, data=payload)
         response.raise_for_status()
 
     def list(self, format=DEFAULT_FORMAT, **params):
         url = self._url(None, format)
-        response = self.api.client.get(url, params=params)
+        response = self.client.get(url, params=params)
         response.raise_for_status()
         json = self._parsers[format](response)
         for feed_data in json['results']:
@@ -80,7 +80,7 @@ class FeedsManager(RESTBase):
 
     def get(self, url_or_id, format=DEFAULT_FORMAT, **params):
         url = self._url(url_or_id, format)
-        response = self.api.client.get(url, **params)
+        response = self.client.get(url, **params)
         response.raise_for_status()
         feed = cosm.Feed(**self._parsers[format](response))
         self._manager = self
@@ -88,69 +88,69 @@ class FeedsManager(RESTBase):
 
     def delete(self, url_or_id):
         url = self._url(url_or_id)
-        response = self.api.client.delete(url)
+        response = self.client.delete(url)
         response.raise_for_status()
 
 
 class DatastreamsManager(RESTBase):
 
-    def __init__(self, api, base_url=None):
-        self.api = api
+    def __init__(self, client, base_url=None):
+        self.client = client
         self.base_url = base_url + '/datastreams'
 
-    def create(self, feed_url, id, **kwargs):
-        payload = dict(id=id, **kwargs)
-        response = self.api.client.post(self.base_url, data=payload)
+    def create(self, id, **kwargs):
+        data = dict(id=id, **kwargs)
+        response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
 
     def update(self, url_or_id, **kwargs):
         url = self._url(url_or_id)
         payload = json.dumps(kwargs)
-        response = self.api.client.put(url, data=payload)
+        response = self.client.put(url, data=payload)
         response.raise_for_status()
 
     def list(self, format=DEFAULT_FORMAT, **params):
         url = self._url(None, format)
-        response = self.api.client.get(url, params=params)
+        response = self.client.get(url, params=params)
         response.raise_for_status()
         return self._parsers[format](response)
 
     def get(self, url_or_id, format=DEFAULT_FORMAT, **params):
         url = self._url(url_or_id, format)
-        response = self.api.client.get(url, **params)
+        response = self.client.get(url, **params)
         response.raise_for_status()
         return self._parsers[format](response)
 
     def delete(self, url_or_id):
         url = self._url(url_or_id)
-        response = self.api.client.delete(url)
+        response = self.client.delete(url)
         response.raise_for_status()
 
 
 class DatapointsManager(RESTBase):
 
-    def __init__(self, api, base_url=None):
-        self.api = api
+    def __init__(self, client, base_url=None):
+        self.client = client
         self.base_url = base_url + '/datapoints'
 
     def create(self, datapoints):
         payload = json.dumps(datapoints)
-        response = self.api.client.post(self.base_url, data=payload)
+        response = self.client.post(self.base_url, data=payload)
         response.raise_for_status()
 
     def update(self, at, value):
         url = self._url(at)
         payload = json.dumps({'value': value})
-        response = self.api.client.put(url, data=payload)
+        response = self.client.put(url, data=payload)
         response.raise_for_status()
 
     def get(self, at, format=DEFAULT_FORMAT):
         url = self._url(at, format)
-        response = self.api.client.get(url)
+        response = self.client.get(url)
         response.raise_for_status()
         return self._parsers[format](response)
 
     def delete(self, at):
         url = self._url(at)
-        response = self.api.client.delete(url)
+        response = self.client.delete(url)
         response.raise_for_status()
