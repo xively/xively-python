@@ -185,6 +185,22 @@ class FeedTest(BaseTestCase):
             'DELETE', 'http://api.cosm.com/v2/feeds/456')
 
 
+class DatastreamTest(BaseTestCase):
+
+    def setUp(self):
+        super(DatastreamTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
+
+    def test_create_datastream(self):
+        feed = self._create_feed(id=101, title="Rother")
+        datastream = feed.datastreams.create(id="flow", current_value=34000)
+        self.assertEqual(
+            self.session.call_args[0],
+            ('POST', 'http://api.cosm.com/v2/feeds/101/datastreams'))
+        self.assertEqual(datastream.id, "flow")
+        self.assertEqual(datastream.current_value, 34000)
+
+
 # Data used to return in the responses.
 
 GET_FEED_JSON = b'''

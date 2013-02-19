@@ -70,10 +70,20 @@ class Base(object):
 class Feed(Base):
     """Cosm Feed, which can contain a number of Datastreams."""
 
+    _datastreams = None
+
     def __init__(self, title, **kwargs):
         super(Feed, self).__init__()
         self._data['title'] = title
         self._data.update(kwargs)
+
+    @property
+    def datastreams(self):
+        if self._datastreams is None:
+            import cosm.api
+            self._datastreams = cosm.api.DatastreamsManager(
+                self._manager.client, self.feed)
+        return self._datastreams
 
     def update(self):
         self._manager.update(self.feed, **self.__getstate__())
@@ -85,9 +95,10 @@ class Feed(Base):
 class Datastream(Base):
     """Cosm Datastream containing current and historical values."""
 
-    def __init__(self, id):
+    def __init__(self, id, **kwargs):
         super(Datastream, self).__init__()
         self._data['id'] = id
+        self._data.update(**kwargs)
 
 
 class Datapoint(Base):

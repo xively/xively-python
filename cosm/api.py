@@ -102,6 +102,9 @@ class DatastreamsManager(RESTBase):
         data = dict(id=id, **kwargs)
         response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
+        datastream = cosm.Datastream(**data)
+        datastream._manager = self
+        return datastream
 
     def update(self, url_or_id, **kwargs):
         url = self._url(url_or_id)
