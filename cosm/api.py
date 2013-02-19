@@ -47,40 +47,22 @@ class RESTBase(object):
         return url
 
 
-class ManagerMapper(object):
-
-    def __init__(self, manager_class, api, base_url):
-        self.manager_class = manager_class
-        self.api = api
-        self.base_url = base_url
-
-    def __getitem__(self, key):
-        url = urljoin(self.base_url + '/', str(key))
-        return self.manager_class(self.api, url)
-
-
 class FeedsManager(RESTBase):
 
     def __init__(self, api):
         self.api = api
         self.base_url = api.client.base_url + 'feeds'
 
-    @property
-    def datastreams(self):
-        datastreams = getattr(self, '_datastreams', None)
-        if datastreams is None:
-            self._datastreams = ManagerMapper(
-                DatastreamsManager, self.api, self.base_url)
-        return self._datastreams
-
     def create(self, title, **kwargs):
-        payload = dict(title=title, **kwargs)
-        response = self.api.client.post(self.base_url, data=payload)
+        data = dict(title=title, **kwargs)
+        response = self.api.client.post(self.base_url, data=data)
         response.raise_for_status()
-        return response.headers['location']
+        feed = cosm.Feed(**data)
+        feed._data['feed'] = response.headers['location']
+        return feed
 
-    def update(self, url_or_id, **kwargs):
-        url = self._url(url_or_id)
+    def update(self, id_or_url, **kwargs):
+        url = self._url(id_or_url)
         payload = json.dumps(kwargs)
         response = self.api.client.put(url, data=payload)
         response.raise_for_status()
@@ -89,13 +71,14 @@ class FeedsManager(RESTBase):
         url = self._url(None, format)
         response = self.api.client.get(url, params=params)
         response.raise_for_status()
-        return self._parsers[format](response)
+        json = self._parsers[format](response)
+        return [cosm.Feed(**f) for f in json['results']]
 
     def get(self, url_or_id, format=DEFAULT_FORMAT, **params):
         url = self._url(url_or_id, format)
         response = self.api.client.get(url, **params)
         response.raise_for_status()
-        return self._parsers[format](response)
+        return cosm.Feed(**self._parsers[format](response))
 
     def delete(self, url_or_id):
         url = self._url(url_or_id)
@@ -109,15 +92,7 @@ class DatastreamsManager(RESTBase):
         self.api = api
         self.base_url = base_url + '/datastreams'
 
-    @property
-    def datapoints(self):
-        datapoints = getattr(self, '_datapoints', None)
-        if datapoints is None:
-            self._datapoints = ManagerMapper(
-                DatapointsManager, self.api, self.base_url)
-        return self._datapoints
-
-    def create(self, id, **kwargs):
+    def create(self, feed_url, id, **kwargs):
         payload = dict(id=id, **kwargs)
         response = self.api.client.post(self.base_url, data=payload)
         response.raise_for_status()

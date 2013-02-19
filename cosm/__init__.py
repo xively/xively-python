@@ -64,9 +64,10 @@ class Base(object):
 class Feed(Base):
     """Cosm Feed, which can contain a number of Datastreams."""
 
-    def __init__(self, title):
+    def __init__(self, title, **kwargs):
         super(Feed, self).__init__()
         self._data['title'] = title
+        self._data.update(kwargs)
 
 
 class Datastream(Base):

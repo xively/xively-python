@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 import unittest
 
 try:
@@ -107,63 +106,70 @@ class APIClientTest(BaseTestCase):
 
     def setUp(self):
         super(APIClientTest, self).setUp()
-        self.client = cosm.api.Client("API_KEY")
+        self.api = cosm.api.Client("API_KEY")
 
     def test_create_feed(self):
-        """Tests a request is sent to create a feed and return a location."""
+        """Tests a request is sent to create a feed."""
         response = requests.Response()
         response.status_code = 201
         response.headers['location'] = "http://cosm.api.com/v2/feeds/51"
         with patch('cosm.Session.request') as request:
             request.return_value = response
-            location = self.client.feeds.create(title="Area 51")
-        self.assertEqual(location, "http://cosm.api.com/v2/feeds/51")
+            feed = self.api.feeds.create(title="Area 51")
+        self.assertEqual(feed.feed, "http://cosm.api.com/v2/feeds/51")
 
     def test_update_feed(self):
-        """Tests a request is sent to update a feed by its id."""
+        """Tests a request is sent to update a feed."""
         response = requests.Response()
         response.status_code = 200
         self.session.return_value = response
-        self.client.feeds.update(51, private=True)
+        self.api.feeds.update(51, private=True)
         self.session.assert_called_with(
             'PUT', 'http://api.cosm.com/v2/feeds/51',
             data='{"private": true}')
 
     def test_list_feeds(self):
-        """Tests a request is sent to list all feeds and return as json."""
+        """Tests a request is sent to list all feeds."""
         response = requests.Response()
         response.status_code = 200
-        response.raw = BytesIO(b'{"totalResults": 0, "results": []}')
+        response.raw = BytesIO(LIST_FEEDS_JSON)
         self.session.return_value = response
-        result = self.client.feeds.list()
+        (feed,) = self.api.feeds.list()
         self.assertEqual(self.session.call_args[0],
-                         ('GET', 'http://api.cosm.com/v2/feeds.json'))
-        self.assertEqual(result['results'], [])
+                         ('GET', u'http://api.cosm.com/v2/feeds.json'))
+        self.assertEqual(feed.feed, u'http://api.cosm.com/v2/feeds/5853.json')
 
     def test_view_feed(self):
         """Tests a request is sent to view a feed (by id) returning json."""
         response = requests.Response()
         response.status_code = 200
-        response.raw = BytesIO(FEED_JSON)
+        response.raw = BytesIO(GET_FEED_JSON)
         self.session.return_value = response
-        result = self.client.feeds.get(7021)
+        feed = self.api.feeds.get(7021)
         self.assertEqual(self.session.call_args[0],
                          ('GET', 'http://api.cosm.com/v2/feeds/7021.json'))
-        self.assertEqual(result, json.loads(FEED_JSON.decode('utf8')))
+        self.assertEqual(feed.title, "Cosm Office environment")
 
     def test_delete_feed(self):
         """Tests a DELETE request is sent for a feed by its id."""
         response = requests.Response()
         response.status_code = 200
         self.session.return_response = response
-        self.client.feeds.delete(7021)
+        self.api.feeds.delete(7021)
         self.session.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/7021')
+
+    def _create_feed(self, **data):
+        feed = cosm.Feed(**data)
+        if 'id' in data and 'feed' not in data:
+            feed_url = 'http://api.cosm.com/v2/feeds/{}'.format(data['id'])
+            feed._data['feed'] = feed_url
+        return feed
 
 
 # Data used to return in the responses.
 
-FEED_JSON = b'''
+GET_FEED_JSON = b'''
 {
 "description" : "test of manual feed snapshotting",
 "feed" : "http://api.cosm.com/v2/feeds/504.json",
@@ -203,5 +209,46 @@ FEED_JSON = b'''
   "max_value" : "19.0",
   "min_value" : "7.0"
   } ]
+}
+'''
+
+LIST_FEEDS_JSON = b'''
+{
+  "totalResults":4299,
+  "results":[
+    {
+      "feed":"http://api.cosm.com/v2/feeds/5853.json",
+      "title":"bridge19",
+      "status":"live",
+      "version":"1.0.0",
+      "creator":"me",
+      "url":"https://cosm.com/users/hdr",
+      "updated":"2010-06-08T09:30:21.472927Z",
+      "created":"2010-05-03T23:43:01.238734Z",
+      "location":{"domain":"physical"},
+      "tags":[
+          "Tag1",
+          "Tag2"
+      ],
+      "datastreams":[
+        {
+          "max_value":"10000.0",
+          "tags":["humidity"],
+          "current_value":"435",
+          "min_value":"-10.0",
+          "at":"2010-07-02T10:21:57.101496Z",
+          "id":"0"
+        },
+        {
+          "max_value":"10000.0",
+          "tags":["humidity"],
+          "current_value":"herz",
+          "min_value":"-10.0",
+          "at":"2010-07-02T10:21:57.176209Z",
+          "id":"1"
+        }
+      ]
+    }
+  ]
 }
 '''
