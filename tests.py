@@ -98,32 +98,6 @@ class ClientTest(BaseTestCase):
             data={'title': "This is an object", "value": 42})
 
 
-class FeedObjectTest(BaseTestCase):
-
-    def setUp(self):
-        super(FeedObjectTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
-
-    def test_create_feed(self):
-        feed = cosm.Feed(title="Feed Test")
-        self.client.post('/v2/feeds', data=feed)
-
-    def test_update_feed(self):
-        feed = self._create_feed(id='123', title="Office")
-        feed.private = True
-        feed.update()
-        self.assertEqual(self.session.call_args[0],
-                         ('PUT', 'http://api.cosm.com/v2/feeds/123'))
-        payload = json.loads(self.session.call_args[1]['data'])
-        self.assertEqual(payload['private'], True)
-
-    def test_delete_feed(self):
-        feed = self._create_feed(id='456', title="Home")
-        feed.delete()
-        self.session.assert_called_with(
-            'DELETE', 'http://api.cosm.com/v2/feeds/456')
-
-
 class APIClientTest(BaseTestCase):
     """
     Cosm API Client tests.
@@ -183,6 +157,32 @@ class APIClientTest(BaseTestCase):
         self.api.feeds.delete(7021)
         self.session.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/7021')
+
+
+class FeedTest(BaseTestCase):
+
+    def setUp(self):
+        super(FeedTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
+
+    def test_create_feed(self):
+        feed = cosm.Feed(title="Feed Test")
+        self.client.post('/v2/feeds', data=feed)
+
+    def test_update_feed(self):
+        feed = self._create_feed(id='123', title="Office")
+        feed.private = True
+        feed.update()
+        self.assertEqual(self.session.call_args[0],
+                         ('PUT', 'http://api.cosm.com/v2/feeds/123'))
+        payload = json.loads(self.session.call_args[1]['data'])
+        self.assertEqual(payload['private'], True)
+
+    def test_delete_feed(self):
+        feed = self._create_feed(id='456', title="Home")
+        feed.delete()
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/feeds/456')
 
 
 # Data used to return in the responses.
