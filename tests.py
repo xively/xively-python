@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import unittest
 
 try:
@@ -97,15 +98,30 @@ class ClientTest(BaseTestCase):
             data={'title': "This is an object", "value": 42})
 
 
-class FeedTest(BaseTestCase):
+class FeedObjectTest(BaseTestCase):
 
     def setUp(self):
-        super(FeedTest, self).setUp()
+        super(FeedObjectTest, self).setUp()
         self.client = cosm.Client("API_KEY")
 
     def test_create_feed(self):
         feed = cosm.Feed(title="Feed Test")
         self.client.post('/v2/feeds', data=feed)
+
+    def test_update_feed(self):
+        feed = self._create_feed(id='123', title="Office")
+        feed.private = True
+        feed.update()
+        self.assertEqual(self.session.call_args[0],
+                         ('PUT', 'http://api.cosm.com/v2/feeds/123'))
+        payload = json.loads(self.session.call_args[1]['data'])
+        self.assertEqual(payload['private'], True)
+
+    def test_delete_feed(self):
+        feed = self._create_feed(id='456', title="Home")
+        feed.delete()
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/feeds/456')
 
 
 class APIClientTest(BaseTestCase):

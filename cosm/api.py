@@ -58,6 +58,7 @@ class FeedsManager(RESTBase):
         response = self.api.client.post(self.base_url, data=data)
         response.raise_for_status()
         feed = cosm.Feed(**data)
+        feed._manager = self
         feed._data['feed'] = response.headers['location']
         return feed
 
@@ -72,13 +73,18 @@ class FeedsManager(RESTBase):
         response = self.api.client.get(url, params=params)
         response.raise_for_status()
         json = self._parsers[format](response)
-        return [cosm.Feed(**f) for f in json['results']]
+        for feed_data in json['results']:
+            feed = cosm.Feed(**feed_data)
+            feed._manager = self
+            yield feed
 
     def get(self, url_or_id, format=DEFAULT_FORMAT, **params):
         url = self._url(url_or_id, format)
         response = self.api.client.get(url, **params)
         response.raise_for_status()
-        return cosm.Feed(**self._parsers[format](response))
+        feed = cosm.Feed(**self._parsers[format](response))
+        self._manager = self
+        return feed
 
     def delete(self, url_or_id):
         url = self._url(url_or_id)

@@ -60,6 +60,12 @@ class Base(object):
     def __getattr__(self, name):
         return self._data[name]
 
+    def __setattr__(self, name, value):
+        if not name.startswith('_'):
+            self._data[name] = value
+        else:
+            super(Base, self).__setattr__(name, value)
+
 
 class Feed(Base):
     """Cosm Feed, which can contain a number of Datastreams."""
@@ -68,6 +74,12 @@ class Feed(Base):
         super(Feed, self).__init__()
         self._data['title'] = title
         self._data.update(kwargs)
+
+    def update(self):
+        self._manager.update(self.feed, **self.__getstate__())
+
+    def delete(self):
+        self._manager.delete(self.feed)
 
 
 class Datastream(Base):
