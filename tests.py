@@ -3,6 +3,8 @@
 import json
 import unittest
 
+from datetime import datetime
+
 try:
     from io import BytesIO
 except TypeError:
@@ -246,6 +248,35 @@ class DatastreamTest(BaseTestCase):
             'DELETE', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy')
 
 
+class DatapointTest(BaseTestCase):
+
+    def setUp(self):
+        super(DatapointTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
+        self.feed = self._create_feed(id=1977, title="Rother")
+        self.datastream = self._create_datastream(id='1', current_value="100")
+
+    def test_create_datapoint(self):
+        datapoints = self.datastream.datapoints.create([
+            {'at': datetime(2010, 5, 20, 11, 1, 43), 'value': "294"},
+            {'at': datetime(2010, 5, 20, 11, 1, 44), 'value': "295"},
+            {'at': datetime(2010, 5, 20, 11, 1, 45), 'value': "296"},
+            {'at': datetime(2010, 5, 20, 11, 1, 46), 'value': "297"},
+        ])
+        self.session.assert_called_with(
+            'POST',
+            'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints',
+            data=json.dumps(json.loads(CREATE_DATAPOINTS_JSON.decode('utf8'))))
+        self.assertEqual(datapoints[0].at, datetime(2010, 5, 20, 11, 1, 43))
+        self.assertEqual(datapoints[0].value, "294")
+        self.assertEqual(datapoints[1].at, datetime(2010, 5, 20, 11, 1, 44))
+        self.assertEqual(datapoints[1].value, "295")
+        self.assertEqual(datapoints[2].at, datetime(2010, 5, 20, 11, 1, 45))
+        self.assertEqual(datapoints[2].value, "296")
+        self.assertEqual(datapoints[3].at, datetime(2010, 5, 20, 11, 1, 46))
+        self.assertEqual(datapoints[3].value, "297")
+
+
 # Data used to return in the responses.
 
 GET_FEED_JSON = b'''
@@ -342,5 +373,16 @@ GET_DATASTREAM_JSON = b'''
     "humidity"
   ],
   "id":"1"
+}
+'''
+
+CREATE_DATAPOINTS_JSON = b'''
+{
+  "datapoints":[
+    {"at":"2010-05-20T11:01:43Z","value":"294"},
+    {"at":"2010-05-20T11:01:44Z","value":"295"},
+    {"at":"2010-05-20T11:01:45Z","value":"296"},
+    {"at":"2010-05-20T11:01:46Z","value":"297"}
+  ]
 }
 '''

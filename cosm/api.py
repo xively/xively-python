@@ -2,6 +2,8 @@
 
 import json
 
+from datetime import datetime
+
 try:
     from urlparse import urljoin
 except ImportError:
@@ -32,6 +34,11 @@ class ManagerBase(object):
             url += '/'
             url = urljoin(url, str(url_or_id))
         return url
+
+    def _json_default(self, obj):
+        if not isinstance(obj, datetime):
+            raise TypeError
+        return obj.isoformat() + 'Z'
 
 
 class FeedsManager(ManagerBase):
@@ -132,9 +139,17 @@ class DatapointsManager(ManagerBase):
         self.base_url = base_url + '/datapoints'
 
     def create(self, datapoints):
-        payload = json.dumps(datapoints)
+        def create_datapoint(at, value):
+            datapoint = cosm.Datapoint(at, value)
+            datapoint._manager = self
+            return datapoint
+        datapoints = [self._coerce_to_datapoint(d) for d in datapoints]
+        payload = json.dumps({
+            'datapoints': [d.__getstate__() for d in datapoints],
+        }, default=self._json_default)
         response = self.client.post(self.base_url, data=payload)
         response.raise_for_status()
+        return datapoints
 
     def update(self, at, value):
         url = self._url(at)
@@ -152,3 +167,13 @@ class DatapointsManager(ManagerBase):
         url = self._url(at)
         response = self.client.delete(url)
         response.raise_for_status()
+
+    def _coerce_to_datapoint(self, d):
+        if isinstance(d, cosm.Datapoint):
+            datapoint = self._clone_datapoint(d)
+        elif isinstance(d, dict):
+            datapoint = cosm.Datapoint(**d)
+        return datapoint
+
+    def _clone_datapoint(self, d):
+        return cosm.Datapoint(**d._data)
