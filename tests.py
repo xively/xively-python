@@ -48,6 +48,13 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
             feed._data['feed'] = feed_url
         return feed
 
+    def _create_datastream(self, **data):
+        datastream = cosm.Datastream(**data)
+        base_url = self.feed.feed
+        manager = cosm.api.DatastreamsManager(self.client, base_url)
+        datastream._manager = manager
+        return datastream
+
 
 class KeyAuthTest(unittest.TestCase):
     """
@@ -190,15 +197,26 @@ class DatastreamTest(BaseTestCase):
     def setUp(self):
         super(DatastreamTest, self).setUp()
         self.client = cosm.Client("API_KEY")
+        self.feed = self._create_feed(id=101, title="Rother")
 
     def test_create_datastream(self):
-        feed = self._create_feed(id=101, title="Rother")
-        datastream = feed.datastreams.create(id="flow", current_value=34000)
+        datastream = self.feed.datastreams.create(
+            id="flow", current_value=34000)
         self.assertEqual(
             self.session.call_args[0],
             ('POST', 'http://api.cosm.com/v2/feeds/101/datastreams'))
         self.assertEqual(datastream.id, "flow")
         self.assertEqual(datastream.current_value, 34000)
+
+    def test_update_datastream(self):
+        datastream = self._create_datastream(id="energy", current_value=211)
+        datastream.current_value = 294
+        datastream.update()
+        self.assertEqual(
+            self.session.call_args[0],
+            ('PUT', 'http://api.cosm.com/v2/feeds/101/datastreams/energy'))
+        payload = json.loads(self.session.call_args[1]['data'])
+        self.assertEqual(payload['current_value'], 294)
 
 
 # Data used to return in the responses.

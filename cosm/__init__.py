@@ -100,6 +100,11 @@ class Datastream(Base):
         self._data['id'] = id
         self._data.update(**kwargs)
 
+    def update(self):
+        url = self._manager._url(self.id)
+        state = self.__getstate__()
+        self._manager.update(url, **state)
+
 
 class Datapoint(Base):
     """A Datapoint represents a value at a certain point in time."""
