@@ -106,7 +106,11 @@ class DatastreamsManager(ManagerBase):
         url = self._url('..')
         response = self.client.get(url, params=params)
         response.raise_for_status()
-        return response.json()
+        json = response.json()
+        for datastream_data in json['datastreams']:
+            datastream = cosm.Datastream(**datastream_data)
+            datastream._manager = self
+            yield datastream
 
     def get(self, url_or_id, format=DEFAULT_FORMAT, **params):
         url = self._url(url_or_id, format)

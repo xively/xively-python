@@ -216,6 +216,18 @@ class DatastreamTest(BaseTestCase):
         payload = json.loads(self.session.call_args[1]['data'])
         self.assertEqual(payload['current_value'], 294)
 
+    def test_list_datastreams(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(GET_FEED_JSON)
+        self.session.return_value = response
+        datastreams = self.feed.datastreams.list()
+        self.assertEqual([d.id for d in datastreams], ["3", "4"])
+        # Note that this url isnt' at .../datastreams
+        self.session.assert_called_with(
+            'GET', 'http://api.cosm.com/v2/feeds/7021/',
+            allow_redirects=True, params={})
+
 
 # Data used to return in the responses.
 
