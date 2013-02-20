@@ -8,7 +8,7 @@ from datetime import datetime
 try:
     from io import BytesIO
 except TypeError:
-    from StringIO import StringIO as BytesIO
+    from StringIO import StringIO as BytesIO  # NOQA
 
 import requests
 

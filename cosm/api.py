@@ -7,7 +7,7 @@ from datetime import datetime
 try:
     from urlparse import urljoin
 except ImportError:
-    from urllib.parse import urljoin
+    from urllib.parse import urljoin  # NOQA
 
 import cosm
 
