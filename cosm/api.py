@@ -25,7 +25,7 @@ class Client(object):
         self.feeds = FeedsManager(self.client)
 
 
-class RESTBase(object):
+class ManagerBase(object):
 
     _ext_re = re.compile('(.+)(\.[^.]+)?$')
     _parsers = {
@@ -47,7 +47,7 @@ class RESTBase(object):
         return url
 
 
-class FeedsManager(RESTBase):
+class FeedsManager(ManagerBase):
 
     def __init__(self, client):
         self.client = client
@@ -92,7 +92,7 @@ class FeedsManager(RESTBase):
         response.raise_for_status()
 
 
-class DatastreamsManager(RESTBase):
+class DatastreamsManager(ManagerBase):
 
     def __init__(self, client, base_url=None):
         self.client = client
@@ -130,7 +130,7 @@ class DatastreamsManager(RESTBase):
         response.raise_for_status()
 
 
-class DatapointsManager(RESTBase):
+class DatapointsManager(ManagerBase):
 
     def __init__(self, client, base_url=None):
         self.client = client
