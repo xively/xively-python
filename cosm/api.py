@@ -18,32 +18,21 @@ DEFAULT_FORMAT = 'json'
 class Client(object):
 
     api_version = 'v2'
+    client_class = cosm.Client
 
     def __init__(self, key):
-        self.client = cosm.Client(key)
+        self.client = self.client_class(key)
         self.client.base_url += '/{}/'.format(self.api_version)
         self.feeds = FeedsManager(self.client)
 
 
 class ManagerBase(object):
 
-    _ext_re = re.compile('(.+)(\.[^.]+)?$')
-    _parsers = {
-        'json': lambda r: r.json(),
-        'xml': lambda r: ET.parsestring(r.content),
-        'png': lambda r: r.content,
-    }
-
-    def _replace_ext(self, url, ext):
-        return self._ext_re.sub(r'\1.' + ext, url)
-
-    def _url(self, url_or_id, format=None):
+    def _url(self, url_or_id):
         url = self.base_url
         if url_or_id:
             url += '/'
             url = urljoin(url, str(url_or_id))
-        if format:
-            url = self._replace_ext(url, format)
         return url
 
 
@@ -68,21 +57,22 @@ class FeedsManager(ManagerBase):
         response = self.client.put(url, data=payload)
         response.raise_for_status()
 
-    def list(self, format=DEFAULT_FORMAT, **params):
-        url = self._url(None, format)
+    def list(self, **params):
+        url = self._url(None)
         response = self.client.get(url, params=params)
         response.raise_for_status()
-        json = self._parsers[format](response)
+        json = response.json()
         for feed_data in json['results']:
             feed = cosm.Feed(**feed_data)
             feed._manager = self
             yield feed
 
-    def get(self, url_or_id, format=DEFAULT_FORMAT, **params):
-        url = self._url(url_or_id, format)
+    def get(self, url_or_id, **params):
+        url = self._url(url_or_id)
         response = self.client.get(url, **params)
         response.raise_for_status()
-        feed = cosm.Feed(**self._parsers[format](response))
+        data = response.json()
+        feed = cosm.Feed(**data)
         self._manager = self
         return feed
 
@@ -112,17 +102,17 @@ class DatastreamsManager(ManagerBase):
         response = self.client.put(url, data=payload)
         response.raise_for_status()
 
-    def list(self, format=DEFAULT_FORMAT, **params):
-        url = self._url(None, format)
+    def list(self, **params):
+        url = self._url('..')
         response = self.client.get(url, params=params)
         response.raise_for_status()
-        return self._parsers[format](response)
+        return response.json()
 
     def get(self, url_or_id, format=DEFAULT_FORMAT, **params):
         url = self._url(url_or_id, format)
         response = self.client.get(url, **params)
         response.raise_for_status()
-        return self._parsers[format](response)
+        return response.json()
 
     def delete(self, url_or_id):
         url = self._url(url_or_id)
@@ -151,7 +141,7 @@ class DatapointsManager(ManagerBase):
         url = self._url(at, format)
         response = self.client.get(url)
         response.raise_for_status()
-        return self._parsers[format](response)
+        return response.json()
 
     def delete(self, at):
         url = self._url(at)

@@ -140,7 +140,7 @@ class APIClientTest(BaseTestCase):
         self.session.return_value = response
         (feed,) = self.api.feeds.list()
         self.assertEqual(self.session.call_args[0],
-                         ('GET', u'http://api.cosm.com/v2/feeds.json'))
+                         ('GET', u'http://api.cosm.com/v2/feeds'))
         self.assertEqual(feed.feed, u'http://api.cosm.com/v2/feeds/5853.json')
 
     def test_view_feed(self):
@@ -151,7 +151,7 @@ class APIClientTest(BaseTestCase):
         self.session.return_value = response
         feed = self.api.feeds.get(7021)
         self.assertEqual(self.session.call_args[0],
-                         ('GET', 'http://api.cosm.com/v2/feeds/7021.json'))
+                         ('GET', 'http://api.cosm.com/v2/feeds/7021'))
         self.assertEqual(feed.title, "Cosm Office environment")
 
     def test_delete_feed(self):
@@ -195,14 +195,14 @@ class DatastreamTest(BaseTestCase):
     def setUp(self):
         super(DatastreamTest, self).setUp()
         self.client = cosm.Client("API_KEY")
-        self.feed = self._create_feed(id=101, title="Rother")
+        self.feed = self._create_feed(id=7021, title="Rother")
 
     def test_create_datastream(self):
         datastream = self.feed.datastreams.create(
             id="flow", current_value=34000)
         self.assertEqual(
             self.session.call_args[0],
-            ('POST', 'http://api.cosm.com/v2/feeds/101/datastreams'))
+            ('POST', 'http://api.cosm.com/v2/feeds/7021/datastreams'))
         self.assertEqual(datastream.id, "flow")
         self.assertEqual(datastream.current_value, 34000)
 
@@ -212,7 +212,7 @@ class DatastreamTest(BaseTestCase):
         datastream.update()
         self.assertEqual(
             self.session.call_args[0],
-            ('PUT', 'http://api.cosm.com/v2/feeds/101/datastreams/energy'))
+            ('PUT', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy'))
         payload = json.loads(self.session.call_args[1]['data'])
         self.assertEqual(payload['current_value'], 294)
 
