@@ -55,6 +55,13 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         datastream._manager = manager
         return datastream
 
+    def _create_datapoint(self, **data):
+        datapoint = cosm.Datapoint(**data)
+        base_url = self.datastream._manager._url(self.datastream.id)
+        manager = cosm.api.DatapointsManager(self.client, base_url)
+        datapoint._manager = manager
+        return datapoint
+
 
 class KeyAuthTest(unittest.TestCase):
     """
@@ -275,6 +282,17 @@ class DatapointTest(BaseTestCase):
         self.assertEqual(datapoints[2].value, "296")
         self.assertEqual(datapoints[3].at, datetime(2010, 5, 20, 11, 1, 46))
         self.assertEqual(datapoints[3].value, "297")
+
+    def test_update_datapoint(self):
+        datapoint = self._create_datapoint(
+            at=datetime(2010, 7, 28, 7, 48, 22, 14326), value="296")
+        datapoint.value = "297"
+        datapoint.update()
+        self.session.assert_called_with(
+            'PUT',
+            'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
+            '2010-07-28T07:48:22.014326Z',
+            data='{"value": "297"}')
 
 
 # Data used to return in the responses.

@@ -125,3 +125,7 @@ class Datapoint(Base):
         super(Datapoint, self).__init__()
         self._data['at'] = at
         self._data['value'] = value
+
+    def update(self):
+        state = self.__getstate__()
+        self._manager.update(state.pop('at'), **state)

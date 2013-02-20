@@ -152,7 +152,7 @@ class DatapointsManager(ManagerBase):
         return datapoints
 
     def update(self, at, value):
-        url = self._url(at)
+        url = "{}/{}Z".format(self.base_url, at.isoformat())
         payload = json.dumps({'value': value})
         response = self.client.put(url, data=payload)
         response.raise_for_status()
