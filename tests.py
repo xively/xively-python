@@ -228,6 +228,17 @@ class DatastreamTest(BaseTestCase):
             'GET', 'http://api.cosm.com/v2/feeds/7021/',
             allow_redirects=True, params={})
 
+    def test_view_datastream(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(GET_DATASTREAM_JSON)
+        self.session.return_value = response
+        datastream = self.feed.datastreams.get('1')
+        self.assertEqual(datastream.id, '1')
+        self.session.assert_called_with(
+            'GET', 'http://api.cosm.com/v2/feeds/7021/datastreams/1',
+            allow_redirects=True)
+
 
 # Data used to return in the responses.
 
@@ -312,5 +323,18 @@ LIST_FEEDS_JSON = b'''
       ]
     }
   ]
+}
+'''
+
+GET_DATASTREAM_JSON = b'''
+{
+  "current_value":"100",
+  "max_value":"10000.0",
+  "at":"2010-07-02T10:16:19.270708Z",
+  "min_value":"-10.0",
+  "tags":[
+    "humidity"
+  ],
+  "id":"1"
 }
 '''

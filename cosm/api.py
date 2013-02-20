@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import json
-import re
-import xml.etree.cElementTree as ET
 
 try:
     from urlparse import urljoin
@@ -112,11 +110,14 @@ class DatastreamsManager(ManagerBase):
             datastream._manager = self
             yield datastream
 
-    def get(self, url_or_id, format=DEFAULT_FORMAT, **params):
-        url = self._url(url_or_id, format)
+    def get(self, id, **params):
+        url = self._url(id)
         response = self.client.get(url, **params)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        datastream = cosm.Datastream(**data)
+        datastream._manager = self
+        return datastream
 
     def delete(self, url_or_id):
         url = self._url(url_or_id)
