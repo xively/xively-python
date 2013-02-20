@@ -129,3 +129,6 @@ class Datapoint(Base):
     def update(self):
         state = self.__getstate__()
         self._manager.update(state.pop('at'), **state)
+
+    def delete(self):
+        self._manager.delete(self.at)

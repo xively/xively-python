@@ -168,7 +168,7 @@ class DatapointsManager(ManagerBase):
         return datapoint
 
     def delete(self, at):
-        url = self._url(at)
+        url = "{}/{}Z".format(self.base_url, at.isoformat())
         response = self.client.delete(url)
         response.raise_for_status()
 
