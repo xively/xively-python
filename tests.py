@@ -239,6 +239,12 @@ class DatastreamTest(BaseTestCase):
             'GET', 'http://api.cosm.com/v2/feeds/7021/datastreams/1',
             allow_redirects=True)
 
+    def test_delete_datastream(self):
+        datastream = self._create_datastream(id="energy")
+        datastream.delete()
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy')
+
 
 # Data used to return in the responses.
 

@@ -104,6 +104,9 @@ class Datastream(Base):
         state = self.__getstate__()
         self._manager.update(self.id, **state)
 
+    def delete(self):
+        self._manager.delete(self.id)
+
 
 class Datapoint(Base):
     """A Datapoint represents a value at a certain point in time."""
