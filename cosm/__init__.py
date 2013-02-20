@@ -101,9 +101,8 @@ class Datastream(Base):
         self._data.update(**kwargs)
 
     def update(self):
-        url = self._manager._url(self.id)
         state = self.__getstate__()
-        self._manager.update(url, **state)
+        self._manager.update(self.id, **state)
 
 
 class Datapoint(Base):

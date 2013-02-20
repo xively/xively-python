@@ -96,8 +96,8 @@ class DatastreamsManager(ManagerBase):
         datastream._manager = self
         return datastream
 
-    def update(self, url_or_id, **kwargs):
-        url = self._url(url_or_id)
+    def update(self, datastream_id, **kwargs):
+        url = self._url(datastream_id)
         payload = json.dumps(kwargs)
         response = self.client.put(url, data=payload)
         response.raise_for_status()
