@@ -157,11 +157,15 @@ class DatapointsManager(ManagerBase):
         response = self.client.put(url, data=payload)
         response.raise_for_status()
 
-    def get(self, at, format=DEFAULT_FORMAT):
-        url = self._url(at, format)
+    def get(self, at):
+        url = "{}/{}Z".format(self.base_url, at.isoformat())
         response = self.client.get(url)
         response.raise_for_status()
-        return response.json()
+        data = response.json()
+        data['at'] = datetime.strptime(data['at'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        datapoint = cosm.Datapoint(**data)
+        datapoint._manager = self
+        return datapoint
 
     def delete(self, at):
         url = self._url(at)

@@ -294,6 +294,21 @@ class DatapointTest(BaseTestCase):
             '2010-07-28T07:48:22.014326Z',
             data='{"value": "297"}')
 
+    def test_view_datapoint(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(GET_DATAPOINT_JSON)
+        self.session.return_value = response
+        at = datetime(2010, 7, 28, 7, 48, 22, 14326)
+        datapoint = self.datastream.datapoints.get(at)
+        self.assertEqual(datapoint.at, at)
+        self.assertEqual(datapoint.value, "297")
+        self.session.assert_called_with(
+            'GET',
+            'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
+            '2010-07-28T07:48:22.014326Z',
+            allow_redirects=True)
+
 
 # Data used to return in the responses.
 
@@ -402,5 +417,12 @@ CREATE_DATAPOINTS_JSON = b'''
     {"at":"2010-05-20T11:01:45Z","value":"296"},
     {"at":"2010-05-20T11:01:46Z","value":"297"}
   ]
+}
+'''
+
+GET_DATAPOINT_JSON = b'''
+{
+  "value":"297",
+  "at":"2010-07-28T07:48:22.014326Z"
 }
 '''
