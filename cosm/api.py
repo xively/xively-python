@@ -89,9 +89,14 @@ class FeedsManager(ManagerBase):
 
 class DatastreamsManager(ManagerBase):
 
-    def __init__(self, client, base_url=None):
-        self.client = client
-        self.base_url = base_url + '/datastreams'
+    def __init__(self, feed):
+        self.feed = feed
+        feed_manager = getattr(feed, '_manager', None)
+        if feed_manager:
+            self.client = feed_manager.client
+            self.base_url = feed.feed + '/datastreams'
+        else:
+            self.client = None
 
     def create(self, id, **kwargs):
         data = dict(id=id, **kwargs)
@@ -134,9 +139,15 @@ class DatastreamsManager(ManagerBase):
 
 class DatapointsManager(ManagerBase):
 
-    def __init__(self, client, base_url=None):
-        self.client = client
-        self.base_url = base_url + '/datapoints'
+    def __init__(self, datastream):
+        self.datastream = datastream
+        datastream_manager = getattr(datastream, '_manager', None)
+        if datastream_manager:
+            self.client = datastream._manager.client
+            datastream_url = datastream._manager._url(datastream.id)
+            self.base_url = datastream_url + '/datapoints'
+        else:
+            self.client = None
 
     def create(self, datapoints):
         datapoints = [self._coerce_to_datapoint(d) for d in datapoints]

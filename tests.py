@@ -50,15 +50,13 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
 
     def _create_datastream(self, **data):
         datastream = cosm.Datastream(**data)
-        base_url = self.feed.feed
-        manager = cosm.api.DatastreamsManager(self.client, base_url)
-        datastream._manager = manager
+        datastream._manager = cosm.api.DatastreamsManager(self.feed)
         return datastream
 
     def _create_datapoint(self, **data):
         datapoint = cosm.Datapoint(**data)
         base_url = self.datastream._manager._url(self.datastream.id)
-        manager = cosm.api.DatapointsManager(self.client, base_url)
+        manager = cosm.api.DatapointsManager(self.datastream)
         datapoint._manager = manager
         return datapoint
 

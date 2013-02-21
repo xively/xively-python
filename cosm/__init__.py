@@ -58,7 +58,12 @@ class Base(object):
         return self._data
 
     def __getattr__(self, name):
-        return self._data[name]
+        try:
+            return self._data[name]
+        except KeyError:
+            class_name = self.__class__.__name__
+            raise AttributeError(
+                "'{}' object has no attribute '{}'".format(class_name, name))
 
     def __setattr__(self, name, value):
         if not name.startswith('_'):
@@ -81,8 +86,7 @@ class Feed(Base):
     def datastreams(self):
         if self._datastreams is None:
             import cosm.api
-            self._datastreams = cosm.api.DatastreamsManager(
-                self._manager.client, self.feed)
+            self._datastreams = cosm.api.DatastreamsManager(self)
         return self._datastreams
 
     def update(self):
@@ -106,8 +110,7 @@ class Datastream(Base):
     def datapoints(self):
         if self._datapoints is None:
             import cosm.api
-            self._datapoints = cosm.api.DatapointsManager(
-                self._manager.client, self._manager._url(self.id))
+            self._datapoints = cosm.api.DatapointsManager(self)
         return self._datapoints
 
     def update(self):
