@@ -244,7 +244,7 @@ class DatastreamTest(BaseTestCase):
         self.assertEqual(datastream.id, '1')
         self.session.assert_called_with(
             'GET', 'http://api.cosm.com/v2/feeds/7021/datastreams/1',
-            allow_redirects=True)
+            allow_redirects=True, params={})
 
     def test_delete_datastream(self):
         datastream = self._create_datastream(id="energy")

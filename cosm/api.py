@@ -40,6 +40,16 @@ class ManagerBase(object):
             raise TypeError
         return obj.isoformat() + 'Z'
 
+    def _parse_datetime(self, value):
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    def _prepare_params(self, params):
+        params = dict(params)
+        for name, value in params.items():
+            if isinstance(value, datetime):
+                params[name] = value.isoformat() + 'Z'
+        return params
+
 
 class FeedsManager(ManagerBase):
 
@@ -124,7 +134,8 @@ class DatastreamsManager(ManagerBase):
 
     def get(self, id, **params):
         url = self._url(id)
-        response = self.client.get(url, **params)
+        params = self._prepare_params(params)
+        response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
         datastream = cosm.Datastream(**data)
@@ -169,20 +180,17 @@ class DatapointsManager(ManagerBase):
         response = self.client.get(url)
         response.raise_for_status()
         data = response.json()
-        data['at'] = datetime.strptime(data['at'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        data['at'] = self._parse_datetime(data['at'])
         return self._coerce_to_datapoint(data)
 
     def history(self, **params):
         url = self._url('..').rstrip('/')
-        for name, value in params.items():
-            if isinstance(value, datetime):
-                params[name] = value.isoformat() + 'Z'
+        params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
         for datapoint_data in data['datapoints']:
-            datapoint_data['at'] = datetime.strptime(datapoint_data['at'],
-                                                     "%Y-%m-%dT%H:%M:%S.%fZ")
+            datapoint_data['at'] = self._parse_datetime(datapoint_data['at'])
             yield self._coerce_to_datapoint(datapoint_data)
 
     def delete(self, at=None, **params):
@@ -190,9 +198,7 @@ class DatapointsManager(ManagerBase):
         if at:
             url = "{}/{}Z".format(url, at.isoformat())
         elif params:
-            for name, value in params.items():
-                if isinstance(value, datetime):
-                    params[name] = value.isoformat() + 'Z'
+            params = self._prepare_params(params)
         response = self.client.delete(url, params=params)
         response.raise_for_status()
 
