@@ -66,7 +66,7 @@ class Base(object):
                 "'{}' object has no attribute '{}'".format(class_name, name))
 
     def __setattr__(self, name, value):
-        if not name.startswith('_'):
+        if not name.startswith('_') and name not in dir(self.__class__):
             self._data[name] = value
         else:
             super(Base, self).__setattr__(name, value)
@@ -89,6 +89,13 @@ class Feed(Base):
             self._datastreams = cosm.api.DatastreamsManager(self)
         return self._datastreams
 
+    @datastreams.setter  # NOQA
+    def datastreams(self, datastreams):
+        manager = getattr(self, '_manager', None)
+        if manager:
+            manager._appropriate_datastreams(self, datastreams)
+        self._data['datastreams'] = datastreams
+
     def update(self):
         self._manager.update(self.feed, **self.__getstate__())
 
@@ -104,6 +111,8 @@ class Datastream(Base):
     def __init__(self, id, **kwargs):
         super(Datastream, self).__init__()
         self._data['id'] = id
+        if 'datapoints' in kwargs:
+            self.datapoints = kwargs.pop('datapoints')
         self._data.update(**kwargs)
 
     @property
@@ -112,6 +121,10 @@ class Datastream(Base):
             import cosm.api
             self._datapoints = cosm.api.DatapointsManager(self)
         return self._datapoints
+
+    @datapoints.setter  # NOQA
+    def datapoints(self, datapoints):
+        self.datapoints._datapoints = datapoints
 
     def update(self):
         state = self.__getstate__()

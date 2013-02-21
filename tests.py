@@ -246,6 +246,28 @@ class DatastreamTest(BaseTestCase):
             'GET', 'http://api.cosm.com/v2/feeds/7021/datastreams/1',
             allow_redirects=True, params={})
 
+    def test_get_datastream_with_history(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(HISTORY_DATASTREAM_JSON)
+        self.session.return_value = response
+        datastream = self.feed.datastreams.get(
+            'random5',
+            start=datetime(2013, 1, 1, 14, 0, 0),
+            end=datetime(2013, 1, 1, 16, 0, 0),
+            interval=900)
+        self.session.assert_called_with(
+            'GET', 'http://api.cosm.com/v2/feeds/7021/datastreams/random5',
+            allow_redirects=True, params={
+                'start': '2013-01-01T14:00:00Z',
+                'end': '2013-01-01T16:00:00Z',
+                'interval': 900,
+            })
+        self.assertEqual(datastream.id, 'random5')
+        self.assertEqual(datastream.datapoints[0].at,
+                         datetime(2013, 1, 1, 14, 14, 55, 118845))
+        self.assertEqual(datastream.datapoints[0].value, "0.25741970")
+
     def test_delete_datastream(self):
         datastream = self._create_datastream(id="energy")
         datastream.delete()
@@ -295,21 +317,19 @@ class DatapointTest(BaseTestCase):
     def test_datapoint_history(self):
         response = requests.Response()
         response.status_code = 200
-        response.raw = BytesIO(HISTORY_DATAPOINTS_JSON)
+        response.raw = BytesIO(HISTORY_DATASTREAM_JSON)
         self.session.return_value = response
         datapoints = list(self.datastream.datapoints.history(
             start=datetime(2013, 1, 1, 14, 0, 0),
             end=datetime(2013, 1, 1, 16, 0, 0),
             interval=900))
         self.session.assert_called_with(
-            'GET',
-            'http://api.cosm.com/v2/feeds/1977/datastreams/1',
-            allow_redirects=True,
-            params={
+            'GET', 'http://api.cosm.com/v2/feeds/1977/datastreams/1',
+            allow_redirects=True, params={
                 'start': '2013-01-01T14:00:00Z',
                 'end': '2013-01-01T16:00:00Z',
                 'interval': 900,
-            }),
+            })
         self.assertEqual(datapoints[0].at,
                          datetime(2013, 1, 1, 14, 14, 55, 118845))
         self.assertEqual(datapoints[0].value, "0.25741970")
@@ -465,7 +485,7 @@ GET_DATAPOINT_JSON = b'''
 }
 '''
 
-HISTORY_DATAPOINTS_JSON = b'''
+HISTORY_DATASTREAM_JSON = b'''
 {
   "max_value": "1.0",
   "current_value": "0.00334173",

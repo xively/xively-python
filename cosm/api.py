@@ -2,6 +2,7 @@
 
 import json
 
+from collections import Sequence
 from datetime import datetime
 
 try:
@@ -138,8 +139,13 @@ class DatastreamsManager(ManagerBase):
         response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
+        datapoints_data = data.pop('datapoints', None)
         datastream = cosm.Datastream(**data)
         datastream._manager = self
+        if datapoints_data:
+            datapoints = self._coerce_datapoints(
+                datastream.datapoints, datapoints_data)
+            datastream._data['datapoints'] = datapoints
         return datastream
 
     def delete(self, url_or_id):
@@ -147,8 +153,17 @@ class DatastreamsManager(ManagerBase):
         response = self.client.delete(url)
         response.raise_for_status()
 
+    def _coerce_datapoints(self, datapoints_manager, datapoints_data):
+        coerce = datapoints_manager._coerce_to_datapoint
+        datapoints = []
+        for data in datapoints_data:
+            data['at'] = self._parse_datetime(data['at'])
+            datapoint = coerce(data)
+            datapoints.append(datapoint)
+        return datapoints
 
-class DatapointsManager(ManagerBase):
+
+class DatapointsManager(Sequence, ManagerBase):
 
     def __init__(self, datastream):
         self.datastream = datastream
@@ -159,6 +174,19 @@ class DatapointsManager(ManagerBase):
             self.base_url = datastream_url + '/datapoints'
         else:
             self.client = None
+
+    def __contains__(self, value):
+        return value in self.datapoints['datapoints']
+
+    def __getitem__(self, item):
+        return self._datapoints[item]
+
+    def __len__(self):
+        return len(self._datapoints)
+
+    @property
+    def _datapoints(self):
+        return self.datastream._data['datapoints']
 
     def create(self, datapoints):
         datapoints = [self._coerce_to_datapoint(d) for d in datapoints]
