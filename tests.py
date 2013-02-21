@@ -55,7 +55,6 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
 
     def _create_datapoint(self, **data):
         datapoint = cosm.Datapoint(**data)
-        base_url = self.datastream._manager._url(self.datastream.id)
         manager = cosm.api.DatapointsManager(self.datastream)
         datapoint._manager = manager
         return datapoint
@@ -78,6 +77,10 @@ class ClientTest(BaseTestCase):
     """
     Low level Cosm Client tests.
     """
+
+    def setUp(self):
+        super(ClientTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
 
     def test_create(self):
         """Tests that we can create a client object."""
@@ -110,13 +113,37 @@ class ClientTest(BaseTestCase):
             data={'title': "This is an object", "value": 42})
 
 
-class APIClientTest(BaseTestCase):
-    """
-    Cosm API Client tests.
-    """
+class FeedTest(BaseTestCase):
 
     def setUp(self):
-        super(APIClientTest, self).setUp()
+        super(FeedTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
+        self.api = cosm.api.Client("API_KEY")
+
+    def test_create_feed(self):
+        feed = cosm.Feed(title="Feed Test")
+        self.client.post('/v2/feeds', data=feed)
+
+    def test_update_feed(self):
+        feed = self._create_feed(id='123', title="Office")
+        feed.private = True
+        feed.update()
+        self.assertEqual(self.session.call_args[0],
+                         ('PUT', 'http://api.cosm.com/v2/feeds/123'))
+        payload = json.loads(self.session.call_args[1]['data'])
+        self.assertEqual(payload['private'], True)
+
+    def test_delete_feed(self):
+        feed = self._create_feed(id='456', title="Home")
+        feed.delete()
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/feeds/456')
+
+
+class FeedsManagerTest(BaseTestCase):
+
+    def setUp(self):
+        super(FeedsManagerTest, self).setUp()
         self.api = cosm.api.Client("API_KEY")
 
     def test_create_feed(self):
@@ -171,36 +198,38 @@ class APIClientTest(BaseTestCase):
             'DELETE', 'http://api.cosm.com/v2/feeds/7021')
 
 
-class FeedTest(BaseTestCase):
-
-    def setUp(self):
-        super(FeedTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
-
-    def test_create_feed(self):
-        feed = cosm.Feed(title="Feed Test")
-        self.client.post('/v2/feeds', data=feed)
-
-    def test_update_feed(self):
-        feed = self._create_feed(id='123', title="Office")
-        feed.private = True
-        feed.update()
-        self.assertEqual(self.session.call_args[0],
-                         ('PUT', 'http://api.cosm.com/v2/feeds/123'))
-        payload = json.loads(self.session.call_args[1]['data'])
-        self.assertEqual(payload['private'], True)
-
-    def test_delete_feed(self):
-        feed = self._create_feed(id='456', title="Home")
-        feed.delete()
-        self.session.assert_called_with(
-            'DELETE', 'http://api.cosm.com/v2/feeds/456')
-
-
 class DatastreamTest(BaseTestCase):
 
     def setUp(self):
         super(DatastreamTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
+        self.feed = self._create_feed(id=7021, title="Rother")
+
+    def test_create_datastream(self):
+        datastream = cosm.Datastream(id="energy")
+        self.assertEqual(datastream.id, "energy")
+
+    def test_update_datastream(self):
+        datastream = self._create_datastream(id="energy", current_value=211)
+        datastream.current_value = 294
+        datastream.update()
+        self.assertEqual(
+            self.session.call_args[0],
+            ('PUT', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy'))
+        payload = json.loads(self.session.call_args[1]['data'])
+        self.assertEqual(payload['current_value'], 294)
+
+    def test_delete_datastream(self):
+        datastream = self._create_datastream(id="energy")
+        datastream.delete()
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy')
+
+
+class DatastreamsManagerTest(BaseTestCase):
+
+    def setUp(self):
+        super(DatastreamsManagerTest, self).setUp()
         self.client = cosm.Client("API_KEY")
         self.feed = self._create_feed(id=7021, title="Rother")
 
@@ -214,9 +243,7 @@ class DatastreamTest(BaseTestCase):
         self.assertEqual(datastream.current_value, 34000)
 
     def test_update_datastream(self):
-        datastream = self._create_datastream(id="energy", current_value=211)
-        datastream.current_value = 294
-        datastream.update()
+        self.feed.datastreams.update('energy', current_value=294)
         self.assertEqual(
             self.session.call_args[0],
             ('PUT', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy'))
@@ -269,8 +296,7 @@ class DatastreamTest(BaseTestCase):
         self.assertEqual(datastream.datapoints[0].value, "0.25741970")
 
     def test_delete_datastream(self):
-        datastream = self._create_datastream(id="energy")
-        datastream.delete()
+        self.feed.datastreams.delete("energy")
         self.session.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy')
 
@@ -279,6 +305,42 @@ class DatapointTest(BaseTestCase):
 
     def setUp(self):
         super(DatapointTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
+        self.feed = self._create_feed(id=1977, title="Rother")
+        self.datastream = self._create_datastream(id='1', current_value="100")
+
+    def test_create_datapoint(self):
+        now = datetime.now()
+        datapoint = cosm.Datapoint(at=now, value=123)
+        self.assertEqual(datapoint.at, now)
+        self.assertEqual(datapoint.value, 123)
+
+    def test_update_datapoint(self):
+        datapoint = self._create_datapoint(
+            at=datetime(2010, 7, 28, 7, 48, 22, 14326), value="296")
+        datapoint.value = "297"
+        datapoint.update()
+        self.session.assert_called_with(
+            'PUT',
+            'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
+            '2010-07-28T07:48:22.014326Z',
+            data='{"value": "297"}')
+
+    def test_delete_datapoint(self):
+        datapoint = self._create_datapoint(
+            at=datetime(2010, 7, 28, 7, 48, 22, 14326), value="297")
+        datapoint.delete()
+        self.session.assert_called_with(
+            'DELETE',
+            'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
+            '2010-07-28T07:48:22.014326Z',
+            params={})
+
+
+class DatapointsManagerTest(BaseTestCase):
+
+    def setUp(self):
+        super(DatapointsManagerTest, self).setUp()
         self.client = cosm.Client("API_KEY")
         self.feed = self._create_feed(id=1977, title="Rother")
         self.datastream = self._create_datastream(id='1', current_value="100")
@@ -304,10 +366,8 @@ class DatapointTest(BaseTestCase):
         self.assertEqual(datapoints[3].value, "297")
 
     def test_update_datapoint(self):
-        datapoint = self._create_datapoint(
-            at=datetime(2010, 7, 28, 7, 48, 22, 14326), value="296")
-        datapoint.value = "297"
-        datapoint.update()
+        self.datastream.datapoints.update(
+            datetime(2010, 7, 28, 7, 48, 22, 14326), value="297")
         self.session.assert_called_with(
             'PUT',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
@@ -350,9 +410,8 @@ class DatapointTest(BaseTestCase):
             allow_redirects=True)
 
     def test_delete_datapoint(self):
-        datapoint = self._create_datapoint(
-            at=datetime(2010, 7, 28, 7, 48, 22, 14326), value="297")
-        datapoint.delete()
+        at = datetime(2010, 7, 28, 7, 48, 22, 14326)
+        self.datastream.datapoints.delete(at)
         self.session.assert_called_with(
             'DELETE',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
