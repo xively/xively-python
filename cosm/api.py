@@ -139,10 +139,6 @@ class DatapointsManager(ManagerBase):
         self.base_url = base_url + '/datapoints'
 
     def create(self, datapoints):
-        def create_datapoint(at, value):
-            datapoint = cosm.Datapoint(at, value)
-            datapoint._manager = self
-            return datapoint
         datapoints = [self._coerce_to_datapoint(d) for d in datapoints]
         payload = json.dumps({
             'datapoints': [d.__getstate__() for d in datapoints],
@@ -163,9 +159,8 @@ class DatapointsManager(ManagerBase):
         response.raise_for_status()
         data = response.json()
         data['at'] = datetime.strptime(data['at'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        datapoint = cosm.Datapoint(**data)
-        datapoint._manager = self
-        return datapoint
+        return self._coerce_to_datapoint(data)
+
 
     def delete(self, at=None, **params):
         url = self.base_url
@@ -183,6 +178,7 @@ class DatapointsManager(ManagerBase):
             datapoint = self._clone_datapoint(d)
         elif isinstance(d, dict):
             datapoint = cosm.Datapoint(**d)
+        datapoint._manager = self
         return datapoint
 
     def _clone_datapoint(self, d):
