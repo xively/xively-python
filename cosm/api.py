@@ -161,6 +161,18 @@ class DatapointsManager(ManagerBase):
         data['at'] = datetime.strptime(data['at'], "%Y-%m-%dT%H:%M:%S.%fZ")
         return self._coerce_to_datapoint(data)
 
+    def history(self, **params):
+        url = self._url('..').rstrip('/')
+        for name, value in params.items():
+            if isinstance(value, datetime):
+                params[name] = value.isoformat() + 'Z'
+        response = self.client.get(url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        for datapoint_data in data['datapoints']:
+            datapoint_data['at'] = datetime.strptime(datapoint_data['at'],
+                                                     "%Y-%m-%dT%H:%M:%S.%fZ")
+            yield self._coerce_to_datapoint(datapoint_data)
 
     def delete(self, at=None, **params):
         url = self.base_url

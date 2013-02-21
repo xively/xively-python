@@ -294,6 +294,28 @@ class DatapointTest(BaseTestCase):
             '2010-07-28T07:48:22.014326Z',
             data='{"value": "297"}')
 
+    def test_datapoint_history(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(HISTORY_DATAPOINTS_JSON)
+        self.session.return_value = response
+        datapoints = list(self.datastream.datapoints.history(
+            start=datetime(2013, 1, 1, 14, 0, 0),
+            end=datetime(2013, 1, 1, 16, 0, 0),
+            interval=900))
+        self.session.assert_called_with(
+            'GET',
+            'http://api.cosm.com/v2/feeds/1977/datastreams/1',
+            allow_redirects=True,
+            params={
+                'start': '2013-01-01T14:00:00Z',
+                'end': '2013-01-01T16:00:00Z',
+                'interval': 900,
+            }),
+        self.assertEqual(datapoints[0].at,
+                         datetime(2013, 1, 1, 14, 14, 55, 118845))
+        self.assertEqual(datapoints[0].value, "0.25741970")
+
     def test_view_datapoint(self):
         response = requests.Response()
         response.status_code = 200
@@ -442,5 +464,50 @@ GET_DATAPOINT_JSON = b'''
 {
   "value":"297",
   "at":"2010-07-28T07:48:22.014326Z"
+}
+'''
+
+HISTORY_DATAPOINTS_JSON = b'''
+{
+  "max_value": "1.0",
+  "current_value": "0.00334173",
+  "min_value": "0.0",
+  "at": "2013-01-04T10:30:00.119435Z",
+  "version": "1.0.0",
+  "datapoints": [
+    {
+      "value": "0.25741970",
+      "at": "2013-01-01T14:14:55.118845Z"
+    },
+    {
+      "value": "0.86826886",
+      "at": "2013-01-01T14:29:55.123420Z"
+    },
+    {
+      "value": "0.28586252",
+      "at": "2013-01-01T14:44:55.111267Z"
+    },
+    {
+      "value": "0.48122377",
+      "at": "2013-01-01T14:59:55.126180Z"
+    },
+    {
+      "value": "0.60897230",
+      "at": "2013-01-01T15:14:55.121795Z"
+    },
+    {
+      "value": "0.52898451",
+      "at": "2013-01-01T15:29:55.105327Z"
+    },
+    {
+      "value": "0.36369879",
+      "at": "2013-01-01T15:44:55.115502Z"
+    },
+    {
+      "value": "0.54204623",
+      "at": "2013-01-01T15:59:55.111692Z"
+    }
+  ],
+  "id": "random5"
 }
 '''
