@@ -3,7 +3,7 @@
 try:
     from urlparse import urljoin
 except ImportError:
-    from urllib.parse import urljoin
+    from urllib.parse import urljoin  # NOQA
 
 from requests.sessions import Session
 
@@ -80,6 +80,8 @@ class Feed(Base):
     def __init__(self, title, **kwargs):
         super(Feed, self).__init__()
         self._data['title'] = title
+        if 'datastreams' in kwargs:
+            self.datastreams = kwargs.pop('datastreams')
         self._data.update(kwargs)
 
     @property
@@ -93,7 +95,7 @@ class Feed(Base):
     def datastreams(self, datastreams):
         manager = getattr(self, '_manager', None)
         if manager:
-            manager._appropriate_datastreams(self, datastreams)
+            manager._coerce_datastreams(self, datastreams)
         self._data['datastreams'] = datastreams
 
     def update(self):
@@ -124,7 +126,7 @@ class Datastream(Base):
 
     @datapoints.setter  # NOQA
     def datapoints(self, datapoints):
-        self.datapoints._datapoints = datapoints
+        self._data['datapoints'] = datapoints
 
     def update(self):
         state = self.__getstate__()

@@ -85,11 +85,17 @@ class FeedsManager(ManagerBase):
 
     def get(self, url_or_id, **params):
         url = self._url(url_or_id)
-        response = self.client.get(url, **params)
+        params = self._prepare_params(params)
+        response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
+        datastreams_data = data.pop('datastreams', None)
         feed = cosm.Feed(**data)
         self._manager = self
+        if datastreams_data:
+            datastreams = self._coerce_datastreams(
+                feed.datastreams, datastreams_data)
+            feed._data['datastreams'] = datastreams
         return feed
 
     def delete(self, url_or_id):
@@ -97,17 +103,38 @@ class FeedsManager(ManagerBase):
         response = self.client.delete(url)
         response.raise_for_status()
 
+    def _coerce_datastreams(self, datastreams_manager, datastreams_data):
+        coerce = datastreams_manager._coerce_to_datastream
+        datastreams = []
+        for data in datastreams_data:
+            datastream = coerce(data)
+            datastreams.append(datastream)
+        return datastreams
 
-class DatastreamsManager(ManagerBase):
+
+class DatastreamsManager(Sequence, ManagerBase):
 
     def __init__(self, feed):
         self.feed = feed
         feed_manager = getattr(feed, '_manager', None)
-        if feed_manager:
+        if feed_manager is not None:
             self.client = feed_manager.client
             self.base_url = feed.feed + '/datastreams'
         else:
             self.client = None
+
+    def __contains__(self, value):
+        return value in self.datastreams['datastreams']
+
+    def __getitem__(self, item):
+        return self._datastreams[item]
+
+    def __len__(self):
+        return len(self._datastreams)
+
+    @property
+    def _datastreams(self):
+        return self.feed._data['datastreams']
 
     def create(self, id, **kwargs):
         data = dict(id=id, **kwargs)
@@ -139,13 +166,7 @@ class DatastreamsManager(ManagerBase):
         response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
-        datapoints_data = data.pop('datapoints', None)
-        datastream = cosm.Datastream(**data)
-        datastream._manager = self
-        if datapoints_data:
-            datapoints = self._coerce_datapoints(
-                datastream.datapoints, datapoints_data)
-            datastream._data['datapoints'] = datapoints
+        datastream = self._coerce_to_datastream(data)
         return datastream
 
     def delete(self, url_or_id):
@@ -162,13 +183,24 @@ class DatastreamsManager(ManagerBase):
             datapoints.append(datapoint)
         return datapoints
 
+    def _coerce_to_datastream(self, d):
+        if isinstance(d, dict):
+            datapoints_data = d.pop('datapoints', None)
+            datastream = cosm.Datastream(**d)
+            if datapoints_data:
+                datapoints = self._coerce_datapoints(
+                    datastream.datapoints, datapoints_data)
+                datastream.datapoints = datapoints
+        datastream._manager = self
+        return datastream
+
 
 class DatapointsManager(Sequence, ManagerBase):
 
     def __init__(self, datastream):
         self.datastream = datastream
         datastream_manager = getattr(datastream, '_manager', None)
-        if datastream_manager:
+        if datastream_manager is not None:
             self.client = datastream._manager.client
             datastream_url = datastream._manager._url(datastream.id)
             self.base_url = datastream_url + '/datapoints'

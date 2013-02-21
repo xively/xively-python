@@ -188,6 +188,28 @@ class FeedsManagerTest(BaseTestCase):
                          ('GET', 'http://api.cosm.com/v2/feeds/7021'))
         self.assertEqual(feed.title, "Cosm Office environment")
 
+    def test_get_feeds_with_datastream_history(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(HISTORY_FEED_JSON)
+        self.session.return_value = response
+        feed = self.api.feeds.get(61916,
+                                  start=datetime(2013, 1, 1, 14, 0, 0),
+                                  end=datetime(2013, 1, 1, 16, 0, 0),
+                                  interval=900)
+        self.session.assert_called_with(
+            'GET', 'http://api.cosm.com/v2/feeds/61916',
+            allow_redirects=True, params={
+                'start': '2013-01-01T14:00:00Z',
+                'end': '2013-01-01T16:00:00Z',
+                'interval': 900,
+            })
+        self.assertEqual(feed.id, 61916)
+        self.assertEqual(feed.datastreams[0].id, "random5")
+        self.assertEqual(feed.datastreams[0].datapoints[2].at,
+                         datetime(2013, 1, 1, 14, 44, 55, 111267))
+        self.assertEqual(feed.datastreams[0].datapoints[2].value, "0.40271227")
+
     def test_delete_feed(self):
         """Tests a DELETE request is sent for a feed by its id."""
         response = requests.Response()
@@ -586,5 +608,141 @@ HISTORY_DATASTREAM_JSON = b'''
     }
   ],
   "id": "random5"
+}
+'''
+
+HISTORY_FEED_JSON = b'''
+{
+  "status": "live",
+  "tags": [
+    "data",
+    "generated",
+    "generator",
+    "random",
+    "sawtooth",
+    "sine",
+    "square",
+    "test",
+    "toggle",
+    "triangle",
+    "wave"
+  ],
+  "datastreams": [
+    {
+      "current_value": "-0.52858234",
+      "datapoints": [
+        {
+          "value": "-0.36438789",
+          "at": "2013-01-01T14:14:55.118845Z"
+        },
+        {
+          "value": "-0.92348577",
+          "at": "2013-01-01T14:29:55.123420Z"
+        },
+        {
+          "value": "0.40271227",
+          "at": "2013-01-01T14:44:55.111267Z"
+        },
+        {
+          "value": "0.90677334",
+          "at": "2013-01-01T14:59:55.126180Z"
+        },
+        {
+          "value": "-0.44034308",
+          "at": "2013-01-01T15:14:55.121795Z"
+        },
+        {
+          "value": "-0.88850004",
+          "at": "2013-01-01T15:29:55.105327Z"
+        }
+      ],
+      "at": "2013-01-04T10:22:40.111636Z",
+      "max_value": "1.0",
+      "min_value": "-1.0",
+      "id": "random5"
+    },
+    {
+      "current_value": "0.90935832",
+      "datapoints": [
+        {
+          "value": "-0.37776079",
+          "at": "2013-01-01T14:14:55.118845Z"
+        },
+        {
+          "value": "-0.99809959",
+          "at": "2013-01-01T14:29:55.123420Z"
+        },
+        {
+          "value": "-0.26099779",
+          "at": "2013-01-01T14:44:55.111267Z"
+        },
+        {
+          "value": "0.83106759",
+          "at": "2013-01-01T14:59:55.126180Z"
+        },
+        {
+          "value": "0.79286010",
+          "at": "2013-01-01T15:14:55.121795Z"
+        },
+        {
+          "value": "-0.32355670",
+          "at": "2013-01-01T15:29:55.105327Z"
+        }
+      ],
+      "at": "2013-01-04T10:22:40.111636Z",
+      "max_value": "1.0",
+      "min_value": "-1.0",
+      "id": "random60"
+    },
+    {
+      "current_value": "0.79187545",
+      "datapoints": [
+        {
+          "value": "0.99688943",
+          "at": "2013-01-01T14:14:55.118845Z"
+        },
+        {
+          "value": "0.99999155",
+          "at": "2013-01-01T14:29:55.123420Z"
+        },
+        {
+          "value": "0.99620780",
+          "at": "2013-01-01T14:44:55.111267Z"
+        },
+        {
+          "value": "0.98556422",
+          "at": "2013-01-01T14:59:55.126180Z"
+        },
+        {
+          "value": "0.96813412",
+          "at": "2013-01-01T15:14:55.121795Z"
+        },
+        {
+          "value": "0.94403985",
+          "at": "2013-01-01T15:29:55.105327Z"
+        },
+        {
+          "value": "0.91341442",
+          "at": "2013-01-01T15:44:55.115502Z"
+        }
+      ],
+      "at": "2013-01-04T10:22:40.111636Z",
+      "max_value": "1.0",
+      "min_value": "-1.0",
+      "id": "random900"
+    }
+  ],
+  "description": "A test feed full of data for testing devices against.",
+  "created": "2012-06-01T14:18:51.736718Z",
+  "feed": "https://api.cosm.com/v2/feeds/61916.json",
+  "title": "Test Data Generator",
+  "location": {
+    "domain": "physical"
+  },
+  "version": "1.0.0",
+  "private": "false",
+  "creator": "https://cosm.com/users/paul",
+  "updated": "2013-01-04T10:22:40.342290Z",
+  "id": 61916
 }
 '''
