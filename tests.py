@@ -316,15 +316,16 @@ class DatapointTest(BaseTestCase):
         self.session.assert_called_with(
             'DELETE',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
-            '2010-07-28T07:48:22.014326Z')
+            '2010-07-28T07:48:22.014326Z',
+            params={})
 
     def test_delete_multiple_datapoints(self):
         self.datastream.datapoints.delete(
             start=datetime(2010, 7, 28, 7, 48, 22, 14326))
         self.session.assert_called_with(
             'DELETE',
-            'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints'
-            '?start=2010-07-28T07:48:22.014326Z')
+            'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints',
+            params={'start': '2010-07-28T07:48:22.014326Z'})
 
 
 # Data used to return in the responses.

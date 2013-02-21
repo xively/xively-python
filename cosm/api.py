@@ -168,18 +168,14 @@ class DatapointsManager(ManagerBase):
         return datapoint
 
     def delete(self, at=None, **params):
+        url = self.base_url
         if at:
-            url = "{}/{}Z".format(self.base_url, at.isoformat())
+            url = "{}/{}Z".format(url, at.isoformat())
         elif params:
-            qs = ''
             for name, value in params.items():
-                if value is None:
-                    continue
                 if isinstance(value, datetime):
-                    value = value.isoformat() + 'Z'
-                qs += "&{}={}".format(name, value)
-            url = "{}?{}".format(self.base_url, qs[1:])
-        response = self.client.delete(url)
+                    params[name] = value.isoformat() + 'Z'
+        response = self.client.delete(url, params=params)
         response.raise_for_status()
 
     def _coerce_to_datapoint(self, d):
