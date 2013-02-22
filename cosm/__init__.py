@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import json
+
+from datetime import datetime
+
 try:
     from urlparse import urljoin
 except ImportError:
@@ -35,6 +39,7 @@ class Client(Session):
         super(Client, self).__init__()
         self.auth = KeyAuth(key)
         self.base_url = self.BASE_URL
+        self.headers['Content-Type'] = 'application/json'
 
     def request(self, method, url, *args, **kwargs):
         """Constructs and sends a Request to the Cosm API.
@@ -43,9 +48,24 @@ class Client(Session):
 
         """
         full_url = urljoin(self.base_url, url)
-        if 'data' in kwargs and hasattr(kwargs['data'], '__getstate__'):
-            kwargs['data'] = kwargs['data'].__getstate__()
+        if 'data' in kwargs:
+            kwargs['data'] = self._encode_data(kwargs['data'])
         return super(Client, self).request(method, full_url, *args, **kwargs)
+
+    def _encode_data(self, data, **kwargs):
+        """Returns data encoded as JSON using a custom encoder.
+
+        >>> client = Client("XXXXXX")
+        >>> client._encode_data({'foo': datetime(2013, 2, 22, 12, 14, 40)})
+        '{"foo": "2013-02-22T12:14:40Z"}'
+        >>> feed = Feed(id=42, title="The Answer")
+        >>> client._encode_data({'feed': feed}, sort_keys=True)
+        '{"feed": {"id": 42, "title": "The Answer"}}'
+        >>> datastreams = [Datastream(id="1"), Datastream(id="2")]
+        >>> client._encode_data({'datastreams': datastreams})
+        '{"datastreams": [{"id": "1"}, {"id": "2"}]}'
+        """
+        return json.dumps(data, cls=JSONEncoder, **kwargs)
 
 
 class Base(object):
@@ -150,3 +170,14 @@ class Datapoint(Base):
 
     def delete(self):
         self._manager.delete(self.at)
+
+
+class JSONEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat() + 'Z'
+        elif hasattr(obj, '__getstate__'):
+            return obj.__getstate__()
+        else:
+            return json.JSONEncoder.default(self, obj)

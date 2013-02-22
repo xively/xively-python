@@ -110,7 +110,7 @@ class ClientTest(BaseTestCase):
         client.request('POST', "/v2/feeds", data=obj)
         self.session.assert_called_with(
             'POST', "http://api.cosm.com/v2/feeds",
-            data={'title': "This is an object", "value": 42})
+            data='{"value": 42, "title": "This is an object"}')
 
 
 class FeedTest(BaseTestCase):

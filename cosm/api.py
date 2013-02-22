@@ -69,8 +69,7 @@ class FeedsManager(ManagerBase):
 
     def update(self, id_or_url, **kwargs):
         url = self._url(id_or_url)
-        payload = json.dumps(kwargs)
-        response = self.client.put(url, data=payload)
+        response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
     def list(self, **params):
@@ -146,8 +145,7 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     def update(self, datastream_id, **kwargs):
         url = self._url(datastream_id)
-        payload = json.dumps(kwargs)
-        response = self.client.put(url, data=payload)
+        response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
     def list(self, **params):
@@ -222,16 +220,14 @@ class DatapointsManager(Sequence, ManagerBase):
 
     def create(self, datapoints):
         datapoints = [self._coerce_to_datapoint(d) for d in datapoints]
-        payload = json.dumps({
-            'datapoints': [d.__getstate__() for d in datapoints],
-        }, default=self._json_default)
+        payload = {'datapoints': datapoints}
         response = self.client.post(self.base_url, data=payload)
         response.raise_for_status()
         return datapoints
 
     def update(self, at, value):
         url = "{}/{}Z".format(self.base_url, at.isoformat())
-        payload = json.dumps({'value': value})
+        payload = {'value': value}
         response = self.client.put(url, data=payload)
         response.raise_for_status()
 
