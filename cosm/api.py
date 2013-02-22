@@ -118,7 +118,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         feed_manager = getattr(feed, '_manager', None)
         if feed_manager is not None:
             self.client = feed_manager.client
-            self.base_url = feed.feed + '/datastreams'
+            self.base_url = feed.feed.replace('.json', '') + '/datastreams'
         else:
             self.client = None
 
