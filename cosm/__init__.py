@@ -80,7 +80,7 @@ class Base(object):
         self._data = {}
 
     def __getstate__(self):
-        return self._data
+        return dict(**self._data)
 
     def __getattr__(self, name):
         try:
