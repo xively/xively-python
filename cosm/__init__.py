@@ -177,6 +177,21 @@ class Datapoint(Base):
         self._manager.delete(self.at)
 
 
+class Trigger(Base):
+    """Triggers provide 'push' capabilities (aka notifications)."""
+
+    def __init__(self, environment_id, stream_id, url, trigger_type,
+                 threshold_value=None):
+        self._data = {
+            'environment_id': environment_id,
+            'stream_id': stream_id,
+            'url': url,
+            'trigger_type': trigger_type,
+        }
+        if threshold_value is not None:
+            self._data['threshold_value'] = threshold_value
+
+
 class JSONEncoder(json.JSONEncoder):
 
     def default(self, obj):

@@ -123,6 +123,9 @@ class FeedTest(BaseTestCase):
     def test_create_feed(self):
         feed = cosm.Feed(title="Feed Test")
         self.client.post('/v2/feeds', data=feed)
+        self.session.assert_called_with(
+            'POST', 'http://api.cosm.com/v2/feeds',
+            data='{"title": "Feed Test"}')
 
     def test_update_feed(self):
         feed = self._create_feed(id='123', title="Office")
@@ -151,9 +154,8 @@ class FeedsManagerTest(BaseTestCase):
         response = requests.Response()
         response.status_code = 201
         response.headers['location'] = "http://cosm.api.com/v2/feeds/51"
-        with patch('cosm.Session.request') as request:
-            request.return_value = response
-            feed = self.api.feeds.create(title="Area 51")
+        self.session.return_value = response
+        feed = self.api.feeds.create(title="Area 51")
         self.assertEqual(feed.feed, "http://cosm.api.com/v2/feeds/51")
 
     def test_update_feed(self):
@@ -447,6 +449,59 @@ class DatapointsManagerTest(BaseTestCase):
             'DELETE',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints',
             params={'start': '2010-07-28T07:48:22.014326Z'})
+
+
+class TriggerTest(BaseTestCase):
+
+    def setUp(self):
+        super(TriggerTest, self).setUp()
+        self.client = cosm.Client("API_KEY")
+        self.api = cosm.api.Client("API_KEY")
+        self.feed = self._create_feed(id=8470, title="Dave")
+        self.datastream = self._create_datastream(id="0")
+
+    def test_create_trigger(self):
+        trigger = cosm.Trigger(
+            self.feed.id, self.datastream.id,
+            url="http://www.postbin.org/1ijyltn",
+            trigger_type="lt",
+            threshold_value="15.0")
+        self.client.post('/v2/triggers', data=trigger)
+        self.session.assert_called_with(
+            'POST', 'http://api.cosm.com/v2/triggers',
+            data=json.dumps({
+                'environment_id': 8470,
+                'stream_id': "0",
+                'url': "http://www.postbin.org/1ijyltn",
+                'trigger_type': 'lt',
+                'threshold_value': "15.0",
+            }))
+
+
+class TriggerManagerTest(BaseTestCase):
+
+    def setUp(self):
+        super(TriggerManagerTest, self).setUp()
+        self.api = cosm.api.Client("API_KEY")
+
+    def test_create_trigger(self):
+        response = requests.Response()
+        response.status_code = 201
+        response.headers['location'] = "http://cosm.api.com/v2/triggers/14"
+        self.session.return_value = response
+        trigger = self.api.triggers.create(
+            8470, "0", url="http://www.postbin.org/1ijyltn",
+            trigger_type='lt', threshold_value="15.0")
+        self.session.assert_called_with(
+            'POST', 'http://api.cosm.com/v2/triggers',
+            data=json.dumps({
+                'environment_id': 8470,
+                'stream_id': "0",
+                'url': "http://www.postbin.org/1ijyltn",
+                'trigger_type': 'lt',
+                'threshold_value': "15.0",
+            }))
+        self.assertEqual(trigger.id, 14)
 
 
 # Data used to return in the responses.

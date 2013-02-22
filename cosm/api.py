@@ -25,6 +25,7 @@ class Client(object):
         self.client = self.client_class(key)
         self.client.base_url += '/{}/'.format(self.api_version)
         self.feeds = FeedsManager(self.client)
+        self.triggers = TriggersManager(self.client)
 
 
 class ManagerBase(object):
@@ -268,3 +269,19 @@ class DatapointsManager(Sequence, ManagerBase):
 
     def _clone_datapoint(self, d):
         return cosm.Datapoint(**d._data)
+
+
+class TriggersManager(ManagerBase):
+
+    def __init__(self, client):
+        self.client = client
+        self.base_url = urljoin(client.base_url, "triggers")
+
+    def create(self, *args, **kwargs):
+        trigger = cosm.Trigger(*args, **kwargs)
+        response = self.client.post(self.base_url, data=trigger)
+        response.raise_for_status()
+        trigger._manager = self
+        location = response.headers['location']
+        trigger._data['id'] = int(location.rsplit('/', 1)[1])
+        return trigger
