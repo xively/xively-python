@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+__title__ = 'cosm-python'
+__version__ = '0.1.0'
+
 import json
 
 from datetime import datetime
@@ -40,6 +43,8 @@ class Client(Session):
         self.auth = KeyAuth(key)
         self.base_url = self.BASE_URL
         self.headers['Content-Type'] = 'application/json'
+        self.headers['User-Agent'] = 'cosm-python/{} {}'.format(
+            __version__, self.headers['User-Agent'])
 
     def request(self, method, url, *args, **kwargs):
         """Constructs and sends a Request to the Cosm API.
