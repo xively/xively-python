@@ -153,7 +153,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
-        for datastream_data in json['datastreams']:
+        for datastream_data in json.get('datastreams', []):
             datastream = cosm.Datastream(**datastream_data)
             datastream._manager = self
             yield datastream
