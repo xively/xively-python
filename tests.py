@@ -503,6 +503,24 @@ class TriggerManagerTest(BaseTestCase):
             }))
         self.assertEqual(trigger.id, 14)
 
+    def test_view_trigger(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(GET_TRIGGER_JSON)
+        self.session.return_value = response
+        trigger = self.api.triggers.get(14)
+        self.session.assert_called_with(
+            'GET', 'http://api.cosm.com/v2/triggers/14', allow_redirects=True)
+        self.assertEqual(trigger._data, {
+            'id': 14,
+            'environment_id': 8470,
+            'stream_id': "0",
+            'user': 'cosm',
+            'url': "http://www.postbin.org/1ijyltn",
+            'trigger_type': "lt",
+            'threshold_value': "15.0",
+        })
+
 
 # Data used to return in the responses.
 
@@ -799,5 +817,18 @@ HISTORY_FEED_JSON = b'''
   "creator": "https://cosm.com/users/paul",
   "updated": "2013-01-04T10:22:40.342290Z",
   "id": 61916
+}
+'''
+
+GET_TRIGGER_JSON = b'''
+{
+  "threshold_value":"15.0",
+  "user":"cosm",
+  "notified_at":"",
+  "url":"http:\/\/www.postbin.org\/1ijyltn",
+  "trigger_type":"lt",
+  "id":14,
+  "environment_id":8470,
+  "stream_id":"0"
 }
 '''

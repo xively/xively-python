@@ -285,3 +285,20 @@ class TriggersManager(ManagerBase):
         location = response.headers['location']
         trigger._data['id'] = int(location.rsplit('/', 1)[1])
         return trigger
+
+    def get(self, id):
+        url = self._url(id)
+        response = self.client.get(url)
+        response.raise_for_status()
+        data = response.json()
+        data.pop('id')
+        notified_at = data.pop('notified_at', None)
+        user = data.pop('user', None)
+        trigger = cosm.Trigger(**data)
+        trigger._data['id'] = id
+        if notified_at:
+            trigger._data['notified_at'] = self._parse_datetime(notified_at)
+        if user:
+            trigger._data['user'] = user
+        trigger._manager = self
+        return trigger
