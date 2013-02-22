@@ -136,10 +136,10 @@ class DatastreamsManager(Sequence, ManagerBase):
         return self.feed._data['datastreams']
 
     def create(self, id, **kwargs):
-        data = dict(id=id, **kwargs)
+        data = {'version': "1.0.0", 'datastreams': [dict(id=id, **kwargs)]}
         response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
-        datastream = cosm.Datastream(**data)
+        datastream = cosm.Datastream(id=id, **kwargs)
         datastream._manager = self
         return datastream
 
