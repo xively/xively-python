@@ -90,7 +90,7 @@ class FeedsManager(ManagerBase):
         data = response.json()
         datastreams_data = data.pop('datastreams', None)
         feed = cosm.Feed(**data)
-        self._manager = self
+        feed._manager = self
         if datastreams_data:
             datastreams = self._coerce_datastreams(
                 feed.datastreams, datastreams_data)
