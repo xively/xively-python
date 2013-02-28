@@ -120,7 +120,7 @@ class Feed(Base):
     def datastreams(self, datastreams):
         manager = getattr(self, '_manager', None)
         if manager:
-            manager._coerce_datastreams(self, datastreams)
+            manager._coerce_datastreams(self.datastreams, datastreams)
         self._data['datastreams'] = datastreams
 
     def update(self):

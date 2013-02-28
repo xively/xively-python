@@ -142,6 +142,12 @@ class FeedTest(BaseTestCase):
         self.session.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/456')
 
+    def test_set_datastreams(self):
+        feed = self._create_feed(id='123', title="Feed with datastreams")
+        feed.datastreams = [cosm.Datastream(id='0', current_value=42)]
+        self.assertEqual(feed.datastreams[0].id, '0')
+        self.assertEqual(feed.datastreams[0].current_value, 42)
+
 
 class FeedsManagerTest(BaseTestCase):
 

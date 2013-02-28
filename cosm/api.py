@@ -190,6 +190,8 @@ class DatastreamsManager(Sequence, ManagerBase):
                 datapoints = self._coerce_datapoints(
                     datastream.datapoints, datapoints_data)
                 datastream.datapoints = datapoints
+        elif isinstance(d, cosm.Datastream):
+            datastream = d
         datastream._manager = self
         return datastream
 
