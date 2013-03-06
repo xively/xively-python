@@ -187,6 +187,8 @@ class FeedsManagerTest(BaseTestCase):
         self.assertEqual(self.session.call_args[0],
                          ('GET', u'http://api.cosm.com/v2/feeds'))
         self.assertEqual(feed.feed, u'http://api.cosm.com/v2/feeds/5853.json')
+        self.assertEqual(feed.datastreams[0].id, "0")
+        self.assertEqual(feed.datastreams[1].id, "1")
 
     def test_view_feed(self):
         """Tests a request is sent to view a feed (by id) returning json."""

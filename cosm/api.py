@@ -79,8 +79,7 @@ class FeedsManager(ManagerBase):
         response.raise_for_status()
         json = response.json()
         for feed_data in json['results']:
-            feed = cosm.Feed(**feed_data)
-            feed._manager = self
+            feed = self._coerce_feed(feed_data)
             yield feed
 
     def get(self, url_or_id, **params):
@@ -89,13 +88,7 @@ class FeedsManager(ManagerBase):
         response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
-        datastreams_data = data.pop('datastreams', None)
-        feed = cosm.Feed(**data)
-        feed._manager = self
-        if datastreams_data:
-            datastreams = self._coerce_datastreams(
-                feed.datastreams, datastreams_data)
-            feed._data['datastreams'] = datastreams
+        feed = self._coerce_feed(data)
         return feed
 
     def delete(self, url_or_id):
@@ -103,11 +96,20 @@ class FeedsManager(ManagerBase):
         response = self.client.delete(url)
         response.raise_for_status()
 
-    def _coerce_datastreams(self, datastreams_manager, datastreams_data):
-        coerce = datastreams_manager._coerce_to_datastream
+    def _coerce_feed(self, feed_data):
+        datastreams_data = feed_data.pop('datastreams', None)
+        feed = cosm.Feed(**feed_data)
+        feed._manager = self
+        if datastreams_data:
+            datastreams = self._coerce_datastreams(
+                datastreams_data, feed.datastreams)
+            feed._data['datastreams'] = datastreams
+        return feed
+
+    def _coerce_datastreams(self, datastreams_data, datastreams_manager):
         datastreams = []
         for data in datastreams_data:
-            datastream = coerce(data)
+            datastream = datastreams_manager._coerce_datastream(data)
             datastreams.append(datastream)
         return datastreams
 
@@ -134,7 +136,7 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     @property
     def _datastreams(self):
-        return self.feed._data['datastreams']
+        return self.feed._data.setdefault('datastreams', [])
 
     def create(self, id, **kwargs):
         data = {'version': "1.0.0", 'datastreams': [dict(id=id, **kwargs)]}
@@ -165,7 +167,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
-        datastream = self._coerce_to_datastream(data)
+        datastream = self._coerce_datastream(data)
         return datastream
 
     def delete(self, url_or_id):
@@ -174,15 +176,14 @@ class DatastreamsManager(Sequence, ManagerBase):
         response.raise_for_status()
 
     def _coerce_datapoints(self, datapoints_manager, datapoints_data):
-        coerce = datapoints_manager._coerce_to_datapoint
         datapoints = []
         for data in datapoints_data:
             data['at'] = self._parse_datetime(data['at'])
-            datapoint = coerce(data)
+            datapoint = datapoints_manager._coerce_datapoint(data)
             datapoints.append(datapoint)
         return datapoints
 
-    def _coerce_to_datastream(self, d):
+    def _coerce_datastream(self, d):
         if isinstance(d, dict):
             datapoints_data = d.pop('datapoints', None)
             datastream = cosm.Datastream(**d)
@@ -222,7 +223,7 @@ class DatapointsManager(Sequence, ManagerBase):
         return self.datastream._data['datapoints']
 
     def create(self, datapoints):
-        datapoints = [self._coerce_to_datapoint(d) for d in datapoints]
+        datapoints = [self._coerce_datapoint(d) for d in datapoints]
         payload = {'datapoints': datapoints}
         response = self.client.post(self.base_url, data=payload)
         response.raise_for_status()
@@ -240,7 +241,7 @@ class DatapointsManager(Sequence, ManagerBase):
         response.raise_for_status()
         data = response.json()
         data['at'] = self._parse_datetime(data['at'])
-        return self._coerce_to_datapoint(data)
+        return self._coerce_datapoint(data)
 
     def history(self, **params):
         url = self._url('..').rstrip('/')
@@ -250,7 +251,7 @@ class DatapointsManager(Sequence, ManagerBase):
         data = response.json()
         for datapoint_data in data.get('datapoints', []):
             datapoint_data['at'] = self._parse_datetime(datapoint_data['at'])
-            yield self._coerce_to_datapoint(datapoint_data)
+            yield self._coerce_datapoint(datapoint_data)
 
     def delete(self, at=None, **params):
         url = self.base_url
@@ -261,7 +262,7 @@ class DatapointsManager(Sequence, ManagerBase):
         response = self.client.delete(url, params=params)
         response.raise_for_status()
 
-    def _coerce_to_datapoint(self, d):
+    def _coerce_datapoint(self, d):
         if isinstance(d, cosm.Datapoint):
             datapoint = self._clone_datapoint(d)
         elif isinstance(d, dict):
