@@ -40,6 +40,11 @@ class RequestsFixtureMixin(object):
 class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
     """Common base class for Cosm api tests."""
 
+    def setUp(self):
+        super(BaseTestCase, self).setUp()
+        self.api = cosm.api.Client("API_KEY")
+        self.client = self.api.client
+
     def _create_feed(self, **data):
         feed = cosm.Feed(**data)
         feed._manager = cosm.api.FeedsManager(self.client)
@@ -78,10 +83,6 @@ class ClientTest(BaseTestCase):
     Low level Cosm Client tests.
     """
 
-    def setUp(self):
-        super(ClientTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
-
     def test_create(self):
         """Tests that we can create a client object."""
         cosm.Client("ABCDE")
@@ -106,19 +107,13 @@ class ClientTest(BaseTestCase):
         obj = TestObject()
         obj.title = "This is an object"
         obj.value = 42
-        client = cosm.Client("API_KEY")
-        client.request('POST', "/v2/feeds", data=obj)
+        self.client.request('POST', "/v2/feeds", data=obj)
         self.session.assert_called_with(
             'POST', "http://api.cosm.com/v2/feeds",
             data=json.dumps({"value": 42, "title": "This is an object"}))
 
 
 class FeedTest(BaseTestCase):
-
-    def setUp(self):
-        super(FeedTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
-        self.api = cosm.api.Client("API_KEY")
 
     def test_create_feed(self):
         feed = cosm.Feed(title="Feed Test")
@@ -150,10 +145,6 @@ class FeedTest(BaseTestCase):
 
 
 class FeedsManagerTest(BaseTestCase):
-
-    def setUp(self):
-        super(FeedsManagerTest, self).setUp()
-        self.api = cosm.api.Client("API_KEY")
 
     def test_create_feed(self):
         """Tests a request is sent to create a feed."""
@@ -232,7 +223,6 @@ class DatastreamTest(BaseTestCase):
 
     def setUp(self):
         super(DatastreamTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
         self.feed = self._create_feed(id=7021, title="Rother")
 
     def test_create_datastream(self):
@@ -260,7 +250,6 @@ class DatastreamsManagerTest(BaseTestCase):
 
     def setUp(self):
         super(DatastreamsManagerTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
         self.feed = self._create_feed(id=7021, title="Rother")
 
     def test_create_datastream(self):
@@ -335,7 +324,6 @@ class DatapointTest(BaseTestCase):
 
     def setUp(self):
         super(DatapointTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
         self.feed = self._create_feed(id=1977, title="Rother")
         self.datastream = self._create_datastream(id='1', current_value="100")
 
@@ -371,7 +359,6 @@ class DatapointsManagerTest(BaseTestCase):
 
     def setUp(self):
         super(DatapointsManagerTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
         self.feed = self._create_feed(id=1977, title="Rother")
         self.datastream = self._create_datastream(id='1', current_value="100")
 
@@ -461,8 +448,6 @@ class TriggerTest(BaseTestCase):
 
     def setUp(self):
         super(TriggerTest, self).setUp()
-        self.client = cosm.Client("API_KEY")
-        self.api = cosm.api.Client("API_KEY")
         self.feed = self._create_feed(id=8470, title="Dave")
         self.datastream = self._create_datastream(id="0")
 
@@ -481,14 +466,27 @@ class TriggerTest(BaseTestCase):
                 'url': "http://www.postbin.org/1ijyltn",
                 'trigger_type': 'lt',
                 'threshold_value': "15.0",
-            }))
+            }, sort_keys=True))
+
+    def test_update_trigger(self):
+        trigger = self._create_trigger(
+            id=14,
+            url="http://www.postbin.org/1ijyltn",
+            trigger_type='lt',
+            threshold_value="15.0")
+        trigger.threshold_value = "20.0"
+        trigger.update()
+        self.session.assert_called_with(
+            'PUT', 'http://api.cosm.com/v2/triggers/14', data=json.dumps({
+            'threshold_value': "20.0",
+            'stream_id': "0",
+            'environment_id': 8470,
+            'url': "http://www.postbin.org/1ijyltn",
+            'trigger_type': 'lt',
+        }, sort_keys=True))
 
 
 class TriggerManagerTest(BaseTestCase):
-
-    def setUp(self):
-        super(TriggerManagerTest, self).setUp()
-        self.api = cosm.api.Client("API_KEY")
 
     def test_create_trigger(self):
         response = requests.Response()
