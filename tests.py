@@ -299,10 +299,11 @@ class DatastreamsManagerTest(BaseTestCase):
         response.raw = BytesIO(GET_DATASTREAM_JSON)
         self.session.return_value = response
         datastream = self.feed.datastreams.get('1')
-        self.assertEqual(datastream.id, '1')
         self.session.assert_called_with(
             'GET', 'http://api.cosm.com/v2/feeds/7021/datastreams/1',
             allow_redirects=True, params={})
+        self.assertEqual(datastream.id, '1')
+        self.assertEqual(list(datastream.datapoints), [])
 
     def test_get_datastream_with_history(self):
         response = requests.Response()

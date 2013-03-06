@@ -140,9 +140,14 @@ class Datastream(Base):
     def __init__(self, id, **kwargs):
         super(Datastream, self).__init__()
         self._data['id'] = id
-        if 'datapoints' in kwargs:
-            self.datapoints = kwargs.pop('datapoints')
+        self.datapoints = kwargs.pop('datapoints', [])
         self._data.update(**kwargs)
+
+    def __getstate__(self):
+        state = super(Datastream, self).__getstate__()
+        if not state['datapoints']:
+            state.pop('datapoints')
+        return state
 
     @property
     def datapoints(self):
