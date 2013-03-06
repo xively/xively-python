@@ -44,6 +44,8 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         super(BaseTestCase, self).setUp()
         self.api = cosm.api.Client("API_KEY")
         self.client = self.api.client
+        # Ensure that the jsonified output is in a known order.
+        self.client._json_encoder.sort_keys = True
 
     def _create_feed(self, **data):
         feed = cosm.Feed(**data)
@@ -110,7 +112,9 @@ class ClientTest(BaseTestCase):
         self.client.request('POST', "/v2/feeds", data=obj)
         self.session.assert_called_with(
             'POST', "http://api.cosm.com/v2/feeds",
-            data=json.dumps({"value": 42, "title": "This is an object"}))
+            data=json.dumps(
+                {"title": "This is an object", "value": 42},
+                sort_keys=True))
 
 
 class FeedTest(BaseTestCase):
@@ -372,7 +376,8 @@ class DatapointsManagerTest(BaseTestCase):
         self.session.assert_called_with(
             'POST',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints',
-            data=json.dumps(json.loads(CREATE_DATAPOINTS_JSON.decode('utf8'))))
+            data=json.dumps(json.loads(CREATE_DATAPOINTS_JSON.decode('utf8')),
+                            sort_keys=True))
         self.assertEqual(datapoints[0].at, datetime(2010, 5, 20, 11, 1, 43))
         self.assertEqual(datapoints[0].value, "294")
         self.assertEqual(datapoints[1].at, datetime(2010, 5, 20, 11, 1, 44))
@@ -478,12 +483,12 @@ class TriggerTest(BaseTestCase):
         trigger.update()
         self.session.assert_called_with(
             'PUT', 'http://api.cosm.com/v2/triggers/14', data=json.dumps({
-            'threshold_value': "20.0",
-            'stream_id': "0",
-            'environment_id': 8470,
-            'url': "http://www.postbin.org/1ijyltn",
-            'trigger_type': 'lt',
-        }, sort_keys=True))
+                'threshold_value': "20.0",
+                'stream_id': "0",
+                'environment_id': 8470,
+                'url': "http://www.postbin.org/1ijyltn",
+                'trigger_type': 'lt',
+            }, sort_keys=True))
 
 
 class TriggerManagerTest(BaseTestCase):
@@ -504,7 +509,7 @@ class TriggerManagerTest(BaseTestCase):
                 'url': "http://www.postbin.org/1ijyltn",
                 'trigger_type': 'lt',
                 'threshold_value': "15.0",
-            }))
+            }, sort_keys=True))
         self.assertEqual(trigger.id, 14)
 
     def test_view_trigger(self):

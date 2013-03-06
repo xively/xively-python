@@ -45,6 +45,7 @@ class Client(Session):
         self.headers['Content-Type'] = 'application/json'
         self.headers['User-Agent'] = 'cosm-python/{} {}'.format(
             __version__, self.headers['User-Agent'])
+        self._json_encoder = JSONEncoder()
 
     def request(self, method, url, *args, **kwargs):
         """Constructs and sends a Request to the Cosm API.
@@ -70,7 +71,8 @@ class Client(Session):
         >>> client._encode_data({'datastreams': datastreams})
         '{"datastreams": [{"id": "1"}, {"id": "2"}]}'
         """
-        return json.dumps(data, cls=JSONEncoder, **kwargs)
+        encoder = JSONEncoder(**kwargs) if kwargs else self._json_encoder
+        return encoder.encode(data)
 
 
 class Base(object):
