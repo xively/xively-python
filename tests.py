@@ -581,6 +581,18 @@ class TriggerManagerTest(BaseTestCase):
         self.assertEqual(triggers[0].id, 13)
         self.assertEqual(triggers[1].id, 14)
 
+    def test_list_triggers_for_feed(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(LIST_TRIGGERS_JSON)
+        self.session.return_value = response
+        triggers = list(self.api.triggers.list(feed_id=1233))
+        self.session.assert_called_with(
+            'GET', 'http://api.cosm.com/v2/triggers',
+            allow_redirects=True, params={'feed_id': 1233})
+        self.assertEqual(triggers[0].id, 13)
+        self.assertEqual(triggers[1].id, 14)
+
     def test_delete_trigger(self):
         response = requests.Response()
         response.status_code = 200
