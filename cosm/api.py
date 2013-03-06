@@ -309,3 +309,13 @@ class TriggersManager(ManagerBase):
         url = self._url(id)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
+
+    def list(self, **params):
+        url = self._url(None)
+        response = self.client.get(url, params=params)
+        response.raise_for_status()
+        json = response.json()
+        for data in json:
+            trigger = cosm.Trigger(**data)
+            trigger._manager = self
+            yield trigger

@@ -183,7 +183,7 @@ class Trigger(Base):
     """Triggers provide 'push' capabilities (aka notifications)."""
 
     def __init__(self, environment_id, stream_id, url, trigger_type,
-                 threshold_value=None):
+                 threshold_value=None, **kwargs):
         self._data = {
             'environment_id': environment_id,
             'stream_id': stream_id,
@@ -192,6 +192,7 @@ class Trigger(Base):
         }
         if threshold_value is not None:
             self._data['threshold_value'] = threshold_value
+        self._data.update(kwargs)
 
     def update(self):
         state = self.__getstate__()

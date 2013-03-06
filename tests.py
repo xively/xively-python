@@ -544,6 +544,18 @@ class TriggerManagerTest(BaseTestCase):
             'PUT', 'http://api.cosm.com/v2/triggers/14',
             data='{"threshold_value": "20.0"}')
 
+    def test_list_triggers(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(LIST_TRIGGERS_JSON)
+        self.session.return_value = response
+        triggers = list(self.api.triggers.list())
+        self.session.assert_called_with(
+            'GET', 'http://api.cosm.com/v2/triggers',
+            allow_redirects=True, params={})
+        self.assertEqual(triggers[0].id, 13)
+        self.assertEqual(triggers[1].id, 14)
+
 
 # Data used to return in the responses.
 
@@ -854,4 +866,30 @@ GET_TRIGGER_JSON = b'''
   "environment_id":8470,
   "stream_id":"0"
 }
+'''
+
+LIST_TRIGGERS_JSON = b'''
+[
+  {
+    "trigger_type":"gt",
+    "stream_id":"0",
+    "url":"http:\/\/www.postbin.org\/1ijyltn",
+    "environment_id":1233,
+    "user":"cosm",
+    "threshold_value":"20.0",
+    "notified_at":"",
+    "id":13
+  }
+  ,
+  {
+    "trigger_type":"lt",
+    "stream_id":"0",
+    "url":"http:\/\/www.postbin.org\/1ijyltn",
+    "environment_id":1233,
+    "user":"cosm",
+    "threshold_value":"15.0",
+    "notified_at":"",
+    "id":14
+  }
+]
 '''
