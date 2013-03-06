@@ -66,6 +66,14 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         datapoint._manager = manager
         return datapoint
 
+    def _create_trigger(self, **data):
+        id = data.pop('id', None)
+        trigger = cosm.Trigger(self.feed.id, self.datastream.id, **data)
+        if id is not None:
+            trigger._data['id'] = id
+        trigger._manager = cosm.api.TriggersManager(self.client)
+        return trigger
+
 
 class KeyAuthTest(unittest.TestCase):
     """
@@ -529,6 +537,12 @@ class TriggerManagerTest(BaseTestCase):
             'trigger_type': "lt",
             'threshold_value': "15.0",
         })
+
+    def test_update_trigger(self):
+        self.api.triggers.update(14, threshold_value="20.0")
+        self.session.assert_called_with(
+            'PUT', 'http://api.cosm.com/v2/triggers/14',
+            data='{"threshold_value": "20.0"}')
 
 
 # Data used to return in the responses.

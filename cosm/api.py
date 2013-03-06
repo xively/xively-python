@@ -304,3 +304,8 @@ class TriggersManager(ManagerBase):
             trigger._data['user'] = user
         trigger._manager = self
         return trigger
+
+    def update(self, id, **kwargs):
+        url = self._url(id)
+        response = self.client.put(url, data=kwargs)
+        response.raise_for_status()

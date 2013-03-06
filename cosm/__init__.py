@@ -193,6 +193,10 @@ class Trigger(Base):
         if threshold_value is not None:
             self._data['threshold_value'] = threshold_value
 
+    def update(self):
+        state = self.__getstate__()
+        self._manager.update(state.pop('id'), **state)
+
 
 class JSONEncoder(json.JSONEncoder):
 
