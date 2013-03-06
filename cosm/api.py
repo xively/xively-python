@@ -319,3 +319,8 @@ class TriggersManager(ManagerBase):
             trigger = cosm.Trigger(**data)
             trigger._manager = self
             yield trigger
+
+    def delete(self, url_or_id):
+        url = self._url(url_or_id)
+        response = self.client.delete(url)
+        response.raise_for_status()

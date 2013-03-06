@@ -498,6 +498,16 @@ class TriggerTest(BaseTestCase):
                 'trigger_type': 'lt',
             }, sort_keys=True))
 
+    def test_delete_trigger(self):
+        trigger = self._create_trigger(
+            id=14,
+            url="http://www.postbin.org/1ijyltn",
+            trigger_type='lt',
+            threshold_value="15.0")
+        trigger.delete()
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/triggers/14')
+
 
 class TriggerManagerTest(BaseTestCase):
 
@@ -555,6 +565,14 @@ class TriggerManagerTest(BaseTestCase):
             allow_redirects=True, params={})
         self.assertEqual(triggers[0].id, 13)
         self.assertEqual(triggers[1].id, 14)
+
+    def test_delete_trigger(self):
+        response = requests.Response()
+        response.status_code = 200
+        self.session.return_value = response
+        self.api.triggers.delete(42)
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/triggers/42')
 
 
 # Data used to return in the responses.

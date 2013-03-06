@@ -198,6 +198,9 @@ class Trigger(Base):
         state = self.__getstate__()
         self._manager.update(state.pop('id'), **state)
 
+    def delete(self):
+        self._manager.delete(self.id)
+
 
 class JSONEncoder(json.JSONEncoder):
 
