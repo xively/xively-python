@@ -424,6 +424,18 @@ class DatapointsManagerTest(BaseTestCase):
                          datetime(2013, 1, 1, 14, 14, 55, 118845))
         self.assertEqual(datapoints[0].value, "0.25741970")
 
+    def test_datapoint_history_empty(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(b'''{
+            "at": "2013-03-06T14:56:20.844980Z",
+            "id": "empty",
+            "version": "1.0.0"
+        }''')
+        self.session.return_value = response
+        datapoints = list(self.datastream.datapoints.history())
+        self.assertEqual(datapoints, [])
+
     def test_view_datapoint(self):
         response = requests.Response()
         response.status_code = 200

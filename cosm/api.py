@@ -248,7 +248,7 @@ class DatapointsManager(Sequence, ManagerBase):
         response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
-        for datapoint_data in data['datapoints']:
+        for datapoint_data in data.get('datapoints', []):
             datapoint_data['at'] = self._parse_datetime(datapoint_data['at'])
             yield self._coerce_to_datapoint(datapoint_data)
 
