@@ -609,6 +609,16 @@ class KeyTest(BaseTestCase):
         self.assertEqual(key.label, "sharing key")
         self.assertEqual(key.permissions, [])
 
+    def test_delete_key(self):
+        key_id = "1nAYR5W8jUqiZJXIMwu3923Qfuq_lnFCDOKtf3kyw4g"
+        key = self.api.keys._coerce_key({
+            'label': "sharing key",
+            'api_key': key_id
+        })
+        key.delete()
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/keys/' + key_id)
+
 
 class KeyManagerTest(BaseTestCase):
 
@@ -668,6 +678,15 @@ class KeyManagerTest(BaseTestCase):
         self.assertEqual(key.api_key, key_id)
         self.assertEqual(key.label, "sharing key")
         self.assertEqual(key.permissions[0].access_methods, ['get', 'put'])
+
+    def test_delete_key(self):
+        response = requests.Response()
+        response.status_code = 200
+        self.session.return_value = response
+        key_id = "CeWzga_cNja15kjwSVN5x5Mut46qj5akqKPvFxKIec0"
+        self.api.keys.delete(key_id)
+        self.session.assert_called_with(
+            'DELETE', 'http://api.cosm.com/v2/keys/' + key_id)
 
 
 class PermissionTest(BaseTestCase):

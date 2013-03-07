@@ -222,6 +222,9 @@ class Key(Base):
         if private_access is not None:
             self._data['private_access'] = private_access
 
+    def delete(self):
+        self._manager.delete(self.api_key)
+
 
 class Permission(Base):
 

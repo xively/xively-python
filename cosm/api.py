@@ -363,6 +363,11 @@ class KeysManager(ManagerBase):
         key = self._coerce_key(data['key'])
         return key
 
+    def delete(self, key_id):
+        url = self._url(key_id)
+        response = self.client.delete(url)
+        response.raise_for_status()
+
     def _coerce_key(self, data):
         api_key = data.get('api_key')
         permissions_data = data.get('permissions', [])
