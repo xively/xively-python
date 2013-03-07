@@ -214,16 +214,14 @@ class Key(Base):
     """Keys set which permissions are granted for certain resources."""
 
     def __init__(self, label, permissions, expires_at=None,
-                 private_access=None):
+                 private_access=False):
         self._data = {
             'label': label,
             'permissions': permissions,
+            'private_access': private_access,
         }
         if expires_at:
             self._data['expires_at'] = expires_at
-        # TODO: Check what the default is.
-        if private_access is not None:
-            self._data['private_access'] = private_access
 
     def delete(self):
         self._manager.delete(self.api_key)
