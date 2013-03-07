@@ -132,7 +132,7 @@ class FeedTest(BaseTestCase):
         self.client.post('/v2/feeds', data=feed)
         self.session.assert_called_with(
             'POST', 'http://api.cosm.com/v2/feeds',
-            data='{"title": "Feed Test"}')
+            data='{"title": "Feed Test", "version": "1.0.0"}')
 
     def test_update_feed(self):
         feed = self._create_feed(id='123', title="Office")

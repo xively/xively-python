@@ -66,7 +66,7 @@ class Client(Session):
         '{"foo": "2013-02-22T12:14:40Z"}'
         >>> feed = Feed(id=42, title="The Answer")
         >>> client._encode_data({'feed': feed}, sort_keys=True)
-        '{"feed": {"id": 42, "title": "The Answer"}}'
+        '{"feed": {"id": 42, "title": "The Answer", "version": "1.0.0"}}'
         >>> datastreams = [Datastream(id="1"), Datastream(id="2")]
         >>> client._encode_data({'datastreams': datastreams})
         '{"datastreams": [{"id": "1"}, {"id": "2"}]}'
@@ -102,11 +102,15 @@ class Base(object):
 class Feed(Base):
     """Cosm Feed, which can contain a number of Datastreams."""
 
+    VERSION = "1.0.0"
+
     _datastreams = None
 
     def __init__(self, title, **kwargs):
-        super(Feed, self).__init__()
-        self._data['title'] = title
+        self._data = {
+            'title': title,
+            'version': self.VERSION,
+        }
         if 'datastreams' in kwargs:
             self.datastreams = kwargs.pop('datastreams')
         self._data.update(kwargs)
@@ -138,8 +142,7 @@ class Datastream(Base):
     _datapoints = None
 
     def __init__(self, id, **kwargs):
-        super(Datastream, self).__init__()
-        self._data['id'] = id
+        self._data = {'id': id}
         self.datapoints = kwargs.pop('datapoints', [])
         self._data.update(**kwargs)
 

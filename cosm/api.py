@@ -59,7 +59,7 @@ class FeedsManager(ManagerBase):
         self.base_url = urljoin(client.base_url, 'feeds')
 
     def create(self, title, **kwargs):
-        data = dict(title=title, **kwargs)
+        data = dict(title=title, version=cosm.Feed.VERSION, **kwargs)
         response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
         location = response.headers['location']
@@ -139,7 +139,10 @@ class DatastreamsManager(Sequence, ManagerBase):
         return self.feed._data.setdefault('datastreams', [])
 
     def create(self, id, **kwargs):
-        data = {'version': "1.0.0", 'datastreams': [dict(id=id, **kwargs)]}
+        data = {
+            'version': self.feed.version,
+            'datastreams': [dict(id=id, **kwargs)],
+        }
         response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
         datastream = cosm.Datastream(id=id, **kwargs)
