@@ -355,6 +355,14 @@ class KeysManager(ManagerBase):
             key = self._coerce_key(data)
             yield key
 
+    def get(self, key_id, **params):
+        url = self._url(key_id)
+        response = self.client.get(url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        key = self._coerce_key(data['key'])
+        return key
+
     def _coerce_key(self, data):
         api_key = data.get('api_key')
         permissions_data = data.get('permissions', [])

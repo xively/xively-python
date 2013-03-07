@@ -638,7 +638,7 @@ class KeyManagerTest(BaseTestCase):
 
     def test_list_keys(self):
         response = requests.Response()
-        response.status_code = 201
+        response.status_code = 200
         response.raw = BytesIO(LIST_KEYS_JSON)
         self.session.return_value = response
         keys = list(self.api.keys.list())
@@ -654,6 +654,20 @@ class KeyManagerTest(BaseTestCase):
         self.assertEqual(keys[1].label, "sharing key 2")
         self.assertEqual(keys[1].permissions[0].access_methods, ['put'])
         self.assertEqual(keys[1].permissions[0].source_ip, "123.12.123.123")
+
+    def test_view_key(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(GET_KEY_JSON)
+        self.session.return_value = response
+        key_id = "CeWzga_cNja15kjwSVN5x5Mut46qj5akqKPvFxKIec0"
+        key = self.api.keys.get(key_id)
+        self.session.assert_called_with(
+            'GET', "http://api.cosm.com/v2/keys/" + key_id,
+            allow_redirects=True, params={})
+        self.assertEqual(key.api_key, key_id)
+        self.assertEqual(key.label, "sharing key")
+        self.assertEqual(key.permissions[0].access_methods, ['get', 'put'])
 
 
 class PermissionTest(BaseTestCase):
@@ -1053,4 +1067,18 @@ LIST_KEYS_JSON = b'''
     ]
   }
 ]}
+'''
+
+GET_KEY_JSON = b'''
+{
+  "key":{
+    "api_key":"CeWzga_cNja15kjwSVN5x5Mut46qj5akqKPvFxKIec0",
+    "label":"sharing key",
+    "permissions":[
+      {
+        "access_methods":["get","put"]
+      }
+    ]
+  }
+}
 '''
