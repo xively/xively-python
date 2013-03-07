@@ -162,10 +162,39 @@ class FeedsManagerTest(BaseTestCase):
         """Tests a request is sent to create a feed."""
         response = requests.Response()
         response.status_code = 201
-        response.headers['location'] = "http://cosm.api.com/v2/feeds/51"
+        response.headers['location'] = "http://cosm.api.com/v2/feeds/1977"
         self.session.return_value = response
-        feed = self.api.feeds.create(title="Area 51")
-        self.assertEqual(feed.feed, "http://cosm.api.com/v2/feeds/51")
+        feed = self.api.feeds.create(
+            title="Cosm Office environment",
+            website="http://www.example.com/",
+            tags=["Tag1", "Tag2"],
+            location=cosm.Location(
+                name="office",
+                disposition='fixed',
+                exposure='indoor',
+                domain='physical',
+                lat=51.5235375648154,
+                lon=-0.0807666778564453,
+                ele="23.0"),
+            datastreams=[
+                cosm.Datastream(
+                    id="0",
+                    current_value="123",
+                    min_value="-10.0",
+                    max_value="10000.0",
+                    tags=["humidity"]),
+                cosm.Datastream(
+                    id="1",
+                    current_value="987",
+                    min_value="-10.0",
+                    max_value="10000.0",
+                    tags=["humidity"]),
+            ])
+        self.assertEqual(feed.feed, "http://cosm.api.com/v2/feeds/1977")
+        self.session.assert_called_with(
+            'POST', 'http://api.cosm.com/v2/feeds',
+            data=json.dumps(json.loads(CREATE_FEED_JSON.decode('utf8')),
+                            sort_keys=True))
 
     def test_update_feed(self):
         """Tests a request is sent to update a feed."""
@@ -704,7 +733,58 @@ class ResourceTest(BaseTestCase):
         self.assertEqual(resource.datastream_id, "fan1")
 
 
+class LocationTest(BaseTestCase):
+
+    def test_create_location(self):
+        location = cosm.Location(
+            name="office",
+            domain="physical",
+            exposure="indoor",
+            disposition="fixed",
+            lat=51.5235375648154,
+            lon=-0.0807666778564453,
+            ele="23.0")
+        self.assertEqual(location.name, "office")
+
+
 # Data used to return in the responses.
+
+CREATE_FEED_JSON = b'''
+{
+  "title":"Cosm Office environment",
+  "website":"http://www.example.com/",
+  "version":"1.0.0",
+  "tags":[
+      "Tag1",
+      "Tag2"
+  ],
+  "location":{
+    "disposition":"fixed",
+    "ele":"23.0",
+    "name":"office",
+    "lat":51.5235375648154,
+    "exposure":"indoor",
+    "lon":-0.0807666778564453,
+    "domain":"physical"
+  },
+  "datastreams":[
+    {
+      "current_value":"123",
+      "max_value":"10000.0",
+      "min_value":"-10.0",
+      "tags":["humidity"],
+      "id":"0"
+    },
+    {
+      "current_value":"987",
+      "max_value":"10000.0",
+      "min_value":"-10.0",
+      "tags":["humidity"],
+      "id":"1"
+    }
+  ]
+}
+'''
 
 GET_FEED_JSON = b'''
 {

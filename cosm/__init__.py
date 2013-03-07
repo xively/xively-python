@@ -187,6 +187,25 @@ class Datapoint(Base):
         self._manager.delete(self.at)
 
 
+class Location(Base):
+
+    def __init__(self, name=None, domain=None, exposure=None, disposition=None,
+                 lat=None, lon=None, ele=None):
+        self._data = {
+            'name': name,
+            'domain': domain,
+            'exposure': exposure,
+            'disposition': disposition,
+            'lat': lat,
+            'lon': lon,
+            'ele': ele,
+        }
+
+    def __getstate__(self):
+        state = super(Location, self).__getstate__()
+        return {k: v for (k, v) in state.items() if v is not None}
+
+
 class Trigger(Base):
     """Triggers provide 'push' capabilities (aka notifications)."""
 
