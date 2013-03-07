@@ -207,6 +207,48 @@ class Trigger(Base):
         self._manager.delete(self.id)
 
 
+class Key(Base):
+    """Keys set which permissions are granted for certain resources."""
+
+    def __init__(self, label, permissions, expires_at=None,
+                 private_access=None):
+        self._data = {
+            'label': label,
+            'permissions': permissions,
+        }
+        if expires_at:
+            self._data['expires_at'] = expires_at
+        # TODO: Check what the default is.
+        if private_access is not None:
+            self._data['private_access'] = private_access
+
+
+class Permission(Base):
+
+    def __init__(self, access_methods, source_ip=None, referer=None,
+                 minimum_interval=None, label=None, resources=None):
+        self._data = {
+            'access_methods': access_methods,
+        }
+        self._data.update((name, value) for (name, value) in (
+            ('source_ip', source_ip),
+            ('referer', referer),
+            ('minimum_interval', minimum_interval),
+            ('label', label),
+            ('resources', resources),
+        ) if value is not None)
+
+
+class Resource(Base):
+
+    def __init__(self, feed_id, datastream_id=None):
+        self._data = {
+            'feed_id': feed_id,
+        }
+        if datastream_id:
+            self._data['datastream_id'] = datastream_id
+
+
 class JSONEncoder(json.JSONEncoder):
 
     def default(self, obj):

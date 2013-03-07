@@ -602,6 +602,56 @@ class TriggerManagerTest(BaseTestCase):
             'DELETE', 'http://api.cosm.com/v2/triggers/42')
 
 
+class KeyTest(BaseTestCase):
+
+    def test_create_key(self):
+        key = cosm.Key("sharing key", [])
+        self.assertEqual(key.label, "sharing key")
+        self.assertEqual(key.permissions, [])
+
+
+class KeyManagerTest(BaseTestCase):
+
+    def test_create_key(self):
+        response = requests.Response()
+        response.status_code = 201
+        response.headers['Location'] = (
+            'http://api.cosm.com/v2/keys/'
+            '1nAYR5W8jUqiZJXIMwu3923Qfuq_lnFCDOKtf3kyw4g')
+        self.session.return_value = response
+        key = self.api.keys.create(
+            label="sharing key",
+            private_access=True,
+            permissions=[
+                cosm.Permission(
+                    access_methods=['put'],
+                    source_ip="128.44.98.129",
+                    resources=[cosm.Resource(feed_id=504)]),
+                cosm.Permission(access_methods=['get']),
+            ])
+        self.session.assert_called_with(
+            'POST', 'http://api.cosm.com/v2/keys',
+            data=json.dumps(json.loads(CREATE_KEY_JSON.decode('utf8')),
+                            sort_keys=True))
+        self.assertEqual(key.api_key,
+                         "1nAYR5W8jUqiZJXIMwu3923Qfuq_lnFCDOKtf3kyw4g")
+
+
+class PermissionTest(BaseTestCase):
+
+    def test_create_permission(self):
+        permission = cosm.Permission(['get'])
+        self.assertEqual(permission.access_methods, ['get'])
+
+
+class ResourceTest(BaseTestCase):
+
+    def test_create_resource(self):
+        resource = cosm.Resource(feed_id=424, datastream_id="fan1")
+        self.assertEqual(resource.feed_id, 424)
+        self.assertEqual(resource.datastream_id, "fan1")
+
+
 # Data used to return in the responses.
 
 GET_FEED_JSON = b'''
@@ -937,4 +987,27 @@ LIST_TRIGGERS_JSON = b'''
     "id":14
   }
 ]
+'''
+
+CREATE_KEY_JSON = b'''
+{
+  "key":{
+    "label":"sharing key",
+    "private_access": true,
+    "permissions":[
+      {
+        "access_methods":["put"],
+        "source_ip": "128.44.98.129",
+        "resources": [
+          {
+            "feed_id": 504
+          }
+        ]
+      },
+      {
+        "access_methods": ["get"]
+      }
+    ]
+  }
+}
 '''

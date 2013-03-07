@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
-
 from collections import Sequence
 from datetime import datetime
 
@@ -26,6 +24,7 @@ class Client(object):
         self.client.base_url += '/{}/'.format(self.api_version)
         self.feeds = FeedsManager(self.client)
         self.triggers = TriggersManager(self.client)
+        self.keys = KeysManager(self.client)
 
 
 class ManagerBase(object):
@@ -63,9 +62,10 @@ class FeedsManager(ManagerBase):
         data = dict(title=title, **kwargs)
         response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
-        feed = cosm.Feed(**data)
-        feed._manager = self
-        feed._data['feed'] = response.headers['location']
+        location = response.headers['location']
+        data['feed'] = location
+        data['id'] = _id_from_url(location)
+        feed = self._coerce_feed(data)
         return feed
 
     def update(self, id_or_url, **kwargs):
@@ -325,3 +325,32 @@ class TriggersManager(ManagerBase):
         url = self._url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
+
+
+class KeysManager(ManagerBase):
+
+    def __init__(self, client):
+        self.client = client
+        self.base_url = urljoin(client.base_url, 'keys')
+
+    def create(self, label, permissions, **kwargs):
+        data = dict(label=label, permissions=permissions, **kwargs)
+        response = self.client.post(self.base_url, data={'key': data})
+        response.raise_for_status()
+        location = response.headers['Location']
+        data['api_key'] = _id_from_url(location)
+        key = self._coerce_key(data)
+        return key
+
+    def _coerce_key(self, data):
+        api_key = data.get('api_key')
+        data = {k: v for (k, v) in data.items() if k != 'api_key'}
+        key = cosm.Key(**data)
+        key._data['api_key'] = api_key
+        key._manager = self
+        return key
+
+
+def _id_from_url(url):
+    id = url.rsplit('/', 1)[1]
+    return id
