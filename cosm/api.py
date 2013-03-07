@@ -342,13 +342,50 @@ class KeysManager(ManagerBase):
         key = self._coerce_key(data)
         return key
 
+    def list(self, feed_id=None, **kwargs):
+        url = self._url(None)
+        params = {}
+        if feed_id is not None:
+            params['feed_id'] = feed_id
+        params.update(kwargs)
+        response = self.client.get(url, params=params)
+        response.raise_for_status()
+        json = response.json()
+        for data in json['keys']:
+            key = self._coerce_key(data)
+            yield key
+
     def _coerce_key(self, data):
         api_key = data.get('api_key')
+        permissions_data = data.get('permissions', [])
         data = {k: v for (k, v) in data.items() if k != 'api_key'}
+        permissions = []
+        for permission_data in permissions_data:
+            permission = self._coerce_permission(permission_data)
+            permissions.append(permission)
+        data['permissions'] = permissions
         key = cosm.Key(**data)
         key._data['api_key'] = api_key
         key._manager = self
         return key
+
+    def _coerce_permission(self, data):
+        if isinstance(data, cosm.Permission):
+            return data
+        resources_data = data.get('resources')
+        data = {k: v for (k, v) in data.items() if k != 'resources'}
+        permission = cosm.Permission(**data)
+        if resources_data:
+            resources = []
+            for resource_data in resources_data:
+                resource = self._coerce_resource(resource_data)
+                resources.append(resource)
+            permission._data['resources'] = resources
+        return permission
+
+    def _coerce_resource(self, data):
+        resource = cosm.Resource(**data)
+        return resource
 
 
 def _id_from_url(url):
