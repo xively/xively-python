@@ -214,8 +214,9 @@ class FeedsManagerTest(BaseTestCase):
         self.session.return_value = response
         (feed,) = self.api.feeds.list()
         self.assertEqual(self.session.call_args[0],
-                         ('GET', u'http://api.cosm.com/v2/feeds'))
-        self.assertEqual(feed.feed, u'http://api.cosm.com/v2/feeds/5853.json')
+                         ('GET', 'http://api.cosm.com/v2/feeds'))
+        self.assertEqual(feed.feed, 'http://api.cosm.com/v2/feeds/5853.json')
+        self.assertEqual(feed.location.domain, "physical")
         self.assertEqual(feed.datastreams[0].id, "0")
         self.assertEqual(feed.datastreams[1].id, "1")
 
@@ -229,6 +230,7 @@ class FeedsManagerTest(BaseTestCase):
         self.assertEqual(self.session.call_args[0],
                          ('GET', 'http://api.cosm.com/v2/feeds/7021'))
         self.assertEqual(feed.title, "Cosm Office environment")
+        self.assertEqual(feed.location.name, "office")
 
     def test_get_feeds_with_datastream_history(self):
         response = requests.Response()
@@ -1079,6 +1081,115 @@ HISTORY_FEED_JSON = b'''
   "creator": "https://cosm.com/users/paul",
   "updated": "2013-01-04T10:22:40.342290Z",
   "id": 61916
+}
+'''
+
+MOBILE_FEED_JSON = b'''
+{
+    "title": "Ship - HANJIN BELAWAN",
+    "status": "live",
+    "creator": "https://cosm.com/users/dhunter",
+    "location": {
+        "waypoints": [
+            {
+                "at": "2012-06-01T12:25:05.999502Z",
+                "lat": 24.9966,
+                "lon": 55.06608
+            },
+            {
+                "at": "2012-06-01T12:40:04.876604Z",
+                "lat": 24.99647,
+                "lon": 55.06635
+            },
+            {
+                "at": "2012-06-01T12:55:05.907201Z",
+                "lat": 24.99652,
+                "lon": 55.0663
+            },
+            {
+                "at": "2012-06-01T13:10:05.121031Z",
+                "lat": 24.99655,
+                "lon": 55.06627
+            },
+            {
+                "at": "2012-06-01T13:25:04.082083Z",
+                "lat": 24.99648,
+                "lon": 55.06633
+            },
+            {
+                "at": "2012-06-01T13:40:04.589002Z",
+                "lat": 24.99648,
+                "lon": 55.06635
+            }
+        ],
+        "exposure": "outdoor",
+        "domain": "physical",
+        "disposition": "mobile",
+        "lat": 24.9965,
+        "lon": 55.06633
+    },
+    "datastreams": [
+        {
+            "at": "2012-06-01T13:55:05.013149Z",
+            "datapoints": [],
+            "tags": [
+                "latitude"
+            ],
+            "max_value": "29.44627",
+            "current_value": "24.9965",
+            "id": "0",
+            "min_value": "-34.06339"
+        },
+        {
+            "at": "2012-06-01T13:55:05.013149Z",
+            "datapoints": [],
+            "tags": [
+                "longitude"
+            ],
+            "max_value": "153.9353",
+            "current_value": "55.06633",
+            "id": "1",
+            "min_value": "0.0"
+        },
+        {
+            "at": "2012-06-01T13:55:05.013149Z",
+            "datapoints": [],
+            "tags": [
+                "average speed"
+            ],
+            "unit": {
+                "label": "knots"
+            },
+            "max_value": "20.8",
+            "current_value": "14.3",
+            "id": "2",
+            "min_value": "5.2"
+        },
+        {
+            "at": "2012-06-01T13:55:05.013149Z",
+            "datapoints": [],
+            "tags": [
+                "last port"
+            ],
+            "current_value": "JEBEL ALI",
+            "id": "3"
+        },
+        {
+            "at": "2012-06-01T13:55:05.013149Z",
+            "datapoints": [],
+            "tags": [
+                "destination"
+            ],
+            "current_value": "JEBEL ALI",
+            "id": "4"
+        }
+    ],
+    "created": "2009-12-08T19:00:05.304995Z",
+    "feed": "https://api.cosm.com/v2/feeds/3819.json",
+    "private": "false",
+    "id": 3819,
+    "version": "1.0.0",
+    "updated": "2012-06-01T13:55:05.170364Z"
 }
 '''
 

@@ -98,12 +98,15 @@ class FeedsManager(ManagerBase):
 
     def _coerce_feed(self, feed_data):
         datastreams_data = feed_data.pop('datastreams', None)
+        location_data = feed_data.pop('location', None)
         feed = cosm.Feed(**feed_data)
         feed._manager = self
         if datastreams_data:
             datastreams = self._coerce_datastreams(
                 datastreams_data, feed.datastreams)
             feed._data['datastreams'] = datastreams
+        if location_data:
+            feed._data['location'] = self._coerce_location(location_data)
         return feed
 
     def _coerce_datastreams(self, datastreams_data, datastreams_manager):
@@ -113,6 +116,13 @@ class FeedsManager(ManagerBase):
             datastreams.append(datastream)
         return datastreams
 
+    def _coerce_location(self, instance):
+        if isinstance(instance, cosm.Location):
+            location = instance
+        else:
+            location_data = dict(**instance)
+            location = cosm.Location(**location_data)
+        return location
 
 class DatastreamsManager(Sequence, ManagerBase):
 
