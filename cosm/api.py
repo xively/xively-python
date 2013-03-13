@@ -121,8 +121,22 @@ class FeedsManager(ManagerBase):
             location = instance
         else:
             location_data = dict(**instance)
+            waypoints_data = location_data.pop('waypoints', None)
+            if waypoints_data is not None:
+                waypoints = self._coerce_waypoints(waypoints_data)
+                location_data['waypoints'] = waypoints
             location = cosm.Location(**location_data)
         return location
+
+    def _coerce_waypoints(self, waypoints_data):
+        waypoints = []
+        for data in waypoints_data:
+            at = self._parse_datetime(data['at'])
+            data = {k: v for k, v in data.items() if k != 'at'}
+            waypoint = cosm.Waypoint(at=at, **data)
+            waypoints.append(waypoint)
+        return waypoints
+
 
 class DatastreamsManager(Sequence, ManagerBase):
 

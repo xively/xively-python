@@ -190,7 +190,7 @@ class Datapoint(Base):
 class Location(Base):
 
     def __init__(self, name=None, domain=None, exposure=None, disposition=None,
-                 lat=None, lon=None, ele=None):
+                 lat=None, lon=None, ele=None, waypoints=None):
         self._data = {
             'name': name,
             'domain': domain,
@@ -200,10 +200,22 @@ class Location(Base):
             'lon': lon,
             'ele': ele,
         }
+        if waypoints is not None:
+            self._data['waypoints'] = waypoints
 
     def __getstate__(self):
         state = super(Location, self).__getstate__()
         return {k: v for (k, v) in state.items() if v is not None}
+
+
+class Waypoint(Base):
+
+    def __init__(self, at, lat, lon):
+        self._data = {
+            'at': at,
+            'lat': lat,
+            'lon': lon,
+        }
 
 
 class Trigger(Base):

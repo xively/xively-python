@@ -263,6 +263,24 @@ class FeedsManagerTest(BaseTestCase):
         self.session.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/7021')
 
+    def test_mobile_feed(self):
+        response = requests.Response()
+        response.status_code = 200
+        response.raw = BytesIO(MOBILE_FEED_JSON)
+        self.session.return_value = response
+        feed = self.api.feeds.get(3819, duration='1day')
+        self.session.assert_called_with(
+            'GET', 'http://api.cosm.com/v2/feeds/3819',
+            allow_redirects=True, params={'duration': '1day'})
+        self.assertEqual(feed.location.disposition, 'mobile')
+        self.assertEqual(feed.location.lat, 24.9965)
+        self.assertEqual(feed.location.lon, 55.06633)
+        self.assertEqual(len(feed.location.waypoints), 6)
+        self.assertEqual(feed.location.waypoints[0].at,
+                         datetime(2012, 6, 1, 12, 25, 5, 999502))
+        self.assertEqual(feed.location.waypoints[0].lat, 24.9966)
+        self.assertEqual(feed.location.waypoints[0].lon, 55.06608)
+
 
 class DatastreamTest(BaseTestCase):
 
@@ -747,6 +765,18 @@ class LocationTest(BaseTestCase):
             lon=-0.0807666778564453,
             ele="23.0")
         self.assertEqual(location.name, "office")
+
+
+class WaypointTest(BaseTestCase):
+
+    def test_create_waypoint(self):
+        waypoint = cosm.Waypoint(
+            at=datetime(2012, 6, 1, 13, 40, 4, 589002),
+            lat=51.5235375648154,
+            lon=-0.0807666778564453)
+        self.assertEqual(waypoint.at, datetime(2012, 6, 1, 13, 40, 4, 589002))
+        self.assertEqual(waypoint.lat, 51.5235375648154)
+        self.assertEqual(waypoint.lon, -0.0807666778564453)
 
 
 # Data used to return in the responses.
