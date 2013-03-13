@@ -18,9 +18,9 @@ class Fixture(RequestsFixtureMixin):
 
     def setUp(self, *args, **kwargs):
         super(Fixture, self).setUp()
-        self.session.side_effect = self.request
+        self.request.side_effect = self.handle_request
 
-    def request(self, method, url, **kwargs):
+    def handle_request(self, method, url, **kwargs):
         """
         Returns a Response object that we would expect return from Cosm.
 

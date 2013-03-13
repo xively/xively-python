@@ -24,12 +24,12 @@ class RequestsFixtureMixin(object):
     def setUp(self, *args, **kwargs):
         """Installs our own request handler."""
         patcher = patch('cosm.Session.request')
-        self.session = patcher.start()
+        self.request = patcher.start()
     setUp.__test__ = False  # Don't test this method.
 
     def tearDown(self, *args, **kwargs):
         """Ensures the original request object is reinstated."""
-        self.session.stop()
+        self.request.stop()
     tearDown.__test__ = False  # Don't test this method.
 
     def request(self, *args, **kwargs):
@@ -46,6 +46,9 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         self.client = self.api.client
         # Ensure that the jsonified output is in a known order.
         self.client._json_encoder.sort_keys = True
+        response = requests.Response()
+        response.status_code = 200
+        self.request.return_value = self.response = response
 
     def _create_feed(self, **data):
         feed = cosm.Feed(**data)
@@ -74,6 +77,9 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         trigger._manager = cosm.api.TriggersManager(self.client)
         return trigger
 
+    def _sorted_json(self, s):
+        return json.dumps(json.loads(s.decode('utf8')), sort_keys=True)
+
 
 class KeyAuthTest(unittest.TestCase):
     """
@@ -101,13 +107,13 @@ class ClientTest(BaseTestCase):
         """Tests relative urls are requested with absolute url."""
         client = cosm.Client("API_KEY")
         client.request('GET', "/v2/feeds")
-        self.session.assert_called_with('GET', "http://api.cosm.com/v2/feeds")
+        self.request.assert_called_with('GET', "http://api.cosm.com/v2/feeds")
 
     def test_request_absolute_url(self):
         """Tests absolute urls are requested for a different host."""
         client = cosm.Client("API_KEY")
         client.request('GET', "http://example.com")
-        self.session.assert_called_with('GET', "http://example.com")
+        self.request.assert_called_with('GET', "http://example.com")
 
     def test_serialise_data(self):
         """Tests data is serialised using __getstate__ when requested."""
@@ -118,7 +124,7 @@ class ClientTest(BaseTestCase):
         obj.title = "This is an object"
         obj.value = 42
         self.client.request('POST', "/v2/feeds", data=obj)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'POST', "http://api.cosm.com/v2/feeds",
             data=json.dumps(
                 {"title": "This is an object", "value": 42},
@@ -130,7 +136,7 @@ class FeedTest(BaseTestCase):
     def test_create_feed(self):
         feed = cosm.Feed(title="Feed Test")
         self.client.post('/v2/feeds', data=feed)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'POST', 'http://api.cosm.com/v2/feeds',
             data='{"title": "Feed Test", "version": "1.0.0"}')
 
@@ -138,15 +144,15 @@ class FeedTest(BaseTestCase):
         feed = self._create_feed(id='123', title="Office")
         feed.private = True
         feed.update()
-        self.assertEqual(self.session.call_args[0],
+        self.assertEqual(self.request.call_args[0],
                          ('PUT', 'http://api.cosm.com/v2/feeds/123'))
-        payload = json.loads(self.session.call_args[1]['data'])
+        payload = json.loads(self.request.call_args[1]['data'])
         self.assertEqual(payload['private'], True)
 
     def test_delete_feed(self):
         feed = self._create_feed(id='456', title="Home")
         feed.delete()
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/456')
 
     def test_set_datastreams(self):
@@ -160,10 +166,8 @@ class FeedsManagerTest(BaseTestCase):
 
     def test_create_feed(self):
         """Tests a request is sent to create a feed."""
-        response = requests.Response()
-        response.status_code = 201
-        response.headers['location'] = "http://cosm.api.com/v2/feeds/1977"
-        self.session.return_value = response
+        self.response.status_code = 201
+        self.response.headers['location'] = "http://cosm.api.com/v2/feeds/1977"
         feed = self.api.feeds.create(
             title="Cosm Office environment",
             website="http://www.example.com/",
@@ -191,29 +195,22 @@ class FeedsManagerTest(BaseTestCase):
                     tags=["humidity"]),
             ])
         self.assertEqual(feed.feed, "http://cosm.api.com/v2/feeds/1977")
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'POST', 'http://api.cosm.com/v2/feeds',
-            data=json.dumps(json.loads(CREATE_FEED_JSON.decode('utf8')),
-                            sort_keys=True))
+            data=self._sorted_json(CREATE_FEED_JSON))
 
     def test_update_feed(self):
         """Tests a request is sent to update a feed."""
-        response = requests.Response()
-        response.status_code = 200
-        self.session.return_value = response
         self.api.feeds.update(51, private=True)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'PUT', 'http://api.cosm.com/v2/feeds/51',
             data='{"private": true}')
 
     def test_list_feeds(self):
         """Tests a request is sent to list all feeds."""
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(LIST_FEEDS_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(LIST_FEEDS_JSON)
         (feed,) = self.api.feeds.list()
-        self.assertEqual(self.session.call_args[0],
+        self.assertEqual(self.request.call_args[0],
                          ('GET', 'http://api.cosm.com/v2/feeds'))
         self.assertEqual(feed.feed, 'http://api.cosm.com/v2/feeds/5853.json')
         self.assertEqual(feed.location.domain, "physical")
@@ -222,26 +219,20 @@ class FeedsManagerTest(BaseTestCase):
 
     def test_view_feed(self):
         """Tests a request is sent to view a feed (by id) returning json."""
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(GET_FEED_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(GET_FEED_JSON)
         feed = self.api.feeds.get(7021)
-        self.assertEqual(self.session.call_args[0],
+        self.assertEqual(self.request.call_args[0],
                          ('GET', 'http://api.cosm.com/v2/feeds/7021'))
         self.assertEqual(feed.title, "Cosm Office environment")
         self.assertEqual(feed.location.name, "office")
 
     def test_get_feeds_with_datastream_history(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(HISTORY_FEED_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(HISTORY_FEED_JSON)
         feed = self.api.feeds.get(61916,
                                   start=datetime(2013, 1, 1, 14, 0, 0),
                                   end=datetime(2013, 1, 1, 16, 0, 0),
                                   interval=900)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/feeds/61916',
             allow_redirects=True, params={
                 'start': '2013-01-01T14:00:00Z',
@@ -256,20 +247,14 @@ class FeedsManagerTest(BaseTestCase):
 
     def test_delete_feed(self):
         """Tests a DELETE request is sent for a feed by its id."""
-        response = requests.Response()
-        response.status_code = 200
-        self.session.return_value = response
         self.api.feeds.delete(7021)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/7021')
 
     def test_mobile_feed(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(MOBILE_FEED_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(MOBILE_FEED_JSON)
         feed = self.api.feeds.get(3819, duration='1day')
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/feeds/3819',
             allow_redirects=True, params={'duration': '1day'})
         self.assertEqual(feed.location.disposition, 'mobile')
@@ -297,15 +282,15 @@ class DatastreamTest(BaseTestCase):
         datastream.current_value = 294
         datastream.update()
         self.assertEqual(
-            self.session.call_args[0],
+            self.request.call_args[0],
             ('PUT', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy'))
-        payload = json.loads(self.session.call_args[1]['data'])
+        payload = json.loads(self.request.call_args[1]['data'])
         self.assertEqual(payload['current_value'], 294)
 
     def test_delete_datastream(self):
         datastream = self._create_datastream(id="energy")
         datastream.delete()
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy')
 
 
@@ -319,7 +304,7 @@ class DatastreamsManagerTest(BaseTestCase):
         datastream = self.feed.datastreams.create(
             id="flow", current_value=34000)
         self.assertEqual(
-            self.session.call_args[0],
+            self.request.call_args[0],
             ('POST', 'http://api.cosm.com/v2/feeds/7021/datastreams'))
         self.assertEqual(datastream.id, "flow")
         self.assertEqual(datastream.current_value, 34000)
@@ -327,46 +312,37 @@ class DatastreamsManagerTest(BaseTestCase):
     def test_update_datastream(self):
         self.feed.datastreams.update('energy', current_value=294)
         self.assertEqual(
-            self.session.call_args[0],
+            self.request.call_args[0],
             ('PUT', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy'))
-        payload = json.loads(self.session.call_args[1]['data'])
+        payload = json.loads(self.request.call_args[1]['data'])
         self.assertEqual(payload['current_value'], 294)
 
     def test_list_datastreams(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(GET_FEED_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(GET_FEED_JSON)
         datastreams = self.feed.datastreams.list()
         self.assertEqual([d.id for d in datastreams], ["3", "4"])
         # Note that this url isnt' at .../datastreams
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/feeds/7021/',
             allow_redirects=True, params={})
 
     def test_view_datastream(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(GET_DATASTREAM_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(GET_DATASTREAM_JSON)
         datastream = self.feed.datastreams.get('1')
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/feeds/7021/datastreams/1',
             allow_redirects=True, params={})
         self.assertEqual(datastream.id, '1')
         self.assertEqual(list(datastream.datapoints), [])
 
     def test_get_datastream_with_history(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(HISTORY_DATASTREAM_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(HISTORY_DATASTREAM_JSON)
         datastream = self.feed.datastreams.get(
             'random5',
             start=datetime(2013, 1, 1, 14, 0, 0),
             end=datetime(2013, 1, 1, 16, 0, 0),
             interval=900)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/feeds/7021/datastreams/random5',
             allow_redirects=True, params={
                 'start': '2013-01-01T14:00:00Z',
@@ -380,7 +356,7 @@ class DatastreamsManagerTest(BaseTestCase):
 
     def test_delete_datastream(self):
         self.feed.datastreams.delete("energy")
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy')
 
 
@@ -402,7 +378,7 @@ class DatapointTest(BaseTestCase):
             at=datetime(2010, 7, 28, 7, 48, 22, 14326), value="296")
         datapoint.value = "297"
         datapoint.update()
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'PUT',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
             '2010-07-28T07:48:22.014326Z',
@@ -412,7 +388,7 @@ class DatapointTest(BaseTestCase):
         datapoint = self._create_datapoint(
             at=datetime(2010, 7, 28, 7, 48, 22, 14326), value="297")
         datapoint.delete()
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
             '2010-07-28T07:48:22.014326Z',
@@ -433,11 +409,10 @@ class DatapointsManagerTest(BaseTestCase):
             {'at': datetime(2010, 5, 20, 11, 1, 45), 'value': "296"},
             {'at': datetime(2010, 5, 20, 11, 1, 46), 'value': "297"},
         ])
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'POST',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints',
-            data=json.dumps(json.loads(CREATE_DATAPOINTS_JSON.decode('utf8')),
-                            sort_keys=True))
+            data=self._sorted_json(CREATE_DATAPOINTS_JSON))
         self.assertEqual(datapoints[0].at, datetime(2010, 5, 20, 11, 1, 43))
         self.assertEqual(datapoints[0].value, "294")
         self.assertEqual(datapoints[1].at, datetime(2010, 5, 20, 11, 1, 44))
@@ -450,22 +425,19 @@ class DatapointsManagerTest(BaseTestCase):
     def test_update_datapoint(self):
         self.datastream.datapoints.update(
             datetime(2010, 7, 28, 7, 48, 22, 14326), value="297")
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'PUT',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
             '2010-07-28T07:48:22.014326Z',
             data='{"value": "297"}')
 
     def test_datapoint_history(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(HISTORY_DATASTREAM_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(HISTORY_DATASTREAM_JSON)
         datapoints = list(self.datastream.datapoints.history(
             start=datetime(2013, 1, 1, 14, 0, 0),
             end=datetime(2013, 1, 1, 16, 0, 0),
             interval=900))
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/feeds/1977/datastreams/1',
             allow_redirects=True, params={
                 'start': '2013-01-01T14:00:00Z',
@@ -477,27 +449,21 @@ class DatapointsManagerTest(BaseTestCase):
         self.assertEqual(datapoints[0].value, "0.25741970")
 
     def test_datapoint_history_empty(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(b'''{
+        self.response.raw = BytesIO(b'''{
             "at": "2013-03-06T14:56:20.844980Z",
             "id": "empty",
             "version": "1.0.0"
         }''')
-        self.session.return_value = response
         datapoints = list(self.datastream.datapoints.history())
         self.assertEqual(datapoints, [])
 
     def test_view_datapoint(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(GET_DATAPOINT_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(GET_DATAPOINT_JSON)
         at = datetime(2010, 7, 28, 7, 48, 22, 14326)
         datapoint = self.datastream.datapoints.get(at)
         self.assertEqual(datapoint.at, at)
         self.assertEqual(datapoint.value, "297")
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
             '2010-07-28T07:48:22.014326Z',
@@ -506,7 +472,7 @@ class DatapointsManagerTest(BaseTestCase):
     def test_delete_datapoint(self):
         at = datetime(2010, 7, 28, 7, 48, 22, 14326)
         self.datastream.datapoints.delete(at)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints/'
             '2010-07-28T07:48:22.014326Z',
@@ -515,7 +481,7 @@ class DatapointsManagerTest(BaseTestCase):
     def test_delete_multiple_datapoints(self):
         self.datastream.datapoints.delete(
             start=datetime(2010, 7, 28, 7, 48, 22, 14326))
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE',
             'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints',
             params={'start': '2010-07-28T07:48:22.014326Z'})
@@ -535,7 +501,7 @@ class TriggerTest(BaseTestCase):
             trigger_type="lt",
             threshold_value="15.0")
         self.client.post('/v2/triggers', data=trigger)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'POST', 'http://api.cosm.com/v2/triggers',
             data=json.dumps({
                 'environment_id': 8470,
@@ -553,7 +519,7 @@ class TriggerTest(BaseTestCase):
             threshold_value="15.0")
         trigger.threshold_value = "20.0"
         trigger.update()
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'PUT', 'http://api.cosm.com/v2/triggers/14', data=json.dumps({
                 'threshold_value': "20.0",
                 'stream_id': "0",
@@ -569,21 +535,21 @@ class TriggerTest(BaseTestCase):
             trigger_type='lt',
             threshold_value="15.0")
         trigger.delete()
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/triggers/14')
 
 
 class TriggerManagerTest(BaseTestCase):
 
     def test_create_trigger(self):
-        response = requests.Response()
-        response.status_code = 201
-        response.headers['location'] = "http://cosm.api.com/v2/triggers/14"
-        self.session.return_value = response
+        self.response.status_code = 201
+        self.response.headers.update({
+            'location': "http://cosm.api.com/v2/triggers/14",
+        })
         trigger = self.api.triggers.create(
             8470, "0", url="http://www.postbin.org/1ijyltn",
             trigger_type='lt', threshold_value="15.0")
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'POST', 'http://api.cosm.com/v2/triggers',
             data=json.dumps({
                 'environment_id': 8470,
@@ -595,12 +561,9 @@ class TriggerManagerTest(BaseTestCase):
         self.assertEqual(trigger.id, 14)
 
     def test_view_trigger(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(GET_TRIGGER_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(GET_TRIGGER_JSON)
         trigger = self.api.triggers.get(14)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/triggers/14', allow_redirects=True)
         self.assertEqual(trigger._data, {
             'id': 14,
@@ -614,40 +577,31 @@ class TriggerManagerTest(BaseTestCase):
 
     def test_update_trigger(self):
         self.api.triggers.update(14, threshold_value="20.0")
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'PUT', 'http://api.cosm.com/v2/triggers/14',
             data='{"threshold_value": "20.0"}')
 
     def test_list_triggers(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(LIST_TRIGGERS_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(LIST_TRIGGERS_JSON)
         triggers = list(self.api.triggers.list())
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/triggers',
             allow_redirects=True, params={})
         self.assertEqual(triggers[0].id, 13)
         self.assertEqual(triggers[1].id, 14)
 
     def test_list_triggers_for_feed(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(LIST_TRIGGERS_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(LIST_TRIGGERS_JSON)
         triggers = list(self.api.triggers.list(feed_id=1233))
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/triggers',
             allow_redirects=True, params={'feed_id': 1233})
         self.assertEqual(triggers[0].id, 13)
         self.assertEqual(triggers[1].id, 14)
 
     def test_delete_trigger(self):
-        response = requests.Response()
-        response.status_code = 200
-        self.session.return_value = response
         self.api.triggers.delete(42)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/triggers/42')
 
 
@@ -665,19 +619,17 @@ class KeyTest(BaseTestCase):
             'api_key': key_id
         })
         key.delete()
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/keys/' + key_id)
 
 
 class KeyManagerTest(BaseTestCase):
 
     def test_create_key(self):
-        response = requests.Response()
-        response.status_code = 201
-        response.headers['Location'] = (
+        self.response.status_code = 201
+        self.response.headers['Location'] = (
             'http://api.cosm.com/v2/keys/'
             '1nAYR5W8jUqiZJXIMwu3923Qfuq_lnFCDOKtf3kyw4g')
-        self.session.return_value = response
         key = self.api.keys.create(
             label="sharing key",
             private_access=True,
@@ -688,20 +640,16 @@ class KeyManagerTest(BaseTestCase):
                     resources=[cosm.Resource(feed_id=504)]),
                 cosm.Permission(access_methods=['get']),
             ])
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'POST', 'http://api.cosm.com/v2/keys',
-            data=json.dumps(json.loads(CREATE_KEY_JSON.decode('utf8')),
-                            sort_keys=True))
+            data=self._sorted_json(CREATE_KEY_JSON))
         self.assertEqual(key.api_key,
                          "1nAYR5W8jUqiZJXIMwu3923Qfuq_lnFCDOKtf3kyw4g")
 
     def test_list_keys(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(LIST_KEYS_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(LIST_KEYS_JSON)
         keys = list(self.api.keys.list())
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', 'http://api.cosm.com/v2/keys',
             allow_redirects=True, params={})
         self.assertEqual(keys[0].api_key,
@@ -715,13 +663,10 @@ class KeyManagerTest(BaseTestCase):
         self.assertEqual(keys[1].permissions[0].source_ip, "123.12.123.123")
 
     def test_view_key(self):
-        response = requests.Response()
-        response.status_code = 200
-        response.raw = BytesIO(GET_KEY_JSON)
-        self.session.return_value = response
+        self.response.raw = BytesIO(GET_KEY_JSON)
         key_id = "CeWzga_cNja15kjwSVN5x5Mut46qj5akqKPvFxKIec0"
         key = self.api.keys.get(key_id)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'GET', "http://api.cosm.com/v2/keys/" + key_id,
             allow_redirects=True, params={})
         self.assertEqual(key.api_key, key_id)
@@ -729,12 +674,9 @@ class KeyManagerTest(BaseTestCase):
         self.assertEqual(key.permissions[0].access_methods, ['get', 'put'])
 
     def test_delete_key(self):
-        response = requests.Response()
-        response.status_code = 200
-        self.session.return_value = response
         key_id = "CeWzga_cNja15kjwSVN5x5Mut46qj5akqKPvFxKIec0"
         self.api.keys.delete(key_id)
-        self.session.assert_called_with(
+        self.request.assert_called_with(
             'DELETE', 'http://api.cosm.com/v2/keys/' + key_id)
 
 
