@@ -150,6 +150,14 @@ class FeedTest(BaseTestCase):
         payload = json.loads(self.request.call_args[1]['data'])
         self.assertEqual(payload['private'], True)
 
+    def test_update_feed_fields(self):
+        feed = self._create_feed(id='123', title="Office")
+        feed.private = True
+        feed.update(fields=['private'])
+        self.request.assert_called_with(
+            'PUT', 'http://api.cosm.com/v2/feeds/123',
+            data='{"private": true}')
+
     def test_delete_feed(self):
         feed = self._create_feed(id='456', title="Home")
         feed.delete()
@@ -287,6 +295,14 @@ class DatastreamTest(BaseTestCase):
             ('PUT', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy'))
         payload = json.loads(self.request.call_args[1]['data'])
         self.assertEqual(payload['current_value'], 294)
+
+    def test_update_datastream_fields(self):
+        datastream = self._create_datastream(id="energy", current_value=211)
+        datastream.current_value = 294
+        datastream.update(fields=['current_value'])
+        self.request.assert_called_with(
+            'PUT', 'http://api.cosm.com/v2/feeds/7021/datastreams/energy',
+            data='{"current_value": 294}')
 
     def test_delete_datastream(self):
         datastream = self._create_datastream(id="energy")
@@ -528,6 +544,18 @@ class TriggerTest(BaseTestCase):
                 'url': "http://www.postbin.org/1ijyltn",
                 'trigger_type': 'lt',
             }, sort_keys=True))
+
+    def test_update_trigger_field(self):
+        trigger = self._create_trigger(
+            id=14,
+            url="http://www.postbin.org/1ijyltn",
+            trigger_type='lt',
+            threshold_value="15.0")
+        trigger.threshold_value = "20.0"
+        trigger.update(fields=['threshold_value'])
+        self.request.assert_called_with(
+            'PUT', 'http://api.cosm.com/v2/triggers/14',
+            data='{"threshold_value": "20.0"}')
 
     def test_delete_trigger(self):
         trigger = self._create_trigger(

@@ -129,11 +129,17 @@ class Feed(Base):
             manager._coerce_datastreams(self.datastreams, datastreams)
         self._data['datastreams'] = datastreams
 
-    def update(self):
-        self._manager.update(self.feed, **self.__getstate__())
+    def update(self, fields=None):
+        url = self.feed
+        state = self.__getstate__()
+        if fields is not None:
+            fields = set(fields)
+            state = {k: v for k, v in state.items() if k in fields}
+        self._manager.update(url, **state)
 
     def delete(self):
-        self._manager.delete(self.feed)
+        url = self.feed
+        self._manager.delete(url)
 
 
 class Datastream(Base):
@@ -163,8 +169,11 @@ class Datastream(Base):
     def datapoints(self, datapoints):
         self._data['datapoints'] = datapoints
 
-    def update(self):
+    def update(self, fields=None):
         state = self.__getstate__()
+        if fields is not None:
+            fields = set(fields)
+            state = {k: v for k, v in state.items() if k in fields}
         self._manager.update(self.id, **state)
 
     def delete(self):
@@ -233,9 +242,13 @@ class Trigger(Base):
             self._data['threshold_value'] = threshold_value
         self._data.update(kwargs)
 
-    def update(self):
+    def update(self, fields=None):
         state = self.__getstate__()
-        self._manager.update(state.pop('id'), **state)
+        state.pop('id', None)
+        if fields is not None:
+            fields = set(fields)
+            state = {k: v for k, v in state.items() if k in fields}
+        self._manager.update(self.id, **state)
 
     def delete(self):
         self._manager.delete(self.id)
