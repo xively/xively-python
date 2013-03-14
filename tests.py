@@ -24,7 +24,7 @@ class RequestsFixtureMixin(object):
 
     def setUp(self, *args, **kwargs):
         """Installs our own request handler."""
-        patcher = patch('cosm.Session.request')
+        patcher = patch('cosm.client.Session.request')
         self.request = patcher.start()
     setUp.__test__ = False  # Don't test this method.
 
@@ -43,7 +43,7 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
 
     def setUp(self):
         super(BaseTestCase, self).setUp()
-        self.api = cosm.api.Client("API_KEY")
+        self.api = cosm.api.CosmAPIClient("API_KEY")
         self.client = self.api.client
         # Ensure that the jsonified output is in a known order.
         self.client._json_encoder.sort_keys = True
@@ -90,7 +90,7 @@ class KeyAuthTest(unittest.TestCase):
     def test_api_key_header(self):
         """Tests the X-ApiKey header is set on requests using KeyAuth."""
         request = requests.Request()
-        auth = cosm.KeyAuth("ABCDE")
+        auth = cosm.client.KeyAuth("ABCDE")
         auth(request)
         self.assertEqual(request.headers['X-ApiKey'], "ABCDE")
 

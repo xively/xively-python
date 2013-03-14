@@ -8,23 +8,39 @@ try:
 except ImportError:
     from urllib.parse import urljoin  # NOQA
 
-import cosm
+from cosm.client import Client
+from cosm.models import (
+    Feed, Datastream, Datapoint, Location, Waypoint, Trigger, Key, Permission,
+    Resource)
 
 
-DEFAULT_FORMAT = 'json'
+__all__ = ['CosmAPIClient']
 
 
-class Client(object):
+class CosmAPIClient(object):
+    """Cosm API client."""
 
     api_version = 'v2'
-    client_class = cosm.Client
+    client_class = Client
 
     def __init__(self, key):
         self.client = self.client_class(key)
         self.client.base_url += '/{}/'.format(self.api_version)
-        self.feeds = FeedsManager(self.client)
-        self.triggers = TriggersManager(self.client)
-        self.keys = KeysManager(self.client)
+        self._feeds = FeedsManager(self.client)
+        self._triggers = TriggersManager(self.client)
+        self._keys = KeysManager(self.client)
+
+    @property
+    def feeds(self):
+        return self._feeds
+
+    @property
+    def triggers(self):
+        return self._triggers
+
+    @property
+    def keys(self):
+        return self._keys
 
 
 class ManagerBase(object):
@@ -59,7 +75,8 @@ class FeedsManager(ManagerBase):
         self.base_url = urljoin(client.base_url, 'feeds')
 
     def create(self, title, **kwargs):
-        data = dict(title=title, version=cosm.Feed.VERSION, **kwargs)
+        """Create a new Feed."""
+        data = dict(title=title, version=Feed.VERSION, **kwargs)
         response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
         location = response.headers['location']
@@ -99,7 +116,7 @@ class FeedsManager(ManagerBase):
     def _coerce_feed(self, feed_data):
         datastreams_data = feed_data.pop('datastreams', None)
         location_data = feed_data.pop('location', None)
-        feed = cosm.Feed(**feed_data)
+        feed = Feed(**feed_data)
         feed._manager = self
         if datastreams_data:
             datastreams = self._coerce_datastreams(
@@ -117,7 +134,7 @@ class FeedsManager(ManagerBase):
         return datastreams
 
     def _coerce_location(self, instance):
-        if isinstance(instance, cosm.Location):
+        if isinstance(instance, Location):
             location = instance
         else:
             location_data = dict(**instance)
@@ -125,7 +142,7 @@ class FeedsManager(ManagerBase):
             if waypoints_data is not None:
                 waypoints = self._coerce_waypoints(waypoints_data)
                 location_data['waypoints'] = waypoints
-            location = cosm.Location(**location_data)
+            location = Location(**location_data)
         return location
 
     def _coerce_waypoints(self, waypoints_data):
@@ -169,7 +186,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         }
         response = self.client.post(self.base_url, data=data)
         response.raise_for_status()
-        datastream = cosm.Datastream(id=id, **kwargs)
+        datastream = Datastream(id=id, **kwargs)
         datastream._manager = self
         return datastream
 
@@ -184,7 +201,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         response.raise_for_status()
         json = response.json()
         for datastream_data in json.get('datastreams', []):
-            datastream = cosm.Datastream(**datastream_data)
+            datastream = Datastream(**datastream_data)
             datastream._manager = self
             yield datastream
 
@@ -213,12 +230,12 @@ class DatastreamsManager(Sequence, ManagerBase):
     def _coerce_datastream(self, d):
         if isinstance(d, dict):
             datapoints_data = d.pop('datapoints', None)
-            datastream = cosm.Datastream(**d)
+            datastream = Datastream(**d)
             if datapoints_data:
                 datapoints = self._coerce_datapoints(
                     datastream.datapoints, datapoints_data)
                 datastream.datapoints = datapoints
-        elif isinstance(d, cosm.Datastream):
+        elif isinstance(d, Datastream):
             datastream = d
         datastream._manager = self
         return datastream
@@ -290,15 +307,15 @@ class DatapointsManager(Sequence, ManagerBase):
         response.raise_for_status()
 
     def _coerce_datapoint(self, d):
-        if isinstance(d, cosm.Datapoint):
+        if isinstance(d, Datapoint):
             datapoint = self._clone_datapoint(d)
         elif isinstance(d, dict):
-            datapoint = cosm.Datapoint(**d)
+            datapoint = Datapoint(**d)
         datapoint._manager = self
         return datapoint
 
     def _clone_datapoint(self, d):
-        return cosm.Datapoint(**d._data)
+        return Datapoint(**d._data)
 
 
 class TriggersManager(ManagerBase):
@@ -308,7 +325,7 @@ class TriggersManager(ManagerBase):
         self.base_url = urljoin(client.base_url, "triggers")
 
     def create(self, *args, **kwargs):
-        trigger = cosm.Trigger(*args, **kwargs)
+        trigger = Trigger(*args, **kwargs)
         response = self.client.post(self.base_url, data=trigger)
         response.raise_for_status()
         trigger._manager = self
@@ -324,7 +341,7 @@ class TriggersManager(ManagerBase):
         data.pop('id')
         notified_at = data.pop('notified_at', None)
         user = data.pop('user', None)
-        trigger = cosm.Trigger(**data)
+        trigger = Trigger(**data)
         trigger._data['id'] = id
         if notified_at:
             trigger._data['notified_at'] = self._parse_datetime(notified_at)
@@ -344,7 +361,7 @@ class TriggersManager(ManagerBase):
         response.raise_for_status()
         json = response.json()
         for data in json:
-            trigger = cosm.Trigger(**data)
+            trigger = Trigger(**data)
             trigger._manager = self
             yield trigger
 
@@ -404,17 +421,17 @@ class KeysManager(ManagerBase):
             permission = self._coerce_permission(permission_data)
             permissions.append(permission)
         data['permissions'] = permissions
-        key = cosm.Key(**data)
+        key = Key(**data)
         key._data['api_key'] = api_key
         key._manager = self
         return key
 
     def _coerce_permission(self, data):
-        if isinstance(data, cosm.Permission):
+        if isinstance(data, Permission):
             return data
         resources_data = data.get('resources')
         data = {k: v for (k, v) in data.items() if k != 'resources'}
-        permission = cosm.Permission(**data)
+        permission = Permission(**data)
         if resources_data:
             resources = []
             for resource_data in resources_data:
@@ -424,7 +441,7 @@ class KeysManager(ManagerBase):
         return permission
 
     def _coerce_resource(self, data):
-        resource = cosm.Resource(**data)
+        resource = Resource(**data)
         return resource
 
 
