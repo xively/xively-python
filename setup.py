@@ -3,7 +3,7 @@ from setuptools import setup
 setup(name='cosm-python',
       version='0.1',
       description="Cosm API wrapper",
-      long_description=open("README.md").read(),
+      long_description=open("README.rst").read(),
       url='http://github.com/cosm/cosm-python',
       packages=['cosm'],
       install_requires=[
