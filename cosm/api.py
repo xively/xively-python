@@ -34,21 +34,21 @@ class CosmAPIClient(object):
     @property
     def feeds(self):
         """
-        Access to :class:`.Feed` objects through a :class:`FeedsManager`.
+        Access :class:`.Feed` objects through a :class:`.FeedsManager`.
         """
         return self._feeds
 
     @property
     def triggers(self):
         """
-        Access to :class:`.Trigger` objects through a :class:`TriggersManager`.
+        Access :class:`.Trigger` objects through a :class:`.TriggersManager`.
         """
         return self._triggers
 
     @property
     def keys(self):
         """
-        Access to :class:`.Key` objects through a :class:`KeysManager`.
+        Access :class:`.Key` objects through a :class:`.KeysManager`.
         """
         return self._keys
 
@@ -80,7 +80,7 @@ class ManagerBase(object):
 class FeedsManager(ManagerBase):
     """Create, update and return Feed objects.
 
-    This manager should live on a :class:`CosmAPIClient` instance and not
+    This manager should live on a :class:`.CosmAPIClient` instance and not
     instantiated directly.
 
     """
@@ -177,8 +177,8 @@ class FeedsManager(ManagerBase):
 class DatastreamsManager(Sequence, ManagerBase):
     """Create, update and return Datastream objects.
 
-    Instances of this class hang off of :class:`~cosm.models.Feed` objects to
-    manage datastreams of that feed.
+    Instances of this class hang off of :class:`.Feed` objects to manage
+    datastreams of that feed.
 
     A list of datastreams can be retrieved along with the feed which can be
     accessed via this instance as a sequence.
@@ -277,9 +277,9 @@ class DatastreamsManager(Sequence, ManagerBase):
 class DatapointsManager(Sequence, ManagerBase):
     """Manage datapoints of a datastream.
 
-    A list of :class:`~cosm.models.Datapoint` objects can be retrieved along
-    with the :class:`~cosm.models.Datastream` (or :class:`~cosm.models.Feed`)
-    which can be accessed via this instance as a sequence.
+    A list of :class:`.Datapoint` objects can be retrieved along with the
+    :class:`.Datastream` (or :class:`.Feed`) which can be accessed via this
+    instance as a sequence.
 
     """
 
@@ -322,7 +322,7 @@ class DatapointsManager(Sequence, ManagerBase):
         response.raise_for_status()
 
     def get(self, at):
-        """Fetch and return a :class:`Datapoint` at the given timestamp."""
+        """Fetch and return a :class:`.Datapoint` at the given timestamp."""
         url = "{}/{}Z".format(self.base_url, at.isoformat())
         response = self.client.get(url)
         response.raise_for_status()
@@ -364,9 +364,9 @@ class DatapointsManager(Sequence, ManagerBase):
 
 
 class TriggersManager(ManagerBase):
-    """Manage :class:`Trigger`.
+    """Manage :class:`.Trigger`.
 
-    This manager should live on a :class:`CosmAPIClient` instance and not
+    This manager should live on a :class:`.CosmAPIClient` instance and not
     instantiated directly.
 
     """
@@ -376,9 +376,9 @@ class TriggersManager(ManagerBase):
         self.base_url = urljoin(client.base_url, "triggers")
 
     def create(self, *args, **kwargs):
-        """Create a new :class:`~cosm.models.Trigger`.
+        """Create a new :class:`.Trigger`.
 
-        :returns: A new :class:`~cosm.models.Trigger` object.
+        :returns: A new :class:`.Trigger` object.
 
         """
         trigger = Trigger(*args, **kwargs)

@@ -37,9 +37,9 @@ Example:
 Contents:
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
-    reference/index
+    reference.rst
 
 
 Indices and tables
