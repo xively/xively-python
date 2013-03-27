@@ -24,6 +24,7 @@ class CosmAPIClient(object):
     client_class = Client
 
     def __init__(self, key):
+        """Create an instance of an authenticated Cosm API Client."""
         self.client = self.client_class(key)
         self.client.base_url += '/{}/'.format(self.api_version)
         self._feeds = FeedsManager(self.client)
@@ -32,35 +33,43 @@ class CosmAPIClient(object):
 
     @property
     def feeds(self):
+        """
+        Access to :class:`.Feed` objects through a :class:`FeedsManager`.
+        """
         return self._feeds
 
     @property
     def triggers(self):
+        """
+        Access to :class:`.Trigger` objects through a :class:`TriggersManager`.
+        """
         return self._triggers
 
     @property
     def keys(self):
+        """
+        Access to :class:`.Key` objects through a :class:`KeysManager`.
+        """
         return self._keys
 
 
 class ManagerBase(object):
+    """Abstract base class for all of out manager classes."""
 
     def _url(self, url_or_id):
+        """Return a url relative to the base url."""
         url = self.base_url
         if url_or_id:
             url += '/'
             url = urljoin(url, str(url_or_id))
         return url
 
-    def _json_default(self, obj):
-        if not isinstance(obj, datetime):
-            raise TypeError
-        return obj.isoformat() + 'Z'
-
     def _parse_datetime(self, value):
+        """Parse and return a datetime string from the Cosm API."""
         return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     def _prepare_params(self, params):
+        """Prepare parameters to be passed in query strings to the Cosm API."""
         params = dict(params)
         for name, value in params.items():
             if isinstance(value, datetime):
@@ -69,6 +78,12 @@ class ManagerBase(object):
 
 
 class FeedsManager(ManagerBase):
+    """Create, update and return Feed objects.
+
+    This manager should live on a :class:`CosmAPIClient` instance and not
+    instantiated directly.
+
+    """
 
     def __init__(self, client):
         self.client = client
@@ -86,11 +101,13 @@ class FeedsManager(ManagerBase):
         return feed
 
     def update(self, id_or_url, **kwargs):
+        """Update an existing feed by its id or url."""
         url = self._url(id_or_url)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
     def list(self, **params):
+        """Return a list of feeds."""
         url = self._url(None)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -100,6 +117,7 @@ class FeedsManager(ManagerBase):
             yield feed
 
     def get(self, url_or_id, **params):
+        """Fetch a feed by id or url."""
         url = self._url(url_or_id)
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
@@ -109,6 +127,7 @@ class FeedsManager(ManagerBase):
         return feed
 
     def delete(self, url_or_id):
+        """Delete a feed by id or url."""
         url = self._url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
@@ -150,12 +169,21 @@ class FeedsManager(ManagerBase):
         for data in waypoints_data:
             at = self._parse_datetime(data['at'])
             data = {k: v for k, v in data.items() if k != 'at'}
-            waypoint = cosm.Waypoint(at=at, **data)
+            waypoint = Waypoint(at=at, **data)
             waypoints.append(waypoint)
         return waypoints
 
 
 class DatastreamsManager(Sequence, ManagerBase):
+    """Create, update and return Datastream objects.
+
+    Instances of this class hang off of :class:`~cosm.models.Feed` objects to
+    manage datastreams of that feed.
+
+    A list of datastreams can be retrieved along with the feed which can be
+    accessed via this instance as a sequence.
+
+    """
 
     def __init__(self, feed):
         self.feed = feed
@@ -180,6 +208,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         return self.feed._data.setdefault('datastreams', [])
 
     def create(self, id, **kwargs):
+        """Create a new datastream on a feed."""
         data = {
             'version': self.feed.version,
             'datastreams': [dict(id=id, **kwargs)],
@@ -191,11 +220,13 @@ class DatastreamsManager(Sequence, ManagerBase):
         return datastream
 
     def update(self, datastream_id, **kwargs):
+        """Update a feeds datastream by id."""
         url = self._url(datastream_id)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
     def list(self, **params):
+        """Return a list of datastreams for the parent feed object."""
         url = self._url('..')
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -206,6 +237,7 @@ class DatastreamsManager(Sequence, ManagerBase):
             yield datastream
 
     def get(self, id, **params):
+        """Fetch and return a feeds datastream by its id."""
         url = self._url(id)
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
@@ -215,6 +247,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         return datastream
 
     def delete(self, url_or_id):
+        """Delete a datastream by id or url."""
         url = self._url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
@@ -242,6 +275,13 @@ class DatastreamsManager(Sequence, ManagerBase):
 
 
 class DatapointsManager(Sequence, ManagerBase):
+    """Manage datapoints of a datastream.
+
+    A list of :class:`~cosm.models.Datapoint` objects can be retrieved along
+    with the :class:`~cosm.models.Datastream` (or :class:`~cosm.models.Feed`)
+    which can be accessed via this instance as a sequence.
+
+    """
 
     def __init__(self, datastream):
         self.datastream = datastream
@@ -267,6 +307,7 @@ class DatapointsManager(Sequence, ManagerBase):
         return self.datastream._data['datapoints']
 
     def create(self, datapoints):
+        """Create a number of new datapoints for this datastream."""
         datapoints = [self._coerce_datapoint(d) for d in datapoints]
         payload = {'datapoints': datapoints}
         response = self.client.post(self.base_url, data=payload)
@@ -274,12 +315,14 @@ class DatapointsManager(Sequence, ManagerBase):
         return datapoints
 
     def update(self, at, value):
+        """Update the value of a datapiont at a given timestamp."""
         url = "{}/{}Z".format(self.base_url, at.isoformat())
         payload = {'value': value}
         response = self.client.put(url, data=payload)
         response.raise_for_status()
 
     def get(self, at):
+        """Fetch and return a :class:`Datapoint` at the given timestamp."""
         url = "{}/{}Z".format(self.base_url, at.isoformat())
         response = self.client.get(url)
         response.raise_for_status()
@@ -288,6 +331,7 @@ class DatapointsManager(Sequence, ManagerBase):
         return self._coerce_datapoint(data)
 
     def history(self, **params):
+        """Fetch and return a list of datapoints in a given timerange."""
         url = self._url('..').rstrip('/')
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
@@ -298,6 +342,7 @@ class DatapointsManager(Sequence, ManagerBase):
             yield self._coerce_datapoint(datapoint_data)
 
     def delete(self, at=None, **params):
+        """Delete a datapoint or a range of datapoints."""
         url = self.base_url
         if at:
             url = "{}/{}Z".format(url, at.isoformat())
@@ -319,12 +364,23 @@ class DatapointsManager(Sequence, ManagerBase):
 
 
 class TriggersManager(ManagerBase):
+    """Manage :class:`Trigger`.
+
+    This manager should live on a :class:`CosmAPIClient` instance and not
+    instantiated directly.
+
+    """
 
     def __init__(self, client):
         self.client = client
         self.base_url = urljoin(client.base_url, "triggers")
 
     def create(self, *args, **kwargs):
+        """Create a new :class:`~cosm.models.Trigger`.
+
+        :returns: A new :class:`~cosm.models.Trigger` object.
+
+        """
         trigger = Trigger(*args, **kwargs)
         response = self.client.post(self.base_url, data=trigger)
         response.raise_for_status()
@@ -334,6 +390,7 @@ class TriggersManager(ManagerBase):
         return trigger
 
     def get(self, id):
+        """Fetch and return an existing trigger by its id."""
         url = self._url(id)
         response = self.client.get(url)
         response.raise_for_status()
@@ -351,11 +408,13 @@ class TriggersManager(ManagerBase):
         return trigger
 
     def update(self, id, **kwargs):
+        """Update an existing trigger."""
         url = self._url(id)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
     def list(self, **params):
+        """Return a list of triggers."""
         url = self._url(None)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -366,18 +425,21 @@ class TriggersManager(ManagerBase):
             yield trigger
 
     def delete(self, url_or_id):
+        """Delete a trigger by id or url."""
         url = self._url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
 
 
 class KeysManager(ManagerBase):
+    """Manage keys their permissions and restrict by resource."""
 
     def __init__(self, client):
         self.client = client
         self.base_url = urljoin(client.base_url, 'keys')
 
     def create(self, label, permissions, **kwargs):
+        """Create a new API key."""
         data = dict(label=label, permissions=permissions, **kwargs)
         response = self.client.post(self.base_url, data={'key': data})
         response.raise_for_status()
@@ -387,6 +449,7 @@ class KeysManager(ManagerBase):
         return key
 
     def list(self, feed_id=None, **kwargs):
+        """List all API keys for this account or for the given feed."""
         url = self._url(None)
         params = {}
         if feed_id is not None:
@@ -400,6 +463,7 @@ class KeysManager(ManagerBase):
             yield key
 
     def get(self, key_id, **params):
+        """Fetch and return an API key by its id."""
         url = self._url(key_id)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -408,6 +472,7 @@ class KeysManager(ManagerBase):
         return key
 
     def delete(self, key_id):
+        """Delete an API key."""
         url = self._url(key_id)
         response = self.client.delete(url)
         response.raise_for_status()
@@ -446,5 +511,11 @@ class KeysManager(ManagerBase):
 
 
 def _id_from_url(url):
+    """Return the last part or a url
+
+    >>> _id_from_url('http://api.cosm.com/v2/feeds/1234')
+    '1234'
+
+    """
     id = url.rsplit('/', 1)[1]
     return id

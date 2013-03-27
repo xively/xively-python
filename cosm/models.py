@@ -55,6 +55,7 @@ class Feed(Base):
 
     @property
     def datastreams(self):
+        """Manager for datastreams of this feed."""
         if self._datastreams is None:
             import cosm.api
             self._datastreams = cosm.api.DatastreamsManager(self)
@@ -68,6 +69,7 @@ class Feed(Base):
         self._data['datastreams'] = datastreams
 
     def update(self, fields=None):
+        """Save the current state (or fields only if given)."""
         url = self.feed
         state = self.__getstate__()
         if fields is not None:
@@ -76,6 +78,7 @@ class Feed(Base):
         self._manager.update(url, **state)
 
     def delete(self):
+        """Delete this feed."""
         url = self.feed
         self._manager.delete(url)
 
@@ -86,6 +89,7 @@ class Datastream(Base):
     _datapoints = None
 
     def __init__(self, id, **kwargs):
+        """Create a new datastream object locally."""
         self._data = {'id': id}
         self.datapoints = kwargs.pop('datapoints', [])
         self._data.update(**kwargs)
@@ -98,6 +102,7 @@ class Datastream(Base):
 
     @property
     def datapoints(self):
+        """Manager for datapoints of this datastream."""
         if self._datapoints is None:
             import cosm.api
             self._datapoints = cosm.api.DatapointsManager(self)
@@ -108,6 +113,7 @@ class Datastream(Base):
         self._data['datapoints'] = datapoints
 
     def update(self, fields=None):
+        """Send the current state of this datastream to Cosm."""
         state = self.__getstate__()
         if fields is not None:
             fields = set(fields)
@@ -115,6 +121,7 @@ class Datastream(Base):
         self._manager.update(self.id, **state)
 
     def delete(self):
+        """Delete this datastream from Cosm."""
         self._manager.delete(self.id)
 
 
@@ -122,22 +129,31 @@ class Datapoint(Base):
     """A Datapoint represents a value at a certain point in time."""
 
     def __init__(self, at, value):
+        """Create a new datapoint locally."""
         super(Datapoint, self).__init__()
         self._data['at'] = at
         self._data['value'] = value
 
+    def __repr__(self):
+        classname = 'cosm.' + self.__class__.__name__
+        return "{}({!r}, {!r})".format(classname, self.at, self.value)
+
     def update(self):
+        """Update this datapoint's value."""
         state = self.__getstate__()
         self._manager.update(state.pop('at'), **state)
 
     def delete(self):
+        """Delete this datapoint."""
         self._manager.delete(self.at)
 
 
 class Location(Base):
+    """The location and location type of a feed."""
 
     def __init__(self, name=None, domain=None, exposure=None, disposition=None,
                  lat=None, lon=None, ele=None, waypoints=None):
+        """Create a local location instance."""
         self._data = {
             'name': name,
             'domain': domain,
@@ -156,7 +172,7 @@ class Location(Base):
 
 
 class Waypoint(Base):
-    """A location waypoint."""
+    """A waypoint represents where a mobile feed was at a particular time."""
 
     def __init__(self, at, lat, lon):
         """Create a location waypoint, a timestamped cordinate pair."""
@@ -168,7 +184,17 @@ class Waypoint(Base):
 
 
 class Trigger(Base):
-    """Triggers provide 'push' capabilities (aka notifications)."""
+    """Triggers provide 'push' capabilities (aka notifications).
+
+    To create a new trigger, use the :class:`~cosm.api.TriggersManager` on a
+    :class:`~cosm.api.CosmAPIClient` instance.
+
+    >>> from cosm import CosmAPIClient
+    >>> api = CosmAPIClient("API_KEY")
+    >>> api.triggers.create(123, "temperature", "http://example.com", "frozen")
+    <Trigger(123, 'temperature', 'http://example.com', 'frozen')>
+
+    """
 
     def __init__(self, environment_id, stream_id, url, trigger_type,
                  threshold_value=None, **kwargs):
@@ -182,7 +208,12 @@ class Trigger(Base):
             self._data['threshold_value'] = threshold_value
         self._data.update(kwargs)
 
+    def __repr__(self):
+        r = "<{}({environment_id!r}, {stream_id!r}, {url!r}, {trigger_type!r})>"
+        return r.format(self.__class__.__name__, **self._data)
+
     def update(self, fields=None):
+        """Update an existing trigger."""
         state = self.__getstate__()
         state.pop('id', None)
         if fields is not None:
@@ -191,6 +222,7 @@ class Trigger(Base):
         self._manager.update(self.id, **state)
 
     def delete(self):
+        """Delete a trigger."""
         self._manager.delete(self.id)
 
 
@@ -208,10 +240,12 @@ class Key(Base):
             self._data['expires_at'] = expires_at
 
     def delete(self):
+        """Delete this key."""
         self._manager.delete(self.api_key)
 
 
 class Permission(Base):
+    """Permissions restrict what can be done by a key."""
 
     def __init__(self, access_methods, source_ip=None, referer=None,
                  minimum_interval=None, label=None, resources=None):
@@ -228,6 +262,7 @@ class Permission(Base):
 
 
 class Resource(Base):
+    """A Resource defines what an API key has access to."""
 
     def __init__(self, feed_id, datastream_id=None):
         self._data = {
@@ -235,3 +270,18 @@ class Resource(Base):
         }
         if datastream_id:
             self._data['datastream_id'] = datastream_id
+
+
+def setup_module(module):
+    import mock
+    import requests
+    mock_response = requests.Response()
+    mock_response.status_code = 200
+    mock_request = mock.patch('cosm.client.Client.request')
+    mock_request.return_value = mock_response
+    module._mock_request = mock_request
+    mock_request.start()
+
+
+def teardown_module(module):
+    module._mock_request.stop()

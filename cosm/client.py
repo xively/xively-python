@@ -77,6 +77,7 @@ class Client(Session):
 
 
 class JSONEncoder(json.JSONEncoder):
+    """Encoder that can handle datetime objects or cosm models."""
 
     def default(self, obj):
         if isinstance(obj, datetime):
