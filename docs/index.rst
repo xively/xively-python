@@ -40,6 +40,7 @@ Contents:
     :maxdepth: 3
 
     reference.rst
+    examples.rst
 
 
 Indices and tables
