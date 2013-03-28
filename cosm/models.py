@@ -20,9 +20,14 @@ class Base(object):
         self._data = {}
 
     def __getstate__(self):
-        return dict(**self._data)
+        """Returns the current state of the object.
+
+        This is the data that should be sent to the Cosm API.
+        """
+        return {k: v for k, v in self._data.items() if v is not None}
 
     def __getattr__(self, name):
+        """Looks up and returns an attribute from the state."""
         try:
             return self._data[name]
         except KeyError:
@@ -31,6 +36,7 @@ class Base(object):
                 "'{}' object has no attribute '{}'".format(class_name, name))
 
     def __setattr__(self, name, value):
+        """Sets the value of an attribute in the state."""
         if not name.startswith('_') and name not in dir(self.__class__):
             self._data[name] = value
         else:
@@ -38,7 +44,24 @@ class Base(object):
 
 
 class Feed(Base):
-    """Cosm Feed, which can contain a number of Datastreams."""
+    """Cosm Feed, which can contain a number of Datastreams.
+
+    :param title: A descriptive name for the feed
+    :param website: The URL of a website which is relevant to this feed e.g.
+        home page
+    :param tags: Tagged metadata about the environment (characters ' " and
+        commas will be stripped out)
+    :param location: :class:`.Location` object for this feed
+    :param private: Whether the environment is private or not.
+    :type private: bool
+
+    Usage::
+
+        >>> import cosm
+        >>> cosm.Feed(title="Cosm Office environment")
+        <cosm.Feed(None)>
+
+    """
 
     VERSION = "1.0.0"
 
@@ -53,9 +76,28 @@ class Feed(Base):
             self.datastreams = kwargs.pop('datastreams')
         self._data.update(kwargs)
 
+    def __repr__(self):
+        return "<{}.{}({id})>".format(
+            __package__, self.__class__.__name__, id=self._data.get('id'))
+
     @property
     def datastreams(self):
-        """Manager for datastreams of this feed."""
+        """Manager for datastreams of this feed.
+
+        When fetched from the API, datastreams behaves liek a cache, populated
+        with the most recently updated datastreams for this feed. The manager
+        can also be used to create, update and delete datastreams for this
+        feed.
+
+        Usage::
+
+            >>> import cosm
+            >>> api = cosm.CosmAPIClient("API_KEY")
+            >>> feed = api.feeds.get(7021)
+            >>> feed.datastreams[0]
+            <cosm.Datastream(3)>
+
+        """
         if self._datastreams is None:
             import cosm.api
             self._datastreams = cosm.api.DatastreamsManager(self)
@@ -69,7 +111,17 @@ class Feed(Base):
         self._data['datastreams'] = datastreams
 
     def update(self, fields=None):
-        """Save the current state (or fields only if given)."""
+        """Updates feed and datastreams via the API.
+
+        If successful, the current datastream values are stored and any changes
+        in feed metadata overwrite previous values. Cosm stores a server-side
+        timestamp in the "updated" attribute and sets the feed to "live" if it
+        wasn't before.
+
+        :param fields: If given, only update these fields.
+        :type fields: list of strings
+
+        """
         url = self.feed
         state = self.__getstate__()
         if fields is not None:
@@ -78,7 +130,11 @@ class Feed(Base):
         self._manager.update(url, **state)
 
     def delete(self):
-        """Delete this feed."""
+        """Delete this feed via the API.
+
+        .. warning:: This is final and cannot be undone.
+
+        """
         url = self.feed
         self._manager.delete(url)
 
@@ -99,6 +155,10 @@ class Datastream(Base):
         if not state['datapoints']:
             state.pop('datapoints')
         return state
+
+    def __repr__(self):
+        return "<{}.{}({id})>".format(
+            __package__, self.__class__.__name__, id=self._data.get('id'))
 
     @property
     def datapoints(self):
@@ -165,10 +225,6 @@ class Location(Base):
         }
         if waypoints is not None:
             self._data['waypoints'] = waypoints
-
-    def __getstate__(self):
-        state = super(Location, self).__getstate__()
-        return {k: v for (k, v) in state.items() if v is not None}
 
 
 class Waypoint(Base):

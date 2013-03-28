@@ -18,18 +18,32 @@ __all__ = ['CosmAPIClient']
 
 
 class CosmAPIClient(object):
-    """Cosm API client."""
+    """An instance of an authenticated Cosm API Client.
 
+    The root object from which the user can manage feeds, keys and triggers.
+
+    :param key: A Cosm API Key
+    :type key: str
+
+    Usage::
+
+        >>> import cosm
+        >>> cosm.CosmAPIClient("API_KEY")
+        <cosm.CosmAPIClient()>
+
+    """
     api_version = 'v2'
     client_class = Client
 
     def __init__(self, key):
-        """Create an instance of an authenticated Cosm API Client."""
         self.client = self.client_class(key)
         self.client.base_url += '/{}/'.format(self.api_version)
         self._feeds = FeedsManager(self.client)
         self._triggers = TriggersManager(self.client)
         self._keys = KeysManager(self.client)
+
+    def __repr__(self):
+        return "<{}.{}()>".format(__package__, self.__class__.__name__)
 
     @property
     def feeds(self):
@@ -96,8 +110,21 @@ class ManagerBase(object):
 class FeedsManager(ManagerBase):
     """Create, update and return Feed objects.
 
-    This manager should live on a :class:`.CosmAPIClient` instance and not
-    instantiated directly.
+    .. note:: This manager should live on a :class:`.CosmAPIClient` instance
+        and not instantiated directly.
+
+    :param client: Low level :class:`.Client` instance
+
+    Usage::
+
+        >>> import cosm
+        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> api.feeds.create(title="Cosm Office environment")
+        <cosm.Feed(7021)>
+        >>> api.feeds.get(7021)
+        <cosm.Feed(7021)>
+        >>> api.feeds.update(7021, private=True)
+        >>> api.feeds.delete(7021)
 
     """
 
@@ -107,10 +134,25 @@ class FeedsManager(ManagerBase):
         self.client = client
         self.base_url = client.base_url + self.resource
 
-    def create(self, title, **kwargs):
-        """Create a new Feed."""
-        data = dict(title=title, version=Feed.VERSION, **kwargs)
-        response = self.client.post(self.url(), data=data)
+    def create(self, title, website=None, tags=None, location=None,
+               private=None, **params):
+        """Create a new Feed.
+
+        :param title: A descriptive name for the feed
+        :param website: The URL of a website which is relevant to this feed
+            e.g. home page
+        :param tags: Tagged metadata about the environment (characters ' " and
+            commas will be stripped out)
+        :param location: :class:`.Location` object for this feed
+        :param private: Whether the environment is private or not. Can be
+            either True or False
+        :param params: Additional parameters to be sent with the request
+
+        """
+        data = dict(title=title, website=website, tags=tags, location=location,
+                    private=private, version=Feed.VERSION, **params)
+        feed = self._coerce_feed(data)
+        response = self.client.post(self.url(), data=feed)
         response.raise_for_status()
         location = response.headers['location']
         feed.feed = location
@@ -118,24 +160,101 @@ class FeedsManager(ManagerBase):
         return feed
 
     def update(self, id_or_url, **kwargs):
-        """Update an existing feed by its id or url."""
+        """Update an existing feed by its id or url.
+
+        :param id_or_url: The id of a :class:`.Feed` or its URL
+        :param kwargs: The fields to be updated
+
+        """
         url = self.url(id_or_url)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
-    def list(self, **params):
-        """Return a list of feeds."""
+    def list(self, page=None, per_page=None, content=None, q=None, tag=None,
+             user=None, units=None, status=None, order=None, show_user=None,
+             lat=None, lon=None, distance=None, distance_units=None, **params):
+        """Returns a paged list of feeds.
+
+        Only feeds that are viewable by the authenticated account will be
+        returned. The following parameters can be applied to limit or refine
+        the returned feeds:
+
+        :param page: Integer indicating which page of results you are
+            requesting. Starts from 1.
+        :param per_page: Integer defining how many results to return per page
+            (1 to 1000)
+        :param content: String parameter ('full' or 'summary') describing
+            whether we want full or summary results. Full results means all
+            datastream values are returned, summary just returns the
+            environment meta data for each feed
+        :param q: Full text search parameter. Should return any feeds matching
+            this string
+        :param tag: Returns feeds containing datastreams tagged with the search
+            query
+        :param user: Returns feeds created by the user specified
+        :param units: Returns feeds containing datastreams with units specified
+            by the search query
+        :param status: Possible values ('live', 'frozen', or 'all'). Whether to
+            search for only live feeds, only frozen feeds, or all feeds.
+            Defaults to all
+        :param order: Order of returned feeds. Possible values ('created_at',
+            'retrieved_at', or 'relevance')
+        :param show_user: Include user login and user level for each feed.
+            Possible values: true, false (default)
+
+        The following additional parameters are available which allow location
+        based searching of feeds:
+
+        :param lat: Used to find feeds located around this latitude
+        :param lon: Used to find feeds located around this longitude
+        :param distance: search radius
+        :param distance_units: miles or kms (default)
+        :param params: Additional parameters to send with the request
+
+        """
         url = self.url()
+        params.update({k: v for k, v in (
+            ('page', page),
+            ('per_page', per_page),
+            ('content', content),
+            ('q', q),
+            ('tag', tag),
+            ('user', user),
+            ('units', units),
+            ('status', status),
+            ('order', order),
+            ('show_user', show_user),
+            ('lat', lat),
+            ('lon', lon),
+            ('distance', distance),
+            ('distance_units', distance_units),
+        ) if v is not None})
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
-        for feed_data in json['results']:
-            feed = self._coerce_feed(feed_data)
-            yield feed
+        feeds = [self._coerce_feed(feed_data) for feed_data in json['results']]
+        return feeds
 
-    def get(self, url_or_id, **params):
-        """Fetch a feed by id or url."""
+    def get(self, url_or_id, datastreams=None, show_user=None, **params):
+        """Fetches and returns a feed by id or url.
+
+        By default the most recent datastreams are returned. It is also
+        possible to filter the datastreams returned with the feed by using the
+        "datastreams" parameter and a list of datastream IDs.
+
+        :param datastreams: Filter the returned datastreams. List of datastream
+            IDs
+        :param show_user: Include user login for each feed. (default: False)
+        :type show_user: bool
+
+        """
         url = self.url(url_or_id)
+        if isinstance(datastreams, Sequence):
+            datastreams = ','.join(datastreams)
+        params.update({k: v for k, v in (
+            ('datastreams', datastreams),
+            ('show_user', show_user),
+        ) if v is not None})
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -144,12 +263,19 @@ class FeedsManager(ManagerBase):
         return feed
 
     def delete(self, url_or_id):
-        """Delete a feed by id or url."""
+        """Delete a feed by id or url.
+
+        .. WARNING:: This is final and cannot be undone.
+
+        :param id_or_url: The id of a :class:`.Feed` or its URL
+
+        """
         url = self.url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
 
     def _coerce_feed(self, feed_data):
+        """Returns a Feed object from a mapping object (dict)."""
         datastreams_data = feed_data.pop('datastreams', None)
         location_data = feed_data.pop('location', None)
         feed = Feed(**feed_data)
@@ -165,6 +291,7 @@ class FeedsManager(ManagerBase):
         return feed
 
     def _coerce_datastreams(self, datastreams_data, datastreams_manager):
+        """Returns Datastream objects from the data given."""
         datastreams = []
         for data in datastreams_data:
             datastream = datastreams_manager._coerce_datastream(data)
@@ -172,6 +299,7 @@ class FeedsManager(ManagerBase):
         return datastreams
 
     def _coerce_location(self, instance):
+        """Returns a Location object, converted from instance if required."""
         if isinstance(instance, Location):
             location = instance
         else:
@@ -184,6 +312,7 @@ class FeedsManager(ManagerBase):
         return location
 
     def _coerce_waypoints(self, waypoints_data):
+        """Returns a list of Waypoint objects from the given waypoint data."""
         waypoints = []
         for data in waypoints_data:
             at = self._parse_datetime(data['at'])
