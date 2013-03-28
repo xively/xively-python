@@ -25,7 +25,7 @@ def teardown_module(module):
 
 responses_by_url = {
     'feeds/7021': fixtures.GET_FEED_JSON,
-    'feeds/504/datastreams/3': fixtures.HISTORY_DATASTREAM_JSON,
+    'feeds/7021/datastreams/3': fixtures.HISTORY_DATASTREAM_JSON,
 }
 
 

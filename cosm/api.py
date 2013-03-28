@@ -56,12 +56,28 @@ class CosmAPIClient(object):
 class ManagerBase(object):
     """Abstract base class for all of out manager classes."""
 
-    def _url(self, url_or_id):
+    @property
+    def base_url(self):
+        if getattr(self, '_base_url', None) is not None:
+            return self._base_url
+        parent = getattr(self, 'parent', None)
+        if parent is None:
+            return
+        manager = getattr(parent, '_manager', None)
+        if manager is None:
+            return
+        base_url = manager.url(parent.id) + '/' + self.resource
+        return base_url
+
+    @base_url.setter  # NOQA
+    def base_url(self, base_url):
+        self._base_url = base_url
+
+    def url(self, url_or_id=None):
         """Return a url relative to the base url."""
         url = self.base_url
         if url_or_id:
-            url += '/'
-            url = urljoin(url, str(url_or_id))
+            url = urljoin(url + '/', str(url_or_id))
         return url
 
     def _parse_datetime(self, value):
@@ -85,30 +101,31 @@ class FeedsManager(ManagerBase):
 
     """
 
+    resource = 'feeds'
+
     def __init__(self, client):
         self.client = client
-        self.base_url = urljoin(client.base_url, 'feeds')
+        self.base_url = client.base_url + self.resource
 
     def create(self, title, **kwargs):
         """Create a new Feed."""
         data = dict(title=title, version=Feed.VERSION, **kwargs)
-        response = self.client.post(self.base_url, data=data)
+        response = self.client.post(self.url(), data=data)
         response.raise_for_status()
         location = response.headers['location']
-        data['feed'] = location
-        data['id'] = _id_from_url(location)
-        feed = self._coerce_feed(data)
+        feed.feed = location
+        feed.id = _id_from_url(location)
         return feed
 
     def update(self, id_or_url, **kwargs):
         """Update an existing feed by its id or url."""
-        url = self._url(id_or_url)
+        url = self.url(id_or_url)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
     def list(self, **params):
         """Return a list of feeds."""
-        url = self._url(None)
+        url = self.url()
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
@@ -118,7 +135,7 @@ class FeedsManager(ManagerBase):
 
     def get(self, url_or_id, **params):
         """Fetch a feed by id or url."""
-        url = self._url(url_or_id)
+        url = self.url(url_or_id)
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -128,7 +145,7 @@ class FeedsManager(ManagerBase):
 
     def delete(self, url_or_id):
         """Delete a feed by id or url."""
-        url = self._url(url_or_id)
+        url = self.url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
 
@@ -138,9 +155,11 @@ class FeedsManager(ManagerBase):
         feed = Feed(**feed_data)
         feed._manager = self
         if datastreams_data:
+            datastreams_manager = DatastreamsManager(feed)
             datastreams = self._coerce_datastreams(
-                datastreams_data, feed.datastreams)
+                datastreams_data, datastreams_manager)
             feed._data['datastreams'] = datastreams
+            feed._datastreams = datastreams_manager
         if location_data:
             feed._data['location'] = self._coerce_location(location_data)
         return feed
@@ -185,14 +204,12 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     """
 
+    resource = 'datastreams'
+
     def __init__(self, feed):
-        self.feed = feed
+        self.parent = feed
         feed_manager = getattr(feed, '_manager', None)
-        if feed_manager is not None:
-            self.client = feed_manager.client
-            self.base_url = feed.feed.replace('.json', '') + '/datastreams'
-        else:
-            self.client = None
+        self.client = getattr(feed_manager, 'client', None)
 
     def __contains__(self, value):
         return value in self.datastreams['datastreams']
@@ -205,15 +222,15 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     @property
     def _datastreams(self):
-        return self.feed._data.setdefault('datastreams', [])
+        return self.parent._data.setdefault('datastreams', [])
 
     def create(self, id, **kwargs):
         """Create a new datastream on a feed."""
         data = {
-            'version': self.feed.version,
+            'version': self.parent.version,
             'datastreams': [dict(id=id, **kwargs)],
         }
-        response = self.client.post(self.base_url, data=data)
+        response = self.client.post(self.url(), data=data)
         response.raise_for_status()
         datastream = Datastream(id=id, **kwargs)
         datastream._manager = self
@@ -221,13 +238,13 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     def update(self, datastream_id, **kwargs):
         """Update a feeds datastream by id."""
-        url = self._url(datastream_id)
+        url = self.url(datastream_id)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
     def list(self, **params):
         """Return a list of datastreams for the parent feed object."""
-        url = self._url('..')
+        url = self.url('..')
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
@@ -238,7 +255,7 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     def get(self, id, **params):
         """Fetch and return a feeds datastream by its id."""
-        url = self._url(id)
+        url = self.url(id)
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -248,7 +265,7 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     def delete(self, url_or_id):
         """Delete a datastream by id or url."""
-        url = self._url(url_or_id)
+        url = self.url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
 
@@ -283,15 +300,12 @@ class DatapointsManager(Sequence, ManagerBase):
 
     """
 
+    resource = 'datapoints'
+
     def __init__(self, datastream):
-        self.datastream = datastream
+        self.parent = datastream
         datastream_manager = getattr(datastream, '_manager', None)
-        if datastream_manager is not None:
-            self.client = datastream._manager.client
-            datastream_url = datastream._manager._url(datastream.id)
-            self.base_url = datastream_url + '/datapoints'
-        else:
-            self.client = None
+        self.client = getattr(datastream_manager, 'client', None)
 
     def __contains__(self, value):
         return value in self.datapoints['datapoints']
@@ -304,26 +318,26 @@ class DatapointsManager(Sequence, ManagerBase):
 
     @property
     def _datapoints(self):
-        return self.datastream._data['datapoints']
+        return self.parent._data['datapoints']
 
     def create(self, datapoints):
         """Create a number of new datapoints for this datastream."""
         datapoints = [self._coerce_datapoint(d) for d in datapoints]
         payload = {'datapoints': datapoints}
-        response = self.client.post(self.base_url, data=payload)
+        response = self.client.post(self.url(), data=payload)
         response.raise_for_status()
         return datapoints
 
     def update(self, at, value):
         """Update the value of a datapiont at a given timestamp."""
-        url = "{}/{}Z".format(self.base_url, at.isoformat())
+        url = "{}/{}Z".format(self.url(), at.isoformat())
         payload = {'value': value}
         response = self.client.put(url, data=payload)
         response.raise_for_status()
 
     def get(self, at):
         """Fetch and return a :class:`.Datapoint` at the given timestamp."""
-        url = "{}/{}Z".format(self.base_url, at.isoformat())
+        url = "{}/{}Z".format(self.url(), at.isoformat())
         response = self.client.get(url)
         response.raise_for_status()
         data = response.json()
@@ -332,7 +346,7 @@ class DatapointsManager(Sequence, ManagerBase):
 
     def history(self, **params):
         """Fetch and return a list of datapoints in a given timerange."""
-        url = self._url('..').rstrip('/')
+        url = self.url('..').rstrip('/')
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -343,7 +357,7 @@ class DatapointsManager(Sequence, ManagerBase):
 
     def delete(self, at=None, **params):
         """Delete a datapoint or a range of datapoints."""
-        url = self.base_url
+        url = self.url()
         if at:
             url = "{}/{}Z".format(url, at.isoformat())
         elif params:
@@ -371,9 +385,11 @@ class TriggersManager(ManagerBase):
 
     """
 
+    resource = 'triggers'
+
     def __init__(self, client):
         self.client = client
-        self.base_url = urljoin(client.base_url, "triggers")
+        self.base_url = client.base_url + self.resource
 
     def create(self, *args, **kwargs):
         """Create a new :class:`.Trigger`.
@@ -382,7 +398,7 @@ class TriggersManager(ManagerBase):
 
         """
         trigger = Trigger(*args, **kwargs)
-        response = self.client.post(self.base_url, data=trigger)
+        response = self.client.post(self.url(), data=trigger)
         response.raise_for_status()
         trigger._manager = self
         location = response.headers['location']
@@ -391,7 +407,7 @@ class TriggersManager(ManagerBase):
 
     def get(self, id):
         """Fetch and return an existing trigger by its id."""
-        url = self._url(id)
+        url = self.url(id)
         response = self.client.get(url)
         response.raise_for_status()
         data = response.json()
@@ -409,13 +425,13 @@ class TriggersManager(ManagerBase):
 
     def update(self, id, **kwargs):
         """Update an existing trigger."""
-        url = self._url(id)
+        url = self.url(id)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
     def list(self, **params):
         """Return a list of triggers."""
-        url = self._url(None)
+        url = self.url()
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
@@ -426,7 +442,7 @@ class TriggersManager(ManagerBase):
 
     def delete(self, url_or_id):
         """Delete a trigger by id or url."""
-        url = self._url(url_or_id)
+        url = self.url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
 
@@ -434,14 +450,16 @@ class TriggersManager(ManagerBase):
 class KeysManager(ManagerBase):
     """Manage keys their permissions and restrict by resource."""
 
+    resource = 'keys'
+
     def __init__(self, client):
         self.client = client
-        self.base_url = urljoin(client.base_url, 'keys')
+        self.base_url = client.base_url + self.resource
 
     def create(self, label, permissions, **kwargs):
         """Create a new API key."""
         data = dict(label=label, permissions=permissions, **kwargs)
-        response = self.client.post(self.base_url, data={'key': data})
+        response = self.client.post(self.url(), data={'key': data})
         response.raise_for_status()
         location = response.headers['Location']
         data['api_key'] = _id_from_url(location)
@@ -450,7 +468,7 @@ class KeysManager(ManagerBase):
 
     def list(self, feed_id=None, **kwargs):
         """List all API keys for this account or for the given feed."""
-        url = self._url(None)
+        url = self.url()
         params = {}
         if feed_id is not None:
             params['feed_id'] = feed_id
@@ -464,7 +482,7 @@ class KeysManager(ManagerBase):
 
     def get(self, key_id, **params):
         """Fetch and return an API key by its id."""
-        url = self._url(key_id)
+        url = self.url(key_id)
         response = self.client.get(url, params=params)
         response.raise_for_status()
         data = response.json()
@@ -473,7 +491,7 @@ class KeysManager(ManagerBase):
 
     def delete(self, key_id):
         """Delete an API key."""
-        url = self._url(key_id)
+        url = self.url(key_id)
         response = self.client.delete(url)
         response.raise_for_status()
 
