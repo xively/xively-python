@@ -270,18 +270,3 @@ class Resource(Base):
         }
         if datastream_id:
             self._data['datastream_id'] = datastream_id
-
-
-def setup_module(module):
-    import mock
-    import requests
-    mock_response = requests.Response()
-    mock_response.status_code = 200
-    mock_request = mock.patch('cosm.client.Client.request')
-    mock_request.return_value = mock_response
-    module._mock_request = mock_request
-    mock_request.start()
-
-
-def teardown_module(module):
-    module._mock_request.stop()

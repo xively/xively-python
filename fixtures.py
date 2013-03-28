@@ -1,7 +1,16 @@
+# -*- coding: utf-8 -*-
 """
 Data used to return in the responses.
 
 """
+
+try:
+    from io import BytesIO
+except TypeError:
+    from StringIO import StringIO as BytesIO  # NOQA
+
+import requests
+
 
 CREATE_FEED_JSON = b'''
 {
@@ -544,3 +553,19 @@ GET_KEY_JSON = b'''
   }
 }
 '''
+
+
+def handle_request(method, url, *args, **kwargs):
+    response = requests.Response()
+    response.status_code = 200
+    relative_url = url.replace("http://api.cosm.com/v2/", '')
+    content = None
+    if relative_url == 'feeds':
+        response.headers['Location'] = url + '/7021'
+    elif relative_url == 'feeds/7021':
+        content = GET_FEED_JSON
+    elif relative_url == 'triggers':
+        response.headers['location'] = url + '/1'
+    if content:
+        response.raw = BytesIO(content)
+    return response
