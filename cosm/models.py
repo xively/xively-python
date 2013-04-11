@@ -94,8 +94,8 @@ class Feed(Base):
             >>> import cosm
             >>> api = cosm.CosmAPIClient("API_KEY")
             >>> feed = api.feeds.get(7021)
-            >>> feed.datastreams[0]
-            <cosm.Datastream(3)>
+            >>> feed.datastreams[0]  # doctest: +IGNORE_UNICODE
+            <cosm.Datastream('3')>
 
         """
         if self._datastreams is None:
@@ -157,7 +157,7 @@ class Datastream(Base):
         return state
 
     def __repr__(self):
-        return "<{}.{}({id})>".format(
+        return "<{}.{}({id!r})>".format(
             __package__, self.__class__.__name__, id=self._data.get('id'))
 
     @property
