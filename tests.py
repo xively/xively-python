@@ -274,6 +274,7 @@ class FeedsManagerTest(BaseTestCase):
                          datetime(2012, 6, 1, 12, 25, 5, 999502))
         self.assertEqual(feed.location.waypoints[0].lat, 24.9966)
         self.assertEqual(feed.location.waypoints[0].lon, 55.06608)
+        self.assertEqual(feed.datastreams[2].unit.label, 'knots')
 
 
 class DatastreamTest(BaseTestCase):
@@ -319,12 +320,15 @@ class DatastreamsManagerTest(BaseTestCase):
 
     def test_create_datastream(self):
         datastream = self.feed.datastreams.create(
-            id="flow", current_value=34000)
+            id="flow",
+            current_value=34000,
+            unit=cosm.Unit(symbol='l/s'))
         self.assertEqual(
             self.request.call_args[0],
             ('POST', 'http://api.cosm.com/v2/feeds/7021/datastreams'))
         self.assertEqual(datastream.id, "flow")
         self.assertEqual(datastream.current_value, 34000)
+        self.assertEqual(datastream.unit.symbol, 'l/s')
 
     def test_update_datastream(self):
         self.feed.datastreams.update('energy', current_value=294)

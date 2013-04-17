@@ -379,8 +379,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         response.raise_for_status()
         json = response.json()
         for datastream_data in json.get('datastreams', []):
-            datastream = Datastream(**datastream_data)
-            datastream._manager = self
+            datastream = self._coerce_datastream(datastream_data)
             yield datastream
 
     def get(self, id, **params):
@@ -407,14 +406,27 @@ class DatastreamsManager(Sequence, ManagerBase):
             datapoints.append(datapoint)
         return datapoints
 
+    def _coerce_unit(self, instance):
+        """Returns a Unit object, converted from instance if required."""
+        if isinstance(instance, Unit):
+            unit = instance
+        else:
+            instance_data = dict(**instance)
+            unit = Unit(**instance_data)
+        return unit
+
     def _coerce_datastream(self, d):
         if isinstance(d, dict):
             datapoints_data = d.pop('datapoints', None)
+            unit_data = d.pop('unit', None)
             datastream = Datastream(**d)
             if datapoints_data:
                 datapoints = self._coerce_datapoints(
                     datastream.datapoints, datapoints_data)
                 datastream.datapoints = datapoints
+            if unit_data:
+                unit = self._coerce_unit(unit_data)
+                datastream.unit = unit
         elif isinstance(d, Datastream):
             datastream = d
         datastream._manager = self
