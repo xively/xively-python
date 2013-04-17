@@ -332,6 +332,18 @@ class DatastreamsManager(Sequence, ManagerBase):
     A list of datastreams can be retrieved along with the feed which can be
     accessed via this instance as a sequence.
 
+    :param feed: A :class:`.Feed` instance.
+
+    Usage::
+
+        >>> import cosm
+        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> feed = api.feeds.get(7021)
+        >>> list(feed.datastreams)  # doctest: +IGNORE_UNICODE
+        [<cosm.Datastream('3')>, <cosm.Datastream('4')>]
+        >>> feed.datastreams.create("1")
+        <cosm.Datastream('1')>
+
     """
 
     resource = 'datastreams'
@@ -354,27 +366,63 @@ class DatastreamsManager(Sequence, ManagerBase):
     def _datastreams(self):
         return self.parent._data.setdefault('datastreams', [])
 
-    def create(self, id, **kwargs):
-        """Create a new datastream on a feed."""
+    def create(self, id, current_value=None, tags=None, unit=None,
+               min_value=None, max_value=None, **params):
+        """Creates a new datastream on a feed.
+
+        :param id: The ID of the datastream
+        :param current_value: The current value of the datastream
+        :param tags: Tagged metadata about the datastream
+        :param unit: The :class:`.Unit` for this datastream
+        :param min_value: The minimum value since the last reset
+        :param max_value: The maximum value since the last reset
+        :param params: Additional parameters to be sent with the request
+        :returns: A :class:`.Datastream` object
+
+        """
+        datastream_data = dict(
+            id=id,
+            current_value=current_value,
+            tags=tags,
+            unit=unit,
+            min_value=min_value,
+            max_value=max_value,
+            **params)
+        datastream = self._coerce_datastream(datastream_data)
         data = {
             'version': self.parent.version,
-            'datastreams': [dict(id=id, **kwargs)],
+            'datastreams': [datastream],
         }
         response = self.client.post(self.url(), data=data)
         response.raise_for_status()
-        datastream = Datastream(id=id, **kwargs)
-        datastream._manager = self
         return datastream
 
     def update(self, datastream_id, **kwargs):
-        """Update a feeds datastream by id."""
+        """Updates a feeds datastream by id.
+
+        :param datastream_id: The ID of the datastream to update
+        :param kwargs: The datastream fields to be updated
+
+        """
         url = self.url(datastream_id)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
-    def list(self, **params):
-        """Return a list of datastreams for the parent feed object."""
+    def list(self, datastreams=None, show_user=None, **params):
+        """Returns a list of datastreams for the parent feed object.
+
+        :param datastreams: Filter the returned datastreams
+        :type datastreams: list of datastream IDs
+        :param show_user: Include user login for each feed (default: False)
+        :type show_user: bool
+        :param params: Additional parameters to send with the request
+
+        """
         url = self.url('..')
+        params.update({k: v for k, v in (
+            ('datastreams', datastreams),
+            ('show_user', show_user),
+        ) if v is not None})
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
@@ -383,7 +431,12 @@ class DatastreamsManager(Sequence, ManagerBase):
             yield datastream
 
     def get(self, id, **params):
-        """Fetch and return a feeds datastream by its id."""
+        """Fetches and returns a feed's datastream by its id.
+
+        :param id: The ID of the datastream to retrieve
+        :param params: Additional parameters to send with the request
+
+        """
         url = self.url(id)
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
@@ -393,12 +446,19 @@ class DatastreamsManager(Sequence, ManagerBase):
         return datastream
 
     def delete(self, url_or_id):
-        """Delete a datastream by id or url."""
+        """Delete a datastream by id or url.
+
+        .. WARNING:: This is final and cannot be undone.
+
+        :param url_or_id: The datastream ID or its URL
+
+        """
         url = self.url(url_or_id)
         response = self.client.delete(url)
         response.raise_for_status()
 
     def _coerce_datapoints(self, datapoints_manager, datapoints_data):
+        """Returns Datapoints objects from a list of mapping objects (dict)."""
         datapoints = []
         for data in datapoints_data:
             data['at'] = self._parse_datetime(data['at'])
@@ -416,6 +476,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         return unit
 
     def _coerce_datastream(self, d):
+        """Returns a Datastream object from a mapping object (dict)."""
         if isinstance(d, dict):
             datapoints_data = d.pop('datapoints', None)
             unit_data = d.pop('unit', None)
