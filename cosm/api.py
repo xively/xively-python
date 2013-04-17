@@ -10,8 +10,9 @@ except ImportError:
 
 from cosm.client import Client
 from cosm.models import (
-    Feed, Datastream, Datapoint, Location, Waypoint, Trigger, Key, Permission,
-    Resource)
+    Datapoint, Datastream, Feed, Key, Location, Permission, Resource, Trigger,
+    Unit, Waypoint,
+)
 
 
 __all__ = ['CosmAPIClient']

@@ -748,3 +748,12 @@ class WaypointTest(BaseTestCase):
         self.assertEqual(waypoint.at, datetime(2012, 6, 1, 13, 40, 4, 589002))
         self.assertEqual(waypoint.lat, 51.5235375648154)
         self.assertEqual(waypoint.lon, -0.0807666778564453)
+
+
+class UnitTest(BaseTestCase):
+
+    def test_create_unit(self):
+        unit = cosm.Unit(label='Celsius', type='basicSI', symbol='C')
+        self.assertEqual(unit.label, 'Celsius')
+        self.assertEqual(unit.type, 'basicSI')
+        self.assertEqual(unit.symbol, 'C')

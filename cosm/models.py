@@ -239,6 +239,17 @@ class Waypoint(Base):
         }
 
 
+class Unit(Base):
+    """A type, label and symbol of a values unit."""
+
+    def __init__(self, label=None, type=None, symbol=None):
+        self._data = {
+            'label': label,
+            'type': type,
+            'symbol': symbol,
+        }
+
+
 class Trigger(Base):
     """Triggers provide 'push' capabilities (aka notifications).
 
