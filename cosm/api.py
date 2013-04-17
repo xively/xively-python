@@ -136,7 +136,7 @@ class FeedsManager(ManagerBase):
 
     def create(self, title, website=None, tags=None, location=None,
                private=None, **params):
-        """Create a new Feed.
+        """Creates a new Feed.
 
         :param title: A descriptive name for the feed
         :param website: The URL of a website which is relevant to this feed
@@ -160,7 +160,7 @@ class FeedsManager(ManagerBase):
         return feed
 
     def update(self, id_or_url, **kwargs):
-        """Update an existing feed by its id or url.
+        """Updates an existing feed by its id or url.
 
         :param id_or_url: The id of a :class:`.Feed` or its URL
         :param kwargs: The fields to be updated
@@ -242,8 +242,8 @@ class FeedsManager(ManagerBase):
         possible to filter the datastreams returned with the feed by using the
         "datastreams" parameter and a list of datastream IDs.
 
-        :param datastreams: Filter the returned datastreams. List of datastream
-            IDs
+        :param datastreams: Filter the returned datastreams
+        :type datastreams: list of datastream IDs
         :param show_user: Include user login for each feed. (default: False)
         :type show_user: bool
 
@@ -267,7 +267,7 @@ class FeedsManager(ManagerBase):
 
         .. WARNING:: This is final and cannot be undone.
 
-        :param id_or_url: The id of a :class:`.Feed` or its URL
+        :param url_or_id: The feed ID  or its URL
 
         """
         url = self.url(url_or_id)
