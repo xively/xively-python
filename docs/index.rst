@@ -12,16 +12,16 @@ connected object cloud easy and pythonic.
 Example:
 
     >>> import cosm
-    >>> import datetime
     >>> api = cosm.CosmAPIClient("YOUR_API_KEY")
     >>> feed = api.feeds.get(7021)
 
     >>> # Viewing datapoints
+    >>> import datetime
     >>> start = datetime.datetime(2013, 1, 1, 14, 14, 55)
     >>> stream = feed.datastreams[0]
     >>> points = stream.datapoints.history(start=start, duration='1second')
-    >>> list(points)  # doctest: +ELLIPSIS
-    [cosm.Datapoint(datetime.datetime(2013, 1, 1, 14, 14, 55, 118845), ...'0.25741970'), ...]
+    >>> list(points)  # doctest: +ELLIPSIS +IGNORE_UNICODE
+    [cosm.Datapoint(datetime.datetime(2013, 1, 1, 14, 14, 55, 118845), '0.25741970'), ...]
 
     >>> # Uploading new points
     >>> import random
