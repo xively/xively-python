@@ -237,7 +237,12 @@ class Datastream(Base):
 
 
 class Datapoint(Base):
-    """A Datapoint represents a value at a certain point in time."""
+    """A Datapoint represents a value at a certain point in time.
+
+    :param at: The timestamp of the datapoint
+    :param value: The value at this time
+
+    """
 
     def __init__(self, at, value):
         """Create a new datapoint locally."""
@@ -255,7 +260,11 @@ class Datapoint(Base):
         self._manager.update(state.pop('at'), **state)
 
     def delete(self):
-        """Delete this datapoint."""
+        """Delete this datapoint.
+
+        .. warning:: This is final and cannot be undone.
+
+        """
         self._manager.delete(self.at)
 
 
