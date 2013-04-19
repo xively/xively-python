@@ -30,8 +30,8 @@ Example:
     ...     cosm.Datapoint(datetime.datetime.now(), random.random()),
     ...     cosm.Datapoint(datetime.datetime.now(), random.random()),
     ... ]
-    >>> stream.datapoints.create(randompoints) # doctest: +ELLIPSIS
-    [cosm.Datapoint(...), cosm.Datapoint(...), cosm.Datapoint(...)]
+    >>> stream.datapoints = randompoints
+    >>> stream.update(fields='datapoints')
 
 
 Contents:

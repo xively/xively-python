@@ -523,13 +523,14 @@ class DatapointsManager(Sequence, ManagerBase):
     def _datapoints(self):
         return self.parent._data['datapoints']
 
-    def create(self, datapoints):
-        """Create a number of new datapoints for this datastream."""
-        datapoints = [self._coerce_datapoint(d) for d in datapoints]
-        payload = {'datapoints': datapoints}
+    def create(self, value, at=None):
+        """Create a single new datapoint for this datastream."""
+        at = at or datetime.now()
+        datapoint = Datapoint(at, value)
+        payload = {'datapoints': [datapoint]}
         response = self.client.post(self.url(), data=payload)
         response.raise_for_status()
-        return datapoints
+        return datapoint
 
     def update(self, at, value):
         """Update the value of a datapiont at a given timestamp."""

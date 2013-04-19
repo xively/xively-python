@@ -21,15 +21,13 @@ Create a Datapoint
 
 The datapoint creation endpoint takes an array of datapoints
 
-    >>> from datetime import datetime
-    >>> datapoint = cosm.Datapoint(at=datetime.now(), value=25)
-    >>> datastream.datapoints.create([datapoint])  # doctest: +ELLIPSIS
-    [cosm.Datapoint(datetime.datetime(...), 25)]
+    >>> datastream.datapoints.create(value=42)  # doctest: +ELLIPSIS
+    cosm.Datapoint(datetime.datetime(...), 42)
 
 Alternatively you can update the datastream's current value and a new datapoint
 will be created.
 
-    >>> datastream.current_value = 26
+    >>> datastream.current_value = 42
     >>> # We only want to change current_value.
     >>> datastream.update(fields=['current_value'])
 

@@ -12,7 +12,7 @@ except TypeError:
 
 import requests
 
-from mock import Mock, patch
+from mock import Mock, call, patch
 
 import cosm
 import cosm.api
@@ -424,24 +424,37 @@ class DatapointsManagerTest(BaseTestCase):
         self.datastream = self._create_datastream(id='1', current_value="100")
 
     def test_create_datapoint(self):
-        datapoints = self.datastream.datapoints.create([
-            {'at': datetime(2010, 5, 20, 11, 1, 43), 'value': "294"},
-            {'at': datetime(2010, 5, 20, 11, 1, 44), 'value': "295"},
-            {'at': datetime(2010, 5, 20, 11, 1, 45), 'value': "296"},
-            {'at': datetime(2010, 5, 20, 11, 1, 46), 'value': "297"},
-        ])
-        self.request.assert_called_with(
-            'POST',
-            'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints',
-            data=self._sorted_json(fixtures.CREATE_DATAPOINTS_JSON))
-        self.assertEqual(datapoints[0].at, datetime(2010, 5, 20, 11, 1, 43))
-        self.assertEqual(datapoints[0].value, "294")
-        self.assertEqual(datapoints[1].at, datetime(2010, 5, 20, 11, 1, 44))
-        self.assertEqual(datapoints[1].value, "295")
-        self.assertEqual(datapoints[2].at, datetime(2010, 5, 20, 11, 1, 45))
-        self.assertEqual(datapoints[2].value, "296")
-        self.assertEqual(datapoints[3].at, datetime(2010, 5, 20, 11, 1, 46))
-        self.assertEqual(datapoints[3].value, "297")
+        # Create with a datetime object.
+        datapoint1 = self.datastream.datapoints.create(
+            at=datetime(2010, 5, 20, 11, 1, 43), value="294")
+        # Create with a iso8601 formatted string.
+        datapoint2 = self.datastream.datapoints.create(
+            at="2010-05-20T11:01:44Z", value="295")
+        # Create with no timestamp.
+        with patch('cosm.api.datetime') as mock_datetime:
+            mock_datetime.now.return_value = datetime(2010, 5, 20, 11, 1, 45)
+            datapoint3 = self.datastream.datapoints.create(value="296")
+
+        self.assertEqual(datapoint1.at, datetime(2010, 5, 20, 11, 1, 43))
+        self.assertEqual(datapoint1.value, "294")
+        self.assertEqual(datapoint2.at, "2010-05-20T11:01:44Z")
+        self.assertEqual(datapoint2.value, "295")
+        self.assertEqual(datapoint3.at, datetime(2010, 5, 20, 11, 1, 45))
+        self.assertEqual(datapoint3.value, "296")
+
+        url = 'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints'
+        calls = [
+            call('POST', url, data=json.dumps({
+                'datapoints': [{"at":"2010-05-20T11:01:43Z","value":"294"}]
+            }, sort_keys=True)),
+            call('POST', url, data=json.dumps({
+                'datapoints': [{"at":"2010-05-20T11:01:44Z","value":"295"}]
+            }, sort_keys=True)),
+            call('POST', url, data=json.dumps({
+                'datapoints': [{"at":"2010-05-20T11:01:45Z","value":"296"}]
+            }, sort_keys=True)),
+        ]
+        self.request.assert_has_calls(calls)
 
     def test_update_datapoint(self):
         self.datastream.datapoints.update(
