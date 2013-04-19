@@ -501,6 +501,8 @@ class DatapointsManager(Sequence, ManagerBase):
     :class:`.Datastream` (or :class:`.Feed`) which can be accessed via this
     instance as a sequence.
 
+    :param datastream: A :class:`.Datastream` instance.
+
     """
 
     resource = 'datapoints'
@@ -524,7 +526,32 @@ class DatapointsManager(Sequence, ManagerBase):
         return self.parent._data['datapoints']
 
     def create(self, value, at=None):
-        """Create a single new datapoint for this datastream."""
+        """Create a single new datapoint for this datastream.
+
+        :param at: The timestamp of the datapoint (default: datetime.now())
+        :param value: The value at this time
+
+        To create multiple datapoints at the same time do the following
+        instead:
+
+        .. note:: You can use ISO8601 formatted strings instead of datetime
+                  objects when dealing with the API.
+
+        >>> import cosm
+        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> feed = api.feeds.get(7021)
+        >>> datastream = feed.datastreams[0]
+        >>> # First create the datapoints.
+        >>> datastream.datapoints = [
+        ...     cosm.Datapoint(at="2010-05-20T11:01:43Z", value=294),
+        ...     cosm.Datapoint(at="2010-05-20T11:01:44Z", value=295),
+        ...     cosm.Datapoint(at="2010-05-20T11:01:45Z", value=296),
+        ...     cosm.Datapoint(at="2010-05-20T11:01:46Z", value=297),
+        ... ]
+        >>> # Then send them to the server.
+        >>> datastream.update(fields='datapoints')
+
+        """
         at = at or datetime.now()
         datapoint = Datapoint(at, value)
         payload = {'datapoints': [datapoint]}
@@ -533,14 +560,25 @@ class DatapointsManager(Sequence, ManagerBase):
         return datapoint
 
     def update(self, at, value):
-        """Update the value of a datapiont at a given timestamp."""
+        """Update the value of a datapiont at a given timestamp.
+
+        :param at: The timestamp of a value to change
+        :param value: The value to change
+
+        .. note:: A datapoint at the given time must already exist.
+
+        """
         url = "{}/{}Z".format(self.url(), at.isoformat())
         payload = {'value': value}
         response = self.client.put(url, data=payload)
         response.raise_for_status()
 
     def get(self, at):
-        """Fetch and return a :class:`.Datapoint` at the given timestamp."""
+        """Fetch and return a :class:`.Datapoint` at the given timestamp.
+
+        :param at: The timestamp to return a datapoint for
+
+        """
         url = "{}/{}Z".format(self.url(), at.isoformat())
         response = self.client.get(url)
         response.raise_for_status()
@@ -549,7 +587,73 @@ class DatapointsManager(Sequence, ManagerBase):
         return self._coerce_datapoint(data)
 
     def history(self, **params):
-        """Fetch and return a list of datapoints in a given timerange."""
+        """Fetch and return a list of datapoints in a given timerange.
+
+        :param start: Defines the starting point of the query
+        :param end: Defines the end point of the data returned
+        :param duration: Specifies the duration of the query
+        :param find_previous:
+            Will also return the previous value to the date range being
+            requested.
+        :param limit:
+            Limits the number of results to the number specified.  Defaults to
+            100 and has a maximum of 1000.
+        :param interval_type:
+            If set to "discrete" the data will be returned in fixed time
+            interval format according to the inverval value supplied. If this
+            is not set, the raw datapoints will be returned.
+        :param interval:
+            Determines what interval of data is requested and is defined in
+            seconds between the datapoints. If a value is passed in which does
+            not match one of these values, it is rounded up to the next value.
+
+        .. note::
+
+            ``find_previous`` is useful for any graphing because if you
+            want to draw a graph of the date range you specified you would end
+            up with a small gap until the first value.
+
+        .. note::
+
+            In order to paginate through the data use the last timestamp
+            returned as the start of the next query.
+
+        .. note::
+
+            The maximum number of datapoints able to be returned from the API
+            in one query is 1000. If you need more than 1000 datapoints for
+            a specific period you should use the start and end times to split
+            them up into smaller chunks.
+
+        The valid time units are::
+
+        * seconds
+        * minute(s)
+        * hour(s)
+        * day(s)
+        * week(s)
+        * month(s)
+        * year(s)
+
+        The acceptable intervals are currently:
+
+        ===== ============================== ==========================
+        Value Description                    Maximum range in one query
+        ===== ============================== ==========================
+        0     Every datapoint stored         6 hours
+        30    One datapoint every 30 seconds 12 hours
+        60    One datapoint every minute     24 hours
+        300   One datapoint every 5 minutes  5 days
+        900   One datapoint every 15 minutes 14 days
+        1800  One datapoint per 30 minutes   31 days
+        3600  One datapoint per hour         31 days
+        10800 One datapoint per three hours  90 days
+        21600 One datapoint per six hours    180 days
+        43200 One datapoint per twelve hours 1 year
+        86400 One datapoint per day          1 year
+        ===== ============================== ==========================
+
+        """
         url = self.url('..').rstrip('/')
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
@@ -560,7 +664,29 @@ class DatapointsManager(Sequence, ManagerBase):
             yield self._coerce_datapoint(datapoint_data)
 
     def delete(self, at=None, **params):
-        """Delete a datapoint or a range of datapoints."""
+        """Delete a datapoint or a range of datapoints.
+
+        :param at: A timestamp of a single datapoint to delete
+        :param start: Defines the starting point of the query
+        :param end: Defines the end point of the datapoints deleted
+        :param duration: Specifies the duration of the query
+
+        By providing a start and end timestamp as query parameters, you may
+        remove all datapoints that lie between those dates. If you send your
+        request with only a start timestamp, all datapoints after the value
+        will be removed. Providing an end timestamp will remove all datapoints
+        prior to the supplied value.
+
+        Additionally, this method supports a duration parameter (e.g.
+        ``duration="3hours"``). Providing a `start` and a `duration` will
+        delete all datapoints between the `start` and (`start` + `duration`).
+        Providing `end` will delete all datapoints between (`end` - `duration`)
+        and `end`. The formatting of the `duration` parameter is the same as is
+        used in the :meth:`.history` method.
+
+        .. warning: This is final and cannot be undone.
+
+        """
         url = self.url()
         if at:
             url = "{}/{}Z".format(url, at.isoformat())

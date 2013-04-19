@@ -22,6 +22,7 @@ Feeds, Datastreams and Datapoints
 .. autoclass:: cosm.api.FeedsManager
     :members:
     :undoc-members:
+    :exclude-members: resource
 
 .. autoclass:: cosm.Feed
     :members:
@@ -39,6 +40,7 @@ Feeds, Datastreams and Datapoints
 .. autoclass:: cosm.api.DatapointsManager
     :members:
     :undoc-members:
+    :exclude-members: resource
 
 .. autoclass:: cosm.Datapoint
     :members:
