@@ -4,11 +4,6 @@ Data used to return in the responses.
 
 """
 
-try:
-    from io import BytesIO
-except TypeError:
-    from StringIO import StringIO as BytesIO  # NOQA
-
 import requests
 
 
@@ -555,7 +550,7 @@ GET_KEY_JSON = b'''
 '''
 
 
-def handle_request(method, url, *args, **kwargs):
+def handle_request(method, url, params=None, *args, **kwargs):
     response = requests.Response()
     response.status_code = 200
     relative_url = url.replace("http://api.cosm.com/v2/", '')
@@ -566,6 +561,13 @@ def handle_request(method, url, *args, **kwargs):
         content = GET_FEED_JSON
     elif relative_url == 'triggers':
         response.headers['location'] = url + '/1'
+    elif relative_url == 'feeds/7021/datastreams/':
+        content = b'''
+            {"version":"1.0.0",
+             "datastreams": [{}]}
+        '''.format(GET_DATASTREAM_JSON)
+    elif relative_url == 'feeds/7021/datastreams/random5':
+        content = HISTORY_DATASTREAM_JSON
     if content:
-        response.raw = BytesIO(content)
+        response._content = content
     return response

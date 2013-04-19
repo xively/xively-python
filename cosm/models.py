@@ -140,15 +140,34 @@ class Feed(Base):
 
 
 class Datastream(Base):
-    """Cosm Datastream containing current and historical values."""
+    """Cosm Datastream containing current and historical values.
+
+    :param id: The ID of the datastream
+    :param tags: Tagged metadata about the datastream
+    :param unit: The :class:`.Unit` of the datastream
+    :param min_value: The minimum value since the last reset
+    :param max_value: The maximum value since the last reset
+    :param current_value: The current value of the datastream
+    :param datapoints: A collection of timestamped values
+
+    """
 
     _datapoints = None
 
-    def __init__(self, id, **kwargs):
-        """Create a new datastream object locally."""
-        self._data = {'id': id}
-        self.datapoints = kwargs.pop('datapoints', [])
-        self._data.update(**kwargs)
+    def __init__(self, id, tags=None, unit=None, min_value=None,
+                 max_value=None, current_value=None, datapoints=None,
+                 **kwargs):
+        """Creates a new datastream object locally."""
+        self._data = {
+            'id': id,
+            'tags': tags,
+            'unit': unit,
+            'min_value': min_value,
+            'max_value': max_value,
+            'current_value': current_value,
+        }
+        self.datapoints = datapoints or []
+        self._data.update(kwargs)
 
     def __getstate__(self):
         state = super(Datastream, self).__getstate__()
@@ -162,7 +181,28 @@ class Datastream(Base):
 
     @property
     def datapoints(self):
-        """Manager for datapoints of this datastream."""
+        """Manager for datapoints of this datastream.
+
+        When a datastream is fetched with history from the API, datapoints is
+        a sequence of timestamped values for the period requested. The manger
+        can also be used tocreate, update and delte datapoints for this
+        datastream.
+
+        Usage::
+
+            >>> import cosm
+            >>> import datetime
+            >>> api = cosm.CosmAPIClient("API_KEY")
+            >>> feed = api.feeds.get(7021)
+            >>> datastream = feed.datastreams.get("random5",
+            ...     start=datetime.datetime(2013, 1, 1, 14, 0, 0),
+            ...     end=datetime.datetime(2013, 1, 1, 16, 0, 0))
+            >>> datastream.datapoints[:2]
+            ... # doctest: +IGNORE_UNICODE +NORMALIZE_WHITESPACE +ELLIPSIS
+            [cosm.Datapoint(datetime.datetime(...), '0.25741970'),
+             cosm.Datapoint(datetime.datetime(...), '0.86826886')]
+
+        """
         if self._datapoints is None:
             import cosm.api
             self._datapoints = cosm.api.DatapointsManager(self)
@@ -173,7 +213,14 @@ class Datastream(Base):
         self._data['datapoints'] = datapoints
 
     def update(self, fields=None):
-        """Send the current state of this datastream to Cosm."""
+        """Sends the current state of this datastream to Cosm.
+
+        This method updates just the single datastream.
+
+        :param fields: If given, only update these fields.
+        :type fields: list of strings
+
+        """
         state = self.__getstate__()
         if fields is not None:
             fields = set(fields)
@@ -181,7 +228,11 @@ class Datastream(Base):
         self._manager.update(self.id, **state)
 
     def delete(self):
-        """Delete this datastream from Cosm."""
+        """Delete this datastream from Cosm.
+
+        .. warning:: This is final and cannot be undone.
+
+        """
         self._manager.delete(self.id)
 
 
