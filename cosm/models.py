@@ -84,7 +84,7 @@ class Feed(Base):
     def datastreams(self):
         """Manager for datastreams of this feed.
 
-        When fetched from the API, datastreams behaves liek a cache, populated
+        When fetched from the API, datastreams behaves like a cache, populated
         with the most recently updated datastreams for this feed. The manager
         can also be used to create, update and delete datastreams for this
         feed.
