@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cosm/cosm-python.png?branch=master)](https://travis-ci.org/cosm/cosm-python)
+
 cosm-python
 ===========
 
