@@ -110,7 +110,7 @@ class ClientTest(BaseTestCase):
         client.request('POST', "/v2/feeds", data=obj)
         self.session.assert_called_with(
             'POST', "http://api.cosm.com/v2/feeds",
-            data=json.dumps({"value": 42, "title": "This is an object"}))
+            data=json.dumps({"title": "This is an object", "value": 42}))
 
 
 class FeedTest(BaseTestCase):
@@ -176,8 +176,8 @@ class FeedsManagerTest(BaseTestCase):
         self.session.return_value = response
         (feed,) = self.api.feeds.list()
         self.assertEqual(self.session.call_args[0],
-                         ('GET', u'http://api.cosm.com/v2/feeds'))
-        self.assertEqual(feed.feed, u'http://api.cosm.com/v2/feeds/5853.json')
+                         ('GET', 'http://api.cosm.com/v2/feeds'))
+        self.assertEqual(feed.feed, 'http://api.cosm.com/v2/feeds/5853.json')
 
     def test_view_feed(self):
         """Tests a request is sent to view a feed (by id) returning json."""
