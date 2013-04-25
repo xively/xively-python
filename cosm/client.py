@@ -47,7 +47,6 @@ class Client(Session):
 
     Usage::
 
-        >>> import cosm
         >>> client = cosm.Client("YOUR_API_KEY")
         >>> body = "1,123\r\n2,456\r\n"
         >>> client.post('/v2/feeds/1977.csv', data=body)
@@ -80,7 +79,8 @@ class Client(Session):
     def _encode_data(self, data, **kwargs):
         """Returns data encoded as JSON using a custom encoder.
 
-        >>> client = Client("XXXXXX")
+        >>> import cosm
+        >>> client = Client("API_KEY")
         >>> client._encode_data({'foo': datetime(2013, 2, 22, 12, 14, 40)})
         '{"foo": "2013-02-22T12:14:40Z"}'
         >>> feed = cosm.Feed(id=42, title="The Answer")

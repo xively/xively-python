@@ -3,11 +3,6 @@
 __title__ = 'cosm-python'
 __version__ = '0.1.0'
 
-try:
-    from urlparse import urljoin
-except ImportError:
-    from urllib.parse import urljoin  # NOQA
-
 
 __all__ = ['Feed', 'Datastream', 'Datapoint', 'Location', 'Waypoint',
            'Trigger', 'Key', 'Permission', 'Resource']
