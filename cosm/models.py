@@ -71,7 +71,7 @@ class Feed(Base):
     id = None
     feed = None
 
-    _datastreams = None
+    _datastreams_manager = None
 
     def __init__(self, title, **kwargs):
         self._data = {
@@ -104,10 +104,10 @@ class Feed(Base):
             <cosm.Datastream('3')>
 
         """
-        if self._datastreams is None:
+        if self._datastreams_manager is None:
             import cosm.api
-            self._datastreams = cosm.api.DatastreamsManager(self)
-        return self._datastreams
+            self._datastreams_manager = cosm.api.DatastreamsManager(self)
+        return self._datastreams_manager
 
     @datastreams.setter  # NOQA
     def datastreams(self, datastreams):
@@ -158,7 +158,7 @@ class Datastream(Base):
 
     """
 
-    _datapoints = None
+    _datapoints_manager = None
 
     def __init__(self, id, tags=None, unit=None, min_value=None,
                  max_value=None, current_value=None, datapoints=None,
@@ -209,10 +209,10 @@ class Datastream(Base):
              cosm.Datapoint(datetime.datetime(...), '0.86826886')]
 
         """
-        if self._datapoints is None:
+        if self._datapoints_manager is None:
             import cosm.api
-            self._datapoints = cosm.api.DatapointsManager(self)
-        return self._datapoints
+            self._datapoints_manager = cosm.api.DatapointsManager(self)
+        return self._datapoints_manager
 
     @datapoints.setter  # NOQA
     def datapoints(self, datapoints):

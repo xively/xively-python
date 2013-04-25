@@ -286,11 +286,9 @@ class FeedsManager(ManagerBase):
         feed.id = feed_id
         feed.feed = feed_url or self.url(feed_id)
         if datastreams_data:
-            datastreams_manager = DatastreamsManager(feed)
-            datastreams = self._coerce_datastreams(
-                datastreams_data, datastreams_manager)
-            feed._data['datastreams'] = datastreams
-            feed._datastreams = datastreams_manager
+            feed._datastreams_manager = DatastreamsManager(feed)
+            feed.datastreams = self._coerce_datastreams(
+                datastreams_data, feed._datastreams_manager)
         if location_data:
             location = self._coerce_location(location_data)
         else:
