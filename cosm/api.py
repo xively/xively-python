@@ -851,7 +851,32 @@ class TriggersManager(ManagerBase):
 
 
 class KeysManager(ManagerBase):
-    """Manage keys their permissions and restrict by resource."""
+    """Manage keys their permissions and restrict by resource.
+
+    This manager should live on a :class:`.CosmAPIClient` instance and not
+    instantiated directly.
+
+    :param client: Low level :class:`.Client` instance
+
+    Usage::
+
+        >>> import cosm
+        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> api.keys.create(
+        ...     label="sharing key",
+        ...     private_access=True,
+        ...     permissions=[
+        ...         cosm.Permission(
+        ...             access_methods=["put"],
+        ...             source_ip="128.44.98.129",
+        ...             resources=[
+        ...                 cosm.Resource(feed_id=504),
+        ...             ]),
+        ...         cosm.Permission(access_methods=["get"])
+        ...     ])
+        <cosm.Key('sharing key')>
+
+    """
 
     resource = 'keys'
 
@@ -859,18 +884,34 @@ class KeysManager(ManagerBase):
         self.client = client
         self.base_url = client.base_url + self.resource
 
-    def create(self, label, permissions, **kwargs):
-        """Create a new API key."""
-        data = dict(label=label, permissions=permissions, **kwargs)
-        response = self.client.post(self.url(), data={'key': data})
+    def create(self, label, permissions, expires_at=None, private_access=None):
+        """Create a new API key.
+
+        :param label: A label by which the key can be referenced
+        :param permissions: Collection of Permission objects controlling the
+                            access level
+        :param expires_at: Expiry date for the key after which it won't work
+        :param private_access: Flag that indicates whether this key can access
+                               private resources belonging to the user
+
+        """
+        data = dict(label=label, permissions=permissions,
+                    expires_at=expires_at, private_access=private_access)
+        key = self._coerce_key(data)
+        response = self.client.post(self.url(), data={'key': key})
         response.raise_for_status()
         location = response.headers['Location']
-        data['api_key'] = _id_from_url(location)
-        key = self._coerce_key(data)
+        key.api_key = _id_from_url(location)
         return key
 
     def list(self, feed_id=None, **kwargs):
-        """List all API keys for this account or for the given feed."""
+        """List all API keys for this account or for the given feed.
+
+        :param feed_id: Returns api keys limited to that feed and its
+                        datastreams.
+        :param kwargs: Additional parameters to send with the request
+
+        """
         url = self.url()
         params = {}
         if feed_id is not None:
@@ -884,7 +925,17 @@ class KeysManager(ManagerBase):
             yield key
 
     def get(self, key_id, **params):
-        """Fetch and return an API key by its id."""
+        """Fetch and return an API key by its id.
+
+        :param key_id: The ID of the key to get.
+        :param params: Additional parameters to send with the request
+
+        .. note: Unless a master API key is used, the only key that can be read
+                 is this key. A master key is a non-resource restricted,
+                 private key, which has permissions to perform all HTTP
+                 methods.
+
+        """
         url = self.url(key_id)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -893,7 +944,15 @@ class KeysManager(ManagerBase):
         return key
 
     def delete(self, key_id):
-        """Delete an API key."""
+        """Delete the specified key.
+
+        :param key_id: The key ID
+
+        .. note: You must use a master key to delete an API Key. A master key
+                 is a non-resource restricted, private key, which has
+                 permissions to perform all HTTP methods.
+
+        """
         url = self.url(key_id)
         response = self.client.delete(url)
         response.raise_for_status()

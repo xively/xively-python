@@ -378,6 +378,10 @@ class Key(Base):
         if expires_at:
             self._data['expires_at'] = expires_at
 
+    def __repr__(self):
+        return "<{}.{}({label!r})>".format(
+            __package__, self.__class__.__name__, label=self.label)
+
     def delete(self):
         """Delete this key."""
         self._manager.delete(self.api_key)

@@ -604,6 +604,9 @@ def handle_request(method, url, params=None, *args, **kwargs):
         '''.format(GET_DATASTREAM_JSON)
     elif relative_url == 'feeds/7021/datastreams/random5':
         content = HISTORY_DATASTREAM_JSON
+    elif relative_url == 'keys':
+        response.headers['Location'] = (
+            url + '1nAYR5W8jUqiZJXIMwu3923Qfuq_lnFCDOKtf3kyw4g')
     if content:
         response._content = content
     return response
