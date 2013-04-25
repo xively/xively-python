@@ -464,13 +464,13 @@ class DatapointsManagerTest(BaseTestCase):
         url = 'http://api.cosm.com/v2/feeds/1977/datastreams/1/datapoints'
         calls = [
             call('POST', url, data=json.dumps({
-                'datapoints': [{"at":"2010-05-20T11:01:43Z","value":"294"}]
+                'datapoints': [{"at": "2010-05-20T11:01:43Z", "value": "294"}]
             }, sort_keys=True)),
             call('POST', url, data=json.dumps({
-                'datapoints': [{"at":"2010-05-20T11:01:44Z","value":"295"}]
+                'datapoints': [{"at": "2010-05-20T11:01:44Z", "value": "295"}]
             }, sort_keys=True)),
             call('POST', url, data=json.dumps({
-                'datapoints': [{"at":"2010-05-20T11:01:45Z","value":"296"}]
+                'datapoints': [{"at": "2010-05-20T11:01:45Z", "value": "296"}]
             }, sort_keys=True)),
         ]
         self.request.assert_has_calls(calls)
