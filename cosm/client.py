@@ -36,13 +36,18 @@ class Client(Session):
     Cosm API.  It also defines a BASE_URL so that we can specify relative urls
     when using the client (all requests via this client are going to Cosm).
 
+    :param key: A Cosm API Key
+    :type key: str
+    :param use_ssl: Use https for all connections instead of http
+    :type use_ssl: bool [False]
+
     """
     BASE_URL = "//api.cosm.com"
 
-    def __init__(self, key, use_https=False):
+    def __init__(self, key, use_ssl=False):
         super(Client, self).__init__()
         self.auth = KeyAuth(key)
-        self.base_url = ('https:' if use_https else 'http:') + self.BASE_URL
+        self.base_url = ('https:' if use_ssl else 'http:') + self.BASE_URL
         self.headers['Content-Type'] = 'application/json'
         self.headers['User-Agent'] = 'cosm-python/{} {}'.format(
             cosm.__version__, self.headers['User-Agent'])
