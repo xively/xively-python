@@ -729,6 +729,18 @@ class TriggersManager(ManagerBase):
     This manager should live on a :class:`.CosmAPIClient` instance and not
     instantiated directly.
 
+    :param client: Low level :class:`.Client` instance
+
+    Usage::
+
+        >>> import cosm
+        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> api.triggers.create(
+        ...     environment_id=8470, stream_id="0",
+        ...     url="http://www.postbin.org/1ijyltn",
+        ...     trigger_type='lt', threshold_value="15.0")
+        <cosm.Trigger(3)>
+
     """
 
     resource = 'triggers'
@@ -737,13 +749,35 @@ class TriggersManager(ManagerBase):
         self.client = client
         self.base_url = client.base_url + self.resource
 
-    def create(self, *args, **kwargs):
+    def create(self, environment_id, stream_id, url, trigger_type,
+               threshold_value=None):
         """Create a new :class:`.Trigger`.
+
+        :param environment_id: An ID of a :class:`.Feed`
+        :param stream_id: An ID of a :class:`.Datastream`
+        :param url: The URL to POST events to
+        :param trigger_type: The type of trigger (from below)
+        :param threshold_value: The threshold at which the trigger fires
 
         :returns: A new :class:`.Trigger` object.
 
+        Possible values for ``trigger_type`` are:
+
+        ======= ================================
+        gt      greater than
+        gte     greater than or equal to
+        lt      less than
+        lte     less than or equal to
+        eq      equal to
+        change  any change
+        frozen  no updates for 15 minutes
+        live    updated again after being frozen
+        ======= ================================
+
         """
-        trigger = Trigger(*args, **kwargs)
+        trigger = Trigger(
+            environment_id=environment_id, stream_id=stream_id, url=url,
+            trigger_type=trigger_type, threshold_value=threshold_value)
         response = self.client.post(self.url(), data=trigger)
         response.raise_for_status()
         trigger._manager = self
@@ -752,7 +786,11 @@ class TriggersManager(ManagerBase):
         return trigger
 
     def get(self, id_or_url):
-        """Fetch and return an existing trigger."""
+        """Fetch and return an existing trigger.
+
+        :param id_or_url: The ID of the trigger or its URL
+
+        """
         url = self.url(id_or_url)
         response = self.client.get(url)
         response.raise_for_status()
@@ -769,15 +807,28 @@ class TriggersManager(ManagerBase):
         trigger._manager = self
         return trigger
 
-    def update(self, id, **kwargs):
-        """Update an existing trigger."""
-        url = self.url(id)
+    def update(self, id_or_url, **kwargs):
+        """Update an existing trigger.
+
+        :param id_or_url: The ID of the :class:`.Trigger` to update or its URL
+        :param kwargs: The fields to be updated
+
+        """
+        url = self.url(id_or_url)
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
-    def list(self, **params):
-        """Return a list of triggers."""
+    def list(self, feed_id=None):
+        """Return a list of triggers.
+
+        :param feed_id: Filter the returned triggers to only include those on
+                        datastreams of the specified feed.
+
+        """
         url = self.url()
+        params = {k: v for k, v in (
+            ('feed_id', feed_id),
+        ) if v is not None}
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
@@ -787,7 +838,13 @@ class TriggersManager(ManagerBase):
             yield trigger
 
     def delete(self, id_or_url):
-        """Delete a trigger by id or url."""
+        """Delete a trigger by id or url.
+
+        .. WARNING:: This is final and cannot be undone.
+
+        :param id_or_url: The datastream ID or its URL
+
+        """
         url = self.url(id_or_url)
         response = self.client.delete(url)
         response.raise_for_status()
