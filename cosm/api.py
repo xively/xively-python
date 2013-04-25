@@ -99,11 +99,11 @@ class ManagerBase(object):
     def base_url(self, base_url):
         self._base_url = base_url
 
-    def url(self, url_or_id=None):
+    def url(self, id_or_url=None):
         """Return a url relative to the base url."""
         url = self.base_url
-        if url_or_id:
-            url = urljoin(url + '/', str(url_or_id))
+        if id_or_url:
+            url = urljoin(url + '/', str(id_or_url))
         return url
 
     def _parse_datetime(self, value):
@@ -247,7 +247,7 @@ class FeedsManager(ManagerBase):
         feeds = [self._coerce_feed(feed_data) for feed_data in json['results']]
         return feeds
 
-    def get(self, url_or_id, datastreams=None, show_user=None, **params):
+    def get(self, id_or_url, datastreams=None, show_user=None, **params):
         """Fetches and returns a feed by id or url.
 
         By default the most recent datastreams are returned. It is also
@@ -260,7 +260,7 @@ class FeedsManager(ManagerBase):
         :type show_user: bool
 
         """
-        url = self.url(url_or_id)
+        url = self.url(id_or_url)
         if isinstance(datastreams, Sequence):
             datastreams = ','.join(datastreams)
         params.update({k: v for k, v in (
@@ -274,15 +274,15 @@ class FeedsManager(ManagerBase):
         feed = self._coerce_feed(data)
         return feed
 
-    def delete(self, url_or_id):
+    def delete(self, id_or_url):
         """Delete a feed by id or url.
 
         .. WARNING:: This is final and cannot be undone.
 
-        :param url_or_id: The feed ID  or its URL
+        :param id_or_url: The feed ID  or its URL
 
         """
-        url = self.url(url_or_id)
+        url = self.url(id_or_url)
         response = self.client.delete(url)
         response.raise_for_status()
 
@@ -446,14 +446,14 @@ class DatastreamsManager(Sequence, ManagerBase):
             datastream = self._coerce_datastream(datastream_data)
             yield datastream
 
-    def get(self, id, **params):
+    def get(self, id_or_url, **params):
         """Fetches and returns a feed's datastream by its id.
 
-        :param id: The ID of the datastream to retrieve
+        :param id_or_url: The ID of the datastream to retrieve or its URL
         :param params: Additional parameters to send with the request
 
         """
-        url = self.url(id)
+        url = self.url(id_or_url)
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -461,15 +461,15 @@ class DatastreamsManager(Sequence, ManagerBase):
         datastream = self._coerce_datastream(data)
         return datastream
 
-    def delete(self, url_or_id):
+    def delete(self, id_or_url):
         """Delete a datastream by id or url.
 
         .. WARNING:: This is final and cannot be undone.
 
-        :param url_or_id: The datastream ID or its URL
+        :param id_or_url: The datastream ID or its URL
 
         """
-        url = self.url(url_or_id)
+        url = self.url(id_or_url)
         response = self.client.delete(url)
         response.raise_for_status()
 
@@ -751,9 +751,9 @@ class TriggersManager(ManagerBase):
         trigger._data['id'] = int(location.rsplit('/', 1)[1])
         return trigger
 
-    def get(self, id):
-        """Fetch and return an existing trigger by its id."""
-        url = self.url(id)
+    def get(self, id_or_url):
+        """Fetch and return an existing trigger."""
+        url = self.url(id_or_url)
         response = self.client.get(url)
         response.raise_for_status()
         data = response.json()
@@ -761,7 +761,7 @@ class TriggersManager(ManagerBase):
         notified_at = data.pop('notified_at', None)
         user = data.pop('user', None)
         trigger = Trigger(**data)
-        trigger._data['id'] = id
+        trigger._data['id'] = id_or_url
         if notified_at:
             trigger._data['notified_at'] = self._parse_datetime(notified_at)
         if user:
@@ -786,9 +786,9 @@ class TriggersManager(ManagerBase):
             trigger._manager = self
             yield trigger
 
-    def delete(self, url_or_id):
+    def delete(self, id_or_url):
         """Delete a trigger by id or url."""
-        url = self.url(url_or_id)
+        url = self.url(id_or_url)
         response = self.client.delete(url)
         response.raise_for_status()
 
