@@ -366,7 +366,16 @@ class Trigger(Base):
 
 
 class Key(Base):
-    """Keys set which permissions are granted for certain resources."""
+    """Keys set which permissions are granted for certain resources.
+
+    :param label: A label by which the key can be referenced
+    :param permissions: Collection of Permission objects controlling the access
+                        level
+    :param expires_at: Expiry date for the key after which it won't work
+    :param private_access: Flag that indicates whether this key can access
+                           private resources belonging to the user
+
+    """
 
     def __init__(self, label, permissions, expires_at=None,
                  private_access=False):
@@ -388,7 +397,30 @@ class Key(Base):
 
 
 class Permission(Base):
-    """Permissions restrict what can be done by a key."""
+    """Permissions restrict what can be done by a key.
+
+    :param access_methods:
+        A list containing one or more of [get, put, post, delete] indicating
+        what type of access the key has
+    :param source_ip:
+        An IP address that access should be restricted to, so if specified,
+        only requests coming from this IP address will be permitted
+    :param referer:
+        The referer domain. If present this key will only be able to be
+        embedded in a web page with the matching URL.  Subdomains are treated
+        as different domains
+    :param minimum_interval:
+        Can be used to create a key that can only request data with a certain
+        resolution, i.e. a key could be created that only displays graphs with
+        daily values when embedded in a web page. The same key could not be
+        used to access full resolution data
+    :param label:
+        Optional label for identifying permission set
+    :param resources:
+        Optional collection of Resource objects restricting access to specific
+        feeds or datastreams
+
+    """
 
     def __init__(self, access_methods, source_ip=None, referer=None,
                  minimum_interval=None, label=None, resources=None):
@@ -405,7 +437,15 @@ class Permission(Base):
 
 
 class Resource(Base):
-    """A Resource defines what an API key has access to."""
+    """A Resource defines what an API key has access to.
+
+    :param feed_id:
+        Reference to a specific feed id
+    :param datastream_id:
+        Reference to a specific datastream id within a feed. If specified then
+        the feed id must also be specified
+
+    """
 
     def __init__(self, feed_id, datastream_id=None):
         self._data = {
