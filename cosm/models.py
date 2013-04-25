@@ -322,7 +322,7 @@ class Trigger(Base):
     >>> from cosm import CosmAPIClient
     >>> api = CosmAPIClient("API_KEY")
     >>> api.triggers.create(123, "temperature", "http://example.com", "frozen")
-    <Trigger(123, 'temperature', 'http://example.com', 'frozen')>
+    <cosm.Trigger(3)>
 
     """
 
@@ -339,11 +339,16 @@ class Trigger(Base):
         self._data.update(kwargs)
 
     def __repr__(self):
-        r = "<{}({environment_id!r}, {stream_id!r}, {url!r}, {trigger_type!r})>"
-        return r.format(self.__class__.__name__, **self._data)
+        return "<{}.{}({id!r})>".format(
+            __package__, self.__class__.__name__, id=self.id)
 
     def update(self, fields=None):
-        """Update an existing trigger."""
+        """Update an existing trigger.
+
+        :param fields: If given, only update these fields
+        :type fields: list of strings
+
+        """
         state = self.__getstate__()
         state.pop('id', None)
         if fields is not None:
@@ -352,7 +357,11 @@ class Trigger(Base):
         self._manager.update(self.id, **state)
 
     def delete(self):
-        """Delete a trigger."""
+        """Delete a trigger.
+
+        .. warning:: This is final and cannot be undone.
+
+        """
         self._manager.delete(self.id)
 
 

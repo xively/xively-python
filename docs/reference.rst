@@ -82,6 +82,7 @@ Triggers
 .. autoclass:: cosm.api.TriggersManager
     :members:
     :undoc-members:
+    :exclude-members: resource
 
 .. autoclass:: cosm.Trigger
     :members:

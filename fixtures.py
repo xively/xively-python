@@ -596,7 +596,7 @@ def handle_request(method, url, params=None, *args, **kwargs):
     elif relative_url == 'feeds/7021':
         content = GET_FEED_JSON
     elif relative_url == 'triggers':
-        response.headers['location'] = url + '/1'
+        response.headers['location'] = url + '/3'
     elif relative_url == 'feeds/7021/datastreams/':
         content = b'''
             {"version":"1.0.0",
