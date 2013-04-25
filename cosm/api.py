@@ -25,6 +25,8 @@ class CosmAPIClient(object):
 
     :param key: A Cosm API Key
     :type key: str
+    :param use_https: Use https for all connections instead of http
+    :type use_https: bool [False]
 
     Usage::
 
@@ -32,12 +34,20 @@ class CosmAPIClient(object):
         >>> cosm.CosmAPIClient("API_KEY")
         <cosm.CosmAPIClient()>
 
+        >>> api = cosm.CosmAPIClient("API_KEY", use_https=True)
+        >>> api.feeds.base_url
+        'https://api.cosm.com/v2/feeds'
+        >>> api.triggers.base_url
+        'https://api.cosm.com/v2/triggers'
+        >>> api.keys.base_url
+        'https://api.cosm.com/v2/keys'
+
     """
     api_version = 'v2'
     client_class = Client
 
-    def __init__(self, key):
-        self.client = self.client_class(key)
+    def __init__(self, key, use_https=False):
+        self.client = self.client_class(key, use_https=use_https)
         self.client.base_url += '/{}/'.format(self.api_version)
         self._feeds = FeedsManager(self.client)
         self._triggers = TriggersManager(self.client)

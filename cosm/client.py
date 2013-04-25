@@ -37,12 +37,12 @@ class Client(Session):
     when using the client (all requests via this client are going to Cosm).
 
     """
-    BASE_URL = "http://api.cosm.com"
+    BASE_URL = "//api.cosm.com"
 
-    def __init__(self, key):
+    def __init__(self, key, use_https=False):
         super(Client, self).__init__()
         self.auth = KeyAuth(key)
-        self.base_url = self.BASE_URL
+        self.base_url = ('https:' if use_https else 'http:') + self.BASE_URL
         self.headers['Content-Type'] = 'application/json'
         self.headers['User-Agent'] = 'cosm-python/{} {}'.format(
             cosm.__version__, self.headers['User-Agent'])
