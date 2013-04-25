@@ -30,7 +30,7 @@ class KeyAuth(AuthBase):
 
 
 class Client(Session):
-    """A Cosm API Client object.
+    r"""A Cosm API Client object.
 
     This is instantiated with an API key which is used for all requests to the
     Cosm API.  It also defines a BASE_URL so that we can specify relative urls
@@ -40,11 +40,23 @@ class Client(Session):
     :type key: str
     :param use_ssl: Use https for all connections instead of http
     :type use_ssl: bool [False]
+    :param verify: Verify SSL certificates (default: True)
+
+    A Client instance can also be used when you want low level access to the
+    API and can be used with CSV or XML instead of the default JSON.
+
+    Usage::
+
+        >>> import cosm
+        >>> client = cosm.Client("YOUR_API_KEY")
+        >>> body = "1,123\r\n2,456\r\n"
+        >>> client.post('/v2/feeds/1977.csv', data=body)
+        <Response [200]>
 
     """
     BASE_URL = "//api.cosm.com"
 
-    def __init__(self, key, use_ssl=False):
+    def __init__(self, key, use_ssl=False, verify=True):
         super(Client, self).__init__()
         self.auth = KeyAuth(key)
         self.base_url = ('https:' if use_ssl else 'http:') + self.BASE_URL
@@ -52,6 +64,7 @@ class Client(Session):
         self.headers['User-Agent'] = 'cosm-python/{} {}'.format(
             cosm.__version__, self.headers['User-Agent'])
         self._json_encoder = JSONEncoder()
+        self.verify = verify
 
     def request(self, method, url, *args, **kwargs):
         """Constructs and sends a Request to the Cosm API.

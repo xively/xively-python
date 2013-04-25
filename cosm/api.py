@@ -27,6 +27,7 @@ class CosmAPIClient(object):
     :type key: str
     :param use_ssl: Use https for all connections instead of http
     :type use_ssl: bool [False]
+    :param kwargs: Other additional keyword arguments to pass to client
 
     Usage::
 
@@ -47,7 +48,7 @@ class CosmAPIClient(object):
     client_class = Client
 
     def __init__(self, key, use_ssl=False, **kwargs):
-        self.client = self.client_class(key, use_ssl=use_ssl)
+        self.client = self.client_class(key, use_ssl=use_ssl, **kwargs)
         self.client.base_url += '/{}/'.format(self.api_version)
         self._feeds = FeedsManager(self.client)
         self._triggers = TriggersManager(self.client)
