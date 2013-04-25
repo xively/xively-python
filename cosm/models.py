@@ -113,7 +113,9 @@ class Feed(Base):
     def datastreams(self, datastreams):
         manager = getattr(self, '_manager', None)
         if manager:
-            manager._coerce_datastreams(self.datastreams, datastreams)
+            # Accessing self.datastreams will create a DatastreamsManager if
+            # one didn't already exist.
+            manager._coerce_datastreams(datastreams, self.datastreams)
         self._data['datastreams'] = datastreams
 
     def update(self, fields=None):

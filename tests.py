@@ -162,14 +162,16 @@ class FeedTest(BaseTestCase):
             location=cosm.Location(
                 disposition='fixed', ele='23.0', name="office",
                 lat=51.5235375648154, exposure="indoor",
-                lon=-0.0807666778564453, domain="physical"))
+                lon=-0.0807666778564453, domain="physical"),
+            datastreams=[
+                cosm.Datastream(id='0', current_value="211", max_value="20.0",
+                                min_value="7.0"),
+                cosm.Datastream(id='3', current_value="312", max_value="999.0",
+                                min_value="7.0"),
+            ])
         feed.datastreams = [
             cosm.Datastream(id='4', current_value="-333"),
-            cosm.Datastream(id='0', current_value="211", max_value="20.0",
-                            min_value="7.0"),
-            cosm.Datastream(id='3', current_value="312", max_value="999.0",
-                            min_value="7.0"),
-        ]
+        ] + list(feed.datastreams)
         feed.update()
         self.request.assert_called_with(
             'PUT', 'http://api.cosm.com/v2/feeds/1977',
