@@ -11,6 +11,6 @@ setup(name='cosm-python',
       ],
       test_suite='nose.collector',
       tests_require=[
-          'nose', 'mock'
+          'nose', 'mock', 'doctest-ignore-unicode',
       ],
       zip_safe=False)
