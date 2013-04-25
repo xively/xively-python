@@ -1,7 +1,9 @@
 cosm-python
 ===========
 
-[![Build Status](https://travis-ci.org/cosm/cosm-python.png?branch=master)](https://travis-ci.org/cosm/cosm-python)
+.. image:: https://travis-ci.org/cosm/cosm-python.png?branch=master
+    :target: https://travis-ci.org/cosm/cosm-python
+    :alt: Build Status
 
 This is the official pythonic wrapper library for the Cosm V2 API.
 
