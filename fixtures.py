@@ -87,6 +87,42 @@ GET_FEED_JSON = b'''
 }
 '''
 
+UPDATE_FEED_JSON = b'''
+{
+  "title":"Cosm Office environment",
+  "website":"http://www.haque.co.uk/",
+  "version":"1.0.0",
+  "tags":[
+      "Tag1",
+      "Tag2"
+  ],
+  "location":{
+      "disposition":"fixed",
+      "ele":"23.0",
+      "name":"office",
+      "lat":51.5235375648154,
+      "exposure":"indoor",
+      "lon":-0.0807666778564453,
+      "domain":"physical"
+  },
+   "datastreams" : [ {
+      "current_value" : "-333",
+      "id" : "4"
+    },
+    { "current_value" : "211",
+      "id" : "0",
+      "max_value" : "20.0",
+      "min_value" : "7.0"
+    },
+    { "current_value" : "312",
+      "id" : "3",
+      "max_value" : "999.0",
+      "min_value" : "7.0"
+    }
+  ]
+}
+'''
+
 LIST_FEEDS_JSON = b'''
 {
   "totalResults":4299,

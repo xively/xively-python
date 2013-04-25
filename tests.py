@@ -52,11 +52,8 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         self.request.return_value = self.response = response
 
     def _create_feed(self, **data):
-        feed = cosm.Feed(**data)
-        feed._manager = cosm.api.FeedsManager(self.client)
-        if 'id' in data and 'feed' not in data:
-            feed_url = 'http://api.cosm.com/v2/feeds/{}'.format(data['id'])
-            feed._data['feed'] = feed_url
+        feed_manager = cosm.api.FeedsManager(self.client)
+        feed = feed_manager._coerce_feed(data)
         return feed
 
     def _create_datastream(self, **data):
@@ -157,6 +154,26 @@ class FeedTest(BaseTestCase):
         self.request.assert_called_with(
             'PUT', 'http://api.cosm.com/v2/feeds/123',
             data='{"private": true}')
+
+    def test_update_feed_with_datastreams(self):
+        feed = self._create_feed(
+            id='1977', title="Cosm Office environment",
+            website='http://www.haque.co.uk/', tags=['Tag1', 'Tag2'],
+            location=cosm.Location(
+                disposition='fixed', ele='23.0', name="office",
+                lat=51.5235375648154, exposure="indoor",
+                lon=-0.0807666778564453, domain="physical"))
+        feed.datastreams = [
+            cosm.Datastream(id='4', current_value="-333"),
+            cosm.Datastream(id='0', current_value="211", max_value="20.0",
+                            min_value="7.0"),
+            cosm.Datastream(id='3', current_value="312", max_value="999.0",
+                            min_value="7.0"),
+        ]
+        feed.update()
+        self.request.assert_called_with(
+            'PUT', 'http://api.cosm.com/v2/feeds/1977',
+            data=self._sorted_json(fixtures.UPDATE_FEED_JSON))
 
     def test_delete_feed(self):
         feed = self._create_feed(id='456', title="Home")

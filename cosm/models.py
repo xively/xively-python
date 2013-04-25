@@ -65,6 +65,12 @@ class Feed(Base):
 
     VERSION = "1.0.0"
 
+    # Set id and feed directly as they aren't part of state. By setting them on
+    # the class they won't get entered into _data and will be set on the
+    # instance itself.
+    id = None
+    feed = None
+
     _datastreams = None
 
     def __init__(self, title, **kwargs):
@@ -78,7 +84,7 @@ class Feed(Base):
 
     def __repr__(self):
         return "<{}.{}({id})>".format(
-            __package__, self.__class__.__name__, id=self._data.get('id'))
+            __package__, self.__class__.__name__, id=self.id)
 
     @property
     def datastreams(self):
@@ -122,7 +128,7 @@ class Feed(Base):
         :type fields: list of strings
 
         """
-        url = self.feed
+        url = self.id
         state = self.__getstate__()
         if fields is not None:
             fields = set(fields)
@@ -135,7 +141,7 @@ class Feed(Base):
         .. warning:: This is final and cannot be undone.
 
         """
-        url = self.feed
+        url = self.id
         self._manager.delete(url)
 
 

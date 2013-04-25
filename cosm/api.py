@@ -279,8 +279,12 @@ class FeedsManager(ManagerBase):
         """Returns a Feed object from a mapping object (dict)."""
         datastreams_data = feed_data.pop('datastreams', None)
         location_data = feed_data.pop('location', None)
+        feed_id = feed_data.pop('id', None)
+        feed_url = feed_data.pop('feed', None)
         feed = Feed(**feed_data)
         feed._manager = self
+        feed.id = feed_id
+        feed.feed = feed_url or self.url(feed_id)
         if datastreams_data:
             datastreams_manager = DatastreamsManager(feed)
             datastreams = self._coerce_datastreams(
@@ -288,7 +292,10 @@ class FeedsManager(ManagerBase):
             feed._data['datastreams'] = datastreams
             feed._datastreams = datastreams_manager
         if location_data:
-            feed._data['location'] = self._coerce_location(location_data)
+            location = self._coerce_location(location_data)
+        else:
+            location = Location()
+        feed._data['location'] = location
         return feed
 
     def _coerce_datastreams(self, datastreams_data, datastreams_manager):
