@@ -12,27 +12,14 @@ from requests import Response
 
 from tests import RequestsFixtureMixin
 
+import fixtures
 
 class Fixture(RequestsFixtureMixin):
     """A class to hold the mock request object and not pollute globals."""
 
     def setUp(self, *args, **kwargs):
         super(Fixture, self).setUp()
-        self.session.side_effect = self.request
-
-    def request(self, method, url, **kwargs):
-        """
-        Returns a Response object that we would expect return from Cosm.
-
-        We don't want to actually hit Cosm's API during our tests so instead we
-        intercept requests and return the responses that we would expect
-        depending on what arguments we were given.
-        """
-        response = Response()
-        response.status_code = 200
-        if url == 'http://api.cosm.com/v2/feeds.json':
-            response.headers['Location'] = 'http://api.cosm.com/v2/feeds/504'
-        return response
+        self.request.side_effect = fixtures.handle_request
 
 
 # setup_test and teardown_test must live at the module level to be discovered.
