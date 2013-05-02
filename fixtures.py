@@ -133,7 +133,7 @@ LIST_FEEDS_JSON = b'''
       "status":"live",
       "version":"1.0.0",
       "creator":"me",
-      "url":"https://cosm.com/users/hdr",
+      "website":"https://cosm.com/users/hdr",
       "updated":"2010-06-08T09:30:21.472927Z",
       "created":"2010-05-03T23:43:01.238734Z",
       "location":{"domain":"physical"},

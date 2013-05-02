@@ -68,14 +68,19 @@ class Feed(Base):
 
     _datastreams_manager = None
 
-    def __init__(self, title, **kwargs):
+    def __init__(self, title, website=None, tags=None, location=None,
+                 private=None, datastreams=None):
+        """Creates a new Feed."""
         self._data = {
-            'title': title,
             'version': self.VERSION,
+            'title': title,
+            'website': website,
+            'tags': tags,
+            'location': location,
+            'private': private,
         }
-        if 'datastreams' in kwargs:
-            self.datastreams = kwargs.pop('datastreams')
-        self._data.update(kwargs)
+        if datastreams is not None:
+            self.datastreams = datastreams
 
     def __repr__(self):
         return "<{}.{}({id})>".format(

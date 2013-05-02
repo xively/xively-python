@@ -142,6 +142,18 @@ class FeedsManager(ManagerBase):
 
     resource = 'feeds'
 
+    # List of fields that can be returned from the API but not directly set.
+    _readonly_fields = (
+        'id',
+        'feed',
+        'description',
+        'status',
+        'creator',
+        'created',
+        'updated',
+        'version',
+    )
+
     def __init__(self, client):
         self.client = client
         self.base_url = client.base_url + self.resource
@@ -290,12 +302,16 @@ class FeedsManager(ManagerBase):
         """Returns a Feed object from a mapping object (dict)."""
         datastreams_data = feed_data.pop('datastreams', None)
         location_data = feed_data.pop('location', None)
-        feed_id = feed_data.pop('id', None)
-        feed_url = feed_data.pop('feed', None)
+        # Strip out the readonly fields and manually set later.
+        strip_fields = self._readonly_fields
+        readonly = {f:feed_data.pop(f) for f in strip_fields if f in feed_data}
         feed = Feed(**feed_data)
         feed._manager = self
-        feed.id = feed_id
-        feed.feed = feed_url or self.url(feed_id)
+        feed.id = readonly.pop('id', None)
+        feed.feed = readonly.pop('feed', None) or self.url(feed.id)
+        # Explicitely set the readonly fields we stripped out earlier.
+        for name, value in readonly.items():
+            setattr(feed, name, value)
         if datastreams_data:
             feed._datastreams_manager = DatastreamsManager(feed)
             feed.datastreams = self._coerce_datastreams(
