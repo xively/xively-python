@@ -105,8 +105,8 @@ class Feed(Base):
 
         """
         if self._datastreams_manager is None:
-            import cosm.api
-            self._datastreams_manager = cosm.api.DatastreamsManager(self)
+            import cosm.managers
+            self._datastreams_manager = cosm.managers.DatastreamsManager(self)
         return self._datastreams_manager
 
     @datastreams.setter  # NOQA
@@ -210,8 +210,8 @@ class Datastream(Base):
 
         """
         if self._datapoints_manager is None:
-            import cosm.api
-            self._datapoints_manager = cosm.api.DatapointsManager(self)
+            import cosm.managers
+            self._datapoints_manager = cosm.managers.DatapointsManager(self)
         return self._datapoints_manager
 
     @datapoints.setter  # NOQA
