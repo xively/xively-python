@@ -159,7 +159,7 @@ class FeedsManager(ManagerBase):
         self.base_url = client.base_url + self.resource
 
     def create(self, title, website=None, tags=None, location=None,
-               private=None, **params):
+               private=None, datastreams=None):
         """Creates a new Feed.
 
         :param title: A descriptive name for the feed
@@ -170,11 +170,17 @@ class FeedsManager(ManagerBase):
         :param location: :class:`.Location` object for this feed
         :param private: Whether the environment is private or not. Can be
             either True or False
-        :param params: Additional parameters to be sent with the request
 
         """
-        data = dict(title=title, website=website, tags=tags, location=location,
-                    private=private, version=Feed.VERSION, **params)
+        data = {
+            'version': Feed.VERSION,
+            'title': title,
+            'website': website,
+            'tags': tags,
+            'location': location,
+            'private': private,
+            'datastreams': datastreams,
+        }
         feed = self._coerce_feed(data)
         response = self.client.post(self.url(), data=feed)
         response.raise_for_status()
@@ -196,7 +202,7 @@ class FeedsManager(ManagerBase):
 
     def list(self, page=None, per_page=None, content=None, q=None, tag=None,
              user=None, units=None, status=None, order=None, show_user=None,
-             lat=None, lon=None, distance=None, distance_units=None, **params):
+             lat=None, lon=None, distance=None, distance_units=None):
         """Returns a paged list of feeds.
 
         Only feeds that are viewable by the authenticated account will be
@@ -233,11 +239,10 @@ class FeedsManager(ManagerBase):
         :param lon: Used to find feeds located around this longitude
         :param distance: search radius
         :param distance_units: miles or kms (default)
-        :param params: Additional parameters to send with the request
 
         """
         url = self.url()
-        params.update({k: v for k, v in (
+        params = {k: v for k, v in (
             ('page', page),
             ('per_page', per_page),
             ('content', content),
@@ -252,14 +257,16 @@ class FeedsManager(ManagerBase):
             ('lon', lon),
             ('distance', distance),
             ('distance_units', distance_units),
-        ) if v is not None})
+        ) if v is not None}
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
         feeds = [self._coerce_feed(feed_data) for feed_data in json['results']]
         return feeds
 
-    def get(self, id_or_url, datastreams=None, show_user=None, **params):
+    def get(self, id_or_url, datastreams=None, show_user=None, start=None,
+            end=None, duration=None, find_previous=None, limit=None,
+            interval_type=None, interval=None):
         """Fetches and returns a feed by id or url.
 
         By default the most recent datastreams are returned. It is also
@@ -271,14 +278,41 @@ class FeedsManager(ManagerBase):
         :param show_user: Include user login for each feed. (default: False)
         :type show_user: bool
 
+        :param start: Defines the starting point of the query
+        :param end: Defines the end point of the data returned
+        :param duration: Specifies the duration of the query
+        :param find_previous:
+            Will also return the previous value to the date range being
+            requested.
+        :param limit:
+            Limits the number of results to the number specified.  Defaults to
+            100 and has a maximum of 1000.
+        :param interval_type:
+            If set to "discrete" the data will be returned in fixed time
+            interval format according to the inverval value supplied. If this
+            is not set, the raw datapoints will be returned.
+        :param interval:
+            Determines what interval of data is requested and is defined in
+            seconds between the datapoints. If a value is passed in which does
+            not match one of these values, it is rounded up to the next value.
+
+        See :meth:`~.DatapointsManager.history` for details.
+
         """
         url = self.url(id_or_url)
         if isinstance(datastreams, Sequence):
             datastreams = ','.join(datastreams)
-        params.update({k: v for k, v in (
+        params = {k: v for k, v in (
             ('datastreams', datastreams),
             ('show_user', show_user),
-        ) if v is not None})
+            ('start', start),
+            ('end', end),
+            ('duration', duration),
+            ('find_previous', find_previous),
+            ('limit', limit),
+            ('interval_type', interval_type),
+            ('interval', interval),
+        ) if v is not None}
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -405,7 +439,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         return self.parent._data.setdefault('datastreams', [])
 
     def create(self, id, current_value=None, tags=None, unit=None,
-               min_value=None, max_value=None, **params):
+               min_value=None, max_value=None):
         """Creates a new datastream on a feed.
 
         :param id: The ID of the datastream
@@ -414,7 +448,6 @@ class DatastreamsManager(Sequence, ManagerBase):
         :param unit: The :class:`.Unit` for this datastream
         :param min_value: The minimum value since the last reset
         :param max_value: The maximum value since the last reset
-        :param params: Additional parameters to be sent with the request
         :returns: A :class:`.Datastream` object
 
         """
@@ -424,8 +457,7 @@ class DatastreamsManager(Sequence, ManagerBase):
             tags=tags,
             unit=unit,
             min_value=min_value,
-            max_value=max_value,
-            **params)
+            max_value=max_value)
         datastream = self._coerce_datastream(datastream_data)
         data = {
             'version': self.parent.version,
@@ -446,21 +478,20 @@ class DatastreamsManager(Sequence, ManagerBase):
         response = self.client.put(url, data=kwargs)
         response.raise_for_status()
 
-    def list(self, datastreams=None, show_user=None, **params):
+    def list(self, datastreams=None, show_user=None):
         """Returns a list of datastreams for the parent feed object.
 
         :param datastreams: Filter the returned datastreams
         :type datastreams: list of datastream IDs
         :param show_user: Include user login for each feed (default: False)
         :type show_user: bool
-        :param params: Additional parameters to send with the request
 
         """
         url = self.url('..')
-        params.update({k: v for k, v in (
+        params = {k: v for k, v in (
             ('datastreams', datastreams),
             ('show_user', show_user),
-        ) if v is not None})
+        ) if v is not None}
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
@@ -468,14 +499,45 @@ class DatastreamsManager(Sequence, ManagerBase):
             datastream = self._coerce_datastream(datastream_data)
             yield datastream
 
-    def get(self, id_or_url, **params):
+    def get(self, id_or_url, start=None, end=None, duration=None,
+            find_previous=None, limit=None, interval_type=None, interval=None):
         """Fetches and returns a feed's datastream by its id.
 
+        If start, end or duration are given, also returns Datapoints for that
+        period.
+
         :param id_or_url: The ID of the datastream to retrieve or its URL
-        :param params: Additional parameters to send with the request
+        :param start: Defines the starting point of the query
+        :param end: Defines the end point of the data returned
+        :param duration: Specifies the duration of the query
+        :param find_previous:
+            Will also return the previous value to the date range being
+            requested.
+        :param limit:
+            Limits the number of results to the number specified.  Defaults to
+            100 and has a maximum of 1000.
+        :param interval_type:
+            If set to "discrete" the data will be returned in fixed time
+            interval format according to the inverval value supplied. If this
+            is not set, the raw datapoints will be returned.
+        :param interval:
+            Determines what interval of data is requested and is defined in
+            seconds between the datapoints. If a value is passed in which does
+            not match one of these values, it is rounded up to the next value.
+
+        See :meth:`~.DatapointsManager.history` for details.
 
         """
         url = self.url(id_or_url)
+        params = {k:v for k, v in (
+            ('start', start),
+            ('end', end),
+            ('duration', duration),
+            ('find_previous', find_previous),
+            ('limit', limit),
+            ('interval_type', interval_type),
+            ('interval', interval),
+        ) if v is not None}
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -631,7 +693,8 @@ class DatapointsManager(Sequence, ManagerBase):
         data['at'] = self._parse_datetime(data['at'])
         return self._coerce_datapoint(data)
 
-    def history(self, **params):
+    def history(self, start=None, end=None, duration=None, find_previous=None,
+                limit=None, interval_type=None, interval=None):
         """Fetch and return a list of datapoints in a given timerange.
 
         :param start: Defines the starting point of the query
@@ -700,6 +763,15 @@ class DatapointsManager(Sequence, ManagerBase):
 
         """
         url = self.url('..').rstrip('/')
+        params = {k: v for k, v in (
+            ('start', start),
+            ('end', end),
+            ('duration', duration),
+            ('find_previous', find_previous),
+            ('limit', limit),
+            ('interval_type', interval_type),
+            ('interval', interval),
+        ) if v is not None}
         params = self._prepare_params(params)
         response = self.client.get(url, params=params)
         response.raise_for_status()
@@ -708,7 +780,7 @@ class DatapointsManager(Sequence, ManagerBase):
             datapoint_data['at'] = self._parse_datetime(datapoint_data['at'])
             yield self._coerce_datapoint(datapoint_data)
 
-    def delete(self, at=None, **params):
+    def delete(self, at=None, start=None, end=None, duration=None):
         """Delete a datapoint or a range of datapoints.
 
         :param at: A timestamp of a single datapoint to delete
@@ -733,6 +805,11 @@ class DatapointsManager(Sequence, ManagerBase):
 
         """
         url = self.url()
+        params = {k: v for k, v in (
+            ('start', start),
+            ('end', end),
+            ('duration', duration),
+        ) if v is not None}
         if at:
             url = "{}/{}Z".format(url, at.isoformat())
         elif params:
@@ -971,11 +1048,10 @@ class KeysManager(ManagerBase):
             key = self._coerce_key(data)
             yield key
 
-    def get(self, key_id, **params):
+    def get(self, key_id):
         """Fetch and return an API key by its id.
 
         :param key_id: The ID of the key to get.
-        :param params: Additional parameters to send with the request
 
         .. note: Unless a master API key is used, the only key that can be read
                  is this key. A master key is a non-resource restricted,
@@ -984,7 +1060,7 @@ class KeysManager(ManagerBase):
 
         """
         url = self.url(key_id)
-        response = self.client.get(url, params=params)
+        response = self.client.get(url)
         response.raise_for_status()
         data = response.json()
         key = self._coerce_key(data['key'])

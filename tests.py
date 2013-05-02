@@ -733,7 +733,7 @@ class KeyManagerTest(BaseTestCase):
         key = self.api.keys.get(key_id)
         self.request.assert_called_with(
             'GET', "http://api.cosm.com/v2/keys/" + key_id,
-            allow_redirects=True, params={})
+            allow_redirects=True)
         self.assertEqual(key.api_key, key_id)
         self.assertEqual(key.label, "sharing key")
         self.assertEqual(key.permissions[0].access_methods, ['get', 'put'])
