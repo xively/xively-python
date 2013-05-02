@@ -347,7 +347,7 @@ class Trigger(Base):
     """
 
     def __init__(self, environment_id, stream_id, url, trigger_type,
-                 threshold_value=None, **kwargs):
+                 threshold_value=None):
         self._data = {
             'environment_id': environment_id,
             'stream_id': stream_id,
@@ -356,7 +356,6 @@ class Trigger(Base):
         }
         if threshold_value is not None:
             self._data['threshold_value'] = threshold_value
-        self._data.update(kwargs)
 
     def __repr__(self):
         return "<{}.{}({id!r})>".format(

@@ -774,6 +774,12 @@ class TriggersManager(ManagerBase):
 
     resource = 'triggers'
 
+    _readonly_fields = (
+        'id',
+        'notified_at',
+        'user',
+    )
+
     def __init__(self, client):
         self.client = client
         self.base_url = client.base_url + self.resource
@@ -804,9 +810,14 @@ class TriggersManager(ManagerBase):
         ======= ================================
 
         """
-        trigger = Trigger(
-            environment_id=environment_id, stream_id=stream_id, url=url,
-            trigger_type=trigger_type, threshold_value=threshold_value)
+        data = {
+            'environment_id': environment_id,
+            'stream_id': stream_id,
+            'url': url,
+            'trigger_type': trigger_type,
+            'threshold_value': threshold_value,
+        }
+        trigger = self._coerce_trigger(data)
         response = self.client.post(self.url(), data=trigger)
         response.raise_for_status()
         trigger._manager = self
@@ -827,7 +838,7 @@ class TriggersManager(ManagerBase):
         data.pop('id')
         notified_at = data.pop('notified_at', None)
         user = data.pop('user', None)
-        trigger = Trigger(**data)
+        trigger = self._coerce_trigger(data)
         trigger._data['id'] = id_or_url
         if notified_at:
             trigger._data['notified_at'] = self._parse_datetime(notified_at)
@@ -862,7 +873,7 @@ class TriggersManager(ManagerBase):
         response.raise_for_status()
         json = response.json()
         for data in json:
-            trigger = Trigger(**data)
+            trigger = self._coerce_trigger(data)
             trigger._manager = self
             yield trigger
 
@@ -877,6 +888,15 @@ class TriggersManager(ManagerBase):
         url = self.url(id_or_url)
         response = self.client.delete(url)
         response.raise_for_status()
+
+    def _coerce_trigger(self, d):
+        # Strip out the readonly fields and manually set later.
+        readonly = {f:d.pop(f) for f in self._readonly_fields if f in d}
+        trigger = Trigger(**d)
+        # Explicitely set the readonly fields we stripped out earlier.
+        for name, value in readonly.items():
+            setattr(trigger, name, value)
+        return trigger
 
 
 class KeysManager(ManagerBase):
