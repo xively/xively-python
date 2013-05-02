@@ -380,6 +380,12 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     resource = 'datastreams'
 
+    # List of fields that can be returned from the API but not directly set.
+    _readonly_fields = (
+        'at',
+        'current_value',
+    )
+
     def __init__(self, feed):
         self.parent = feed
         feed_manager = getattr(feed, '_manager', None)
@@ -512,7 +518,14 @@ class DatastreamsManager(Sequence, ManagerBase):
         if isinstance(d, dict):
             datapoints_data = d.pop('datapoints', None)
             unit_data = d.pop('unit', None)
+            # Remove version, part of Feed not Datastream
+            d.pop('version', None)
+            # Strip out the readonly fields and manually set later.
+            readonly = {f:d.pop(f) for f in self._readonly_fields if f in d}
             datastream = Datastream(**d)
+            # Explicitely set the readonly fields we stripped out earlier.
+            for name, value in readonly.items():
+                setattr(datastream, name, value)
             if datapoints_data:
                 datapoints = self._coerce_datapoints(
                     datastream.datapoints, datapoints_data)

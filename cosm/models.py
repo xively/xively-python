@@ -163,8 +163,7 @@ class Datastream(Base):
     _datapoints_manager = None
 
     def __init__(self, id, tags=None, unit=None, min_value=None,
-                 max_value=None, current_value=None, datapoints=None,
-                 **kwargs):
+                 max_value=None, current_value=None, datapoints=None):
         """Creates a new datastream object locally."""
         self._data = {
             'id': id,
@@ -175,7 +174,6 @@ class Datastream(Base):
             'current_value': current_value,
         }
         self.datapoints = datapoints or []
-        self._data.update(kwargs)
 
     def __getstate__(self):
         state = super(Datastream, self).__getstate__()
