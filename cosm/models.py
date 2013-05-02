@@ -272,7 +272,18 @@ class Datapoint(Base):
 
 
 class Location(Base):
-    """The location and location type of a feed."""
+    """The location and location type of a feed.
+
+    :param name: The name of the location
+    :param domain: The domain of the location, i.e. 'physical' or 'virtual'
+    :param exposure: Whether the location is indoors or outdoors
+    :param disposition: Whether the location is mobile or static
+    :param lat: The latitude of the feed
+    :param lon: The longitude of the feed
+    :param ele: The elevation of the feed
+    :param waypoints: A list of locations for a mobile feed
+
+    """
 
     def __init__(self, name=None, domain=None, exposure=None, disposition=None,
                  lat=None, lon=None, ele=None, waypoints=None):
@@ -291,7 +302,13 @@ class Location(Base):
 
 
 class Waypoint(Base):
-    """A waypoint represents where a mobile feed was at a particular time."""
+    """A waypoint represents where a mobile feed was at a particular time.
+
+    :param at: The timestamp of the waypoint
+    :param lat: The latitude at that time
+    :param lon: The longitude at that time
+
+    """
 
     def __init__(self, at, lat, lon):
         """Create a location waypoint, a timestamped cordinate pair."""

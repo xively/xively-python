@@ -95,3 +95,4 @@ Low Level Client
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: BASE_URL
