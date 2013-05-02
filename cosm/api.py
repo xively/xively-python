@@ -953,19 +953,17 @@ class KeysManager(ManagerBase):
         key.api_key = _id_from_url(location)
         return key
 
-    def list(self, feed_id=None, **kwargs):
+    def list(self, feed_id=None):
         """List all API keys for this account or for the given feed.
 
         :param feed_id: Returns api keys limited to that feed and its
                         datastreams.
-        :param kwargs: Additional parameters to send with the request
 
         """
         url = self.url()
         params = {}
         if feed_id is not None:
             params['feed_id'] = feed_id
-        params.update(kwargs)
         response = self.client.get(url, params=params)
         response.raise_for_status()
         json = response.json()
