@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Examples &mdash; Cosm Python 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Cosm Python 0.1.0 documentation" href="index.html" />
+    <link rel="prev" title="API Reference" href="reference.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="reference.html" title="API Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Cosm Python 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="currentcost">
+<h2>CurrentCost<a class="headerlink" href="#currentcost" title="Permalink to this headline">¶</a></h2>
+<p>This example reads data from a CurrentCost connected via USB. ElementTree is
+used to find the temperature, watts and time of day. The script assumes a feed
+and two datastreams labelled &#8216;tmpr&#8217; and &#8216;watts&#8217; have already been created,
+a key generated with permissions to upload values for these datastreams.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">cosm</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">as</span> <span class="nn">etree</span>
+
+<span class="n">COSM_API_KEY</span> <span class="o">=</span> <span class="s">&quot;YOUR_API_KEY&quot;</span>
+<span class="n">COSM_FEED_ID</span> <span class="o">=</span> <span class="mi">12345</span>
+
+
+<span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ET</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;Error parsing data: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+                  <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">date</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;./date&#39;</span><span class="p">)</span>
+        <span class="n">hr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s">&#39;./hr&#39;</span><span class="p">))</span>
+        <span class="nb">min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s">&#39;./min&#39;</span><span class="p">))</span>
+        <span class="n">sec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s">&#39;./sec&#39;</span><span class="p">))</span>
+        <span class="n">watts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s">&#39;.//watts&#39;</span><span class="p">))</span>
+        <span class="n">tmpr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">findtext</span><span class="p">(</span><span class="s">&#39;./tmpr&#39;</span><span class="p">))</span>
+        <span class="k">yield</span> <span class="n">datetime</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">hr</span><span class="p">,</span> <span class="nb">min</span><span class="p">,</span> <span class="n">sec</span><span class="p">),</span> <span class="n">watts</span><span class="p">,</span> <span class="n">tmpr</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="s">&#39;/dev/ttyUSB0&#39;</span><span class="p">):</span>
+    <span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="n">COSM_API_KEY</span><span class="p">)</span>
+    <span class="n">feed</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">COSM_FEED_ID</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">at</span><span class="p">,</span> <span class="n">watts</span><span class="p">,</span> <span class="n">tmpr</span> <span class="ow">in</span> <span class="n">read_data</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">)):</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Datastream</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">&#39;tmpr&#39;</span><span class="p">,</span> <span class="n">current_value</span><span class="o">=</span><span class="n">tmpr</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="n">now</span><span class="p">),</span>
+            <span class="n">Datastream</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">&#39;watts&#39;</span><span class="p">,</span> <span class="n">current_value</span><span class="o">=</span><span class="n">watts</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="n">now</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="n">feed</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">watts</span><span class="p">,</span> <span class="n">tmpr</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">main</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Examples</a><ul>
+<li><a class="reference internal" href="#currentcost">CurrentCost</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="reference.html"
+                        title="previous chapter">API Reference</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/examples.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="reference.html" title="API Reference"
+             >previous</a> |</li>
+        <li><a href="index.html">Cosm Python 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Cosm Ltd.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+    </div>
+  </body>
+</html>
