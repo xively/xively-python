@@ -68,14 +68,19 @@ class Feed(Base):
 
     _datastreams_manager = None
 
-    def __init__(self, title, **kwargs):
+    def __init__(self, title, website=None, tags=None, location=None,
+                 private=None, datastreams=None):
+        """Creates a new Feed."""
         self._data = {
-            'title': title,
             'version': self.VERSION,
+            'title': title,
+            'website': website,
+            'tags': tags,
+            'location': location,
+            'private': private,
         }
-        if 'datastreams' in kwargs:
-            self.datastreams = kwargs.pop('datastreams')
-        self._data.update(kwargs)
+        if datastreams is not None:
+            self.datastreams = datastreams
 
     def __repr__(self):
         return "<{}.{}({id})>".format(
@@ -100,8 +105,8 @@ class Feed(Base):
 
         """
         if self._datastreams_manager is None:
-            import cosm.api
-            self._datastreams_manager = cosm.api.DatastreamsManager(self)
+            import cosm.managers
+            self._datastreams_manager = cosm.managers.DatastreamsManager(self)
         return self._datastreams_manager
 
     @datastreams.setter  # NOQA
@@ -158,8 +163,7 @@ class Datastream(Base):
     _datapoints_manager = None
 
     def __init__(self, id, tags=None, unit=None, min_value=None,
-                 max_value=None, current_value=None, datapoints=None,
-                 **kwargs):
+                 max_value=None, current_value=None, datapoints=None):
         """Creates a new datastream object locally."""
         self._data = {
             'id': id,
@@ -170,7 +174,6 @@ class Datastream(Base):
             'current_value': current_value,
         }
         self.datapoints = datapoints or []
-        self._data.update(kwargs)
 
     def __getstate__(self):
         state = super(Datastream, self).__getstate__()
@@ -207,8 +210,8 @@ class Datastream(Base):
 
         """
         if self._datapoints_manager is None:
-            import cosm.api
-            self._datapoints_manager = cosm.api.DatapointsManager(self)
+            import cosm.managers
+            self._datapoints_manager = cosm.managers.DatapointsManager(self)
         return self._datapoints_manager
 
     @datapoints.setter  # NOQA
@@ -272,7 +275,18 @@ class Datapoint(Base):
 
 
 class Location(Base):
-    """The location and location type of a feed."""
+    """The location and location type of a feed.
+
+    :param name: The name of the location
+    :param domain: The domain of the location, i.e. 'physical' or 'virtual'
+    :param exposure: Whether the location is indoors or outdoors
+    :param disposition: Whether the location is mobile or static
+    :param lat: The latitude of the feed
+    :param lon: The longitude of the feed
+    :param ele: The elevation of the feed
+    :param waypoints: A list of locations for a mobile feed
+
+    """
 
     def __init__(self, name=None, domain=None, exposure=None, disposition=None,
                  lat=None, lon=None, ele=None, waypoints=None):
@@ -291,7 +305,13 @@ class Location(Base):
 
 
 class Waypoint(Base):
-    """A waypoint represents where a mobile feed was at a particular time."""
+    """A waypoint represents where a mobile feed was at a particular time.
+
+    :param at: The timestamp of the waypoint
+    :param lat: The latitude at that time
+    :param lon: The longitude at that time
+
+    """
 
     def __init__(self, at, lat, lon):
         """Create a location waypoint, a timestamped cordinate pair."""
@@ -327,7 +347,7 @@ class Trigger(Base):
     """
 
     def __init__(self, environment_id, stream_id, url, trigger_type,
-                 threshold_value=None, **kwargs):
+                 threshold_value=None):
         self._data = {
             'environment_id': environment_id,
             'stream_id': stream_id,
@@ -336,7 +356,6 @@ class Trigger(Base):
         }
         if threshold_value is not None:
             self._data['threshold_value'] = threshold_value
-        self._data.update(kwargs)
 
     def __repr__(self):
         return "<{}.{}({id!r})>".format(

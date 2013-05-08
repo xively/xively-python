@@ -52,18 +52,18 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         self.request.return_value = self.response = response
 
     def _create_feed(self, **data):
-        feed_manager = cosm.api.FeedsManager(self.client)
+        feed_manager = cosm.managers.FeedsManager(self.client)
         feed = feed_manager._coerce_feed(data)
         return feed
 
     def _create_datastream(self, **data):
         datastream = cosm.Datastream(**data)
-        datastream._manager = cosm.api.DatastreamsManager(self.feed)
+        datastream._manager = cosm.managers.DatastreamsManager(self.feed)
         return datastream
 
     def _create_datapoint(self, **data):
         datapoint = cosm.Datapoint(**data)
-        manager = cosm.api.DatapointsManager(self.datastream)
+        manager = cosm.managers.DatapointsManager(self.datastream)
         datapoint._manager = manager
         return datapoint
 
@@ -72,7 +72,7 @@ class BaseTestCase(RequestsFixtureMixin, unittest.TestCase):
         trigger = cosm.Trigger(self.feed.id, self.datastream.id, **data)
         if id is not None:
             trigger._data['id'] = id
-        trigger._manager = cosm.api.TriggersManager(self.client)
+        trigger._manager = cosm.managers.TriggersManager(self.client)
         return trigger
 
     def _sorted_json(self, s):
@@ -195,7 +195,7 @@ class FeedsManagerTest(BaseTestCase):
     def test_create_feed(self):
         """Tests a request is sent to create a feed."""
         self.response.status_code = 201
-        self.response.headers['location'] = "http://cosm.api.com/v2/feeds/1977"
+        self.response.headers['location'] = "http://api.cosm.com/v2/feeds/1977"
         feed = self.api.feeds.create(
             title="Cosm Office environment",
             website="http://www.example.com/",
@@ -222,7 +222,7 @@ class FeedsManagerTest(BaseTestCase):
                     max_value="10000.0",
                     tags=["humidity"]),
             ])
-        self.assertEqual(feed.feed, "http://cosm.api.com/v2/feeds/1977")
+        self.assertEqual(feed.feed, "http://api.cosm.com/v2/feeds/1977")
         self.request.assert_called_with(
             'POST', 'http://api.cosm.com/v2/feeds',
             data=self._sorted_json(fixtures.CREATE_FEED_JSON))
@@ -450,7 +450,7 @@ class DatapointsManagerTest(BaseTestCase):
         datapoint2 = self.datastream.datapoints.create(
             at="2010-05-20T11:01:44Z", value="295")
         # Create with no timestamp.
-        with patch('cosm.api.datetime') as mock_datetime:
+        with patch('cosm.managers.datetime') as mock_datetime:
             mock_datetime.now.return_value = datetime(2010, 5, 20, 11, 1, 45)
             datapoint3 = self.datastream.datapoints.create(value="296")
 
@@ -733,7 +733,7 @@ class KeyManagerTest(BaseTestCase):
         key = self.api.keys.get(key_id)
         self.request.assert_called_with(
             'GET', "http://api.cosm.com/v2/keys/" + key_id,
-            allow_redirects=True, params={})
+            allow_redirects=True)
         self.assertEqual(key.api_key, key_id)
         self.assertEqual(key.label, "sharing key")
         self.assertEqual(key.permissions[0].access_methods, ['get', 'put'])

@@ -19,7 +19,7 @@ API Client
 Feeds, Datastreams and Datapoints
 ---------------------------------
 
-.. autoclass:: cosm.api.FeedsManager
+.. autoclass:: cosm.managers.FeedsManager
     :members:
     :undoc-members:
     :exclude-members: resource
@@ -27,8 +27,9 @@ Feeds, Datastreams and Datapoints
 .. autoclass:: cosm.Feed
     :members:
     :undoc-members:
+    :exclude-members: id, feed
 
-.. autoclass:: cosm.api.DatastreamsManager
+.. autoclass:: cosm.managers.DatastreamsManager
     :members:
     :undoc-members:
     :exclude-members: resource
@@ -37,7 +38,7 @@ Feeds, Datastreams and Datapoints
     :members:
     :undoc-members:
 
-.. autoclass:: cosm.api.DatapointsManager
+.. autoclass:: cosm.managers.DatapointsManager
     :members:
     :undoc-members:
     :exclude-members: resource
@@ -60,7 +61,7 @@ Location and Waypoints
 API Keys
 --------
 
-.. autoclass:: cosm.api.KeysManager
+.. autoclass:: cosm.managers.KeysManager
     :members:
     :undoc-members:
 
@@ -79,7 +80,7 @@ API Keys
 Triggers
 --------
 
-.. autoclass:: cosm.api.TriggersManager
+.. autoclass:: cosm.managers.TriggersManager
     :members:
     :undoc-members:
     :exclude-members: resource
@@ -95,3 +96,4 @@ Low Level Client
     :members:
     :undoc-members:
     :show-inheritance:
+    :exclude-members: BASE_URL

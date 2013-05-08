@@ -83,9 +83,9 @@ class Client(Session):
         >>> client = Client("API_KEY")
         >>> client._encode_data({'foo': datetime(2013, 2, 22, 12, 14, 40)})
         '{"foo": "2013-02-22T12:14:40Z"}'
-        >>> feed = cosm.Feed(id=42, title="The Answer")
+        >>> feed = cosm.Feed(title="The Answer")
         >>> client._encode_data({'feed': feed}, sort_keys=True)
-        '{"feed": {"id": 42, "title": "The Answer", "version": "1.0.0"}}'
+        '{"feed": {"title": "The Answer", "version": "1.0.0"}}'
         >>> datastreams = [cosm.Datastream(id="1"), cosm.Datastream(id="2")]
         >>> client._encode_data({'datastreams': datastreams})
         '{"datastreams": [{"id": "1"}, {"id": "2"}]}'
