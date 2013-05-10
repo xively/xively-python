@@ -95,6 +95,8 @@ class FeedsManager(ManagerBase):
         'created',
         'updated',
         'version',
+        'product_id',
+        'device_serial'
     )
 
     def __init__(self, client):
