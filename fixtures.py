@@ -56,6 +56,7 @@ GET_FEED_JSON = b'''
 "created" : "2010-05-03T23:43:01.238734Z",
 "version" : "1.0.0",
 "creator" : "https://cosm.com/users/hdr",
+"auto_feed_url" : "https://api.cosm.com/v2/feeds/7021",
 "tags":[
     "Tag1",
     "Tag2"
@@ -101,6 +102,7 @@ GET_DEVICE_JSON = b'''
 "creator" : "https://cosm.com/users/hdr",
 "product_id": "EK0JEccOD_cVJUeD2eNw",
 "device_serial": "ZEG9G6FAADJK",
+"auto_feed_url" : "https://api.cosm.com/v2/feeds/7021",
 "tags":[
     "Tag1",
     "Tag2"
