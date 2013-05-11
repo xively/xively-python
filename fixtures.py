@@ -56,6 +56,53 @@ GET_FEED_JSON = b'''
 "created" : "2010-05-03T23:43:01.238734Z",
 "version" : "1.0.0",
 "creator" : "https://cosm.com/users/hdr",
+"auto_feed_url" : "https://api.cosm.com/v2/feeds/7021",
+"tags":[
+    "Tag1",
+    "Tag2"
+],
+"location":
+{
+  "disposition":"fixed",
+  "ele":"23.0",
+  "name":"office",
+  "lat":51.5235375648154,
+  "exposure":"indoor",
+  "lon":-0.0807666778564453,
+  "domain":"physical"
+},
+"datastreams" : [ {
+  "at" : "2010-06-25T11:54:17.454020Z",
+  "current_value" : "999",
+  "id" : "3",
+  "max_value" : "999.0",
+  "min_value" : "7.0"
+  },
+  {
+  "at" : "2010-06-24T10:05:49.000000Z",
+  "current_value" : "0000017",
+  "id" : "4",
+  "max_value" : "19.0",
+  "min_value" : "7.0"
+  } ]
+}
+'''
+
+GET_DEVICE_JSON = b'''
+{
+"description" : "test of manual feed snapshotting",
+"feed" : "http://api.cosm.com/v2/feeds/504.json",
+"id" : 7021,
+"status" : "frozen",
+"title" : "Cosm Office environment",
+"website":"http://www.haque.co.uk/",
+"updated" : "2010-06-25T11:54:17.463771Z",
+"created" : "2010-05-03T23:43:01.238734Z",
+"version" : "1.0.0",
+"creator" : "https://cosm.com/users/hdr",
+"product_id": "EK0JEccOD_cVJUeD2eNw",
+"device_serial": "ZEG9G6FAADJK",
+"auto_feed_url" : "https://api.cosm.com/v2/feeds/7021",
 "tags":[
     "Tag1",
     "Tag2"

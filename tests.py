@@ -254,6 +254,17 @@ class FeedsManagerTest(BaseTestCase):
         self.assertEqual(feed.title, "Cosm Office environment")
         self.assertEqual(feed.location.name, "office")
 
+    def test_view_device_feed(self):
+        """Tests a request is sent to view a feed (by id) returning json."""
+        self.response.raw = BytesIO(fixtures.GET_DEVICE_JSON)
+        feed = self.api.feeds.get(7021)
+        self.assertEqual(self.request.call_args[0],
+                         ('GET', 'http://api.cosm.com/v2/feeds/7021'))
+        self.assertEqual(feed.title, "Cosm Office environment")
+        self.assertEqual(feed.location.name, "office")
+        self.assertEqual(feed.product_id, "EK0JEccOD_cVJUeD2eNw")
+        self.assertEqual(feed.device_serial, "ZEG9G6FAADJK")
+
     def test_get_feeds_with_datastream_history(self):
         self.response.raw = BytesIO(fixtures.HISTORY_FEED_JSON)
         feed = self.api.feeds.get(61916,
