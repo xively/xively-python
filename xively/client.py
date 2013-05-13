@@ -12,7 +12,7 @@ except ImportError:
 from requests.auth import AuthBase
 from requests.sessions import Session
 
-import cosm
+import xively
 
 
 __all__ = ['Client']
@@ -30,13 +30,13 @@ class KeyAuth(AuthBase):
 
 
 class Client(Session):
-    r"""A Cosm API Client object.
+    r"""A Xively API Client object.
 
     This is instantiated with an API key which is used for all requests to the
-    Cosm API.  It also defines a BASE_URL so that we can specify relative urls
-    when using the client (all requests via this client are going to Cosm).
+    Xively API.  It also defines a BASE_URL so that we can specify relative urls
+    when using the client (all requests via this client are going to Xively).
 
-    :param key: A Cosm API Key
+    :param key: A Xively API Key
     :type key: str
     :param use_ssl: Use https for all connections instead of http
     :type use_ssl: bool [False]
@@ -47,26 +47,26 @@ class Client(Session):
 
     Usage::
 
-        >>> client = cosm.Client("YOUR_API_KEY")
+        >>> client = xively.Client("YOUR_API_KEY")
         >>> body = "1,123\r\n2,456\r\n"
         >>> client.post('/v2/feeds/1977.csv', data=body)
         <Response [200]>
 
     """
-    BASE_URL = "//api.cosm.com"
+    BASE_URL = "//api.xively.com"
 
     def __init__(self, key, use_ssl=False, verify=True):
         super(Client, self).__init__()
         self.auth = KeyAuth(key)
         self.base_url = ('https:' if use_ssl else 'http:') + self.BASE_URL
         self.headers['Content-Type'] = 'application/json'
-        self.headers['User-Agent'] = 'cosm-python/{} {}'.format(
-            cosm.__version__, self.headers['User-Agent'])
+        self.headers['User-Agent'] = 'xively-python/{} {}'.format(
+            xively.__version__, self.headers['User-Agent'])
         self._json_encoder = JSONEncoder()
         self.verify = verify
 
     def request(self, method, url, *args, **kwargs):
-        """Constructs and sends a Request to the Cosm API.
+        """Constructs and sends a Request to the Xively API.
 
         Objects that implement __getstate__  will be serialised.
 
@@ -79,14 +79,14 @@ class Client(Session):
     def _encode_data(self, data, **kwargs):
         """Returns data encoded as JSON using a custom encoder.
 
-        >>> import cosm
+        >>> import xively
         >>> client = Client("API_KEY")
         >>> client._encode_data({'foo': datetime(2013, 2, 22, 12, 14, 40)})
         '{"foo": "2013-02-22T12:14:40Z"}'
-        >>> feed = cosm.Feed(title="The Answer")
+        >>> feed = xively.Feed(title="The Answer")
         >>> client._encode_data({'feed': feed}, sort_keys=True)
         '{"feed": {"title": "The Answer", "version": "1.0.0"}}'
-        >>> datastreams = [cosm.Datastream(id="1"), cosm.Datastream(id="2")]
+        >>> datastreams = [xively.Datastream(id="1"), xively.Datastream(id="2")]
         >>> client._encode_data({'datastreams': datastreams})
         '{"datastreams": [{"id": "1"}, {"id": "2"}]}'
         """
@@ -95,7 +95,7 @@ class Client(Session):
 
 
 class JSONEncoder(json.JSONEncoder):
-    """Encoder that can handle datetime objects or cosm models."""
+    """Encoder that can handle datetime objects or xively models."""
 
     def default(self, obj):
         if isinstance(obj, datetime):

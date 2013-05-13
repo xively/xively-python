@@ -2,7 +2,7 @@
 REST API Example
 ================
 
-    >>> client = cosm.api.Client(API_KEY)
+    >>> client = xively.api.Client(API_KEY)
 
 Feeds
 -----

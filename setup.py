@@ -1,11 +1,11 @@
 from setuptools import setup
 
-setup(name='cosm-python',
+setup(name='xively-python',
       version='0.1',
-      description="Cosm API wrapper",
+      description="Xively API wrapper",
       long_description=open("README.rst").read(),
-      url='http://github.com/cosm/cosm-python',
-      packages=['cosm'],
+      url='http://github.com/xively/xively-python',
+      packages=['xively'],
       install_requires=[
           'requests >= 1.1.0',
       ],

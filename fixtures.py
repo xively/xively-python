@@ -9,7 +9,7 @@ import requests
 
 CREATE_FEED_JSON = b'''
 {
-  "title":"Cosm Office environment",
+  "title":"Xively Office environment",
   "website":"http://www.example.com/",
   "version":"1.0.0",
   "tags":[
@@ -47,16 +47,16 @@ CREATE_FEED_JSON = b'''
 GET_FEED_JSON = b'''
 {
 "description" : "test of manual feed snapshotting",
-"feed" : "http://api.cosm.com/v2/feeds/504.json",
+"feed" : "http://api.xively.com/v2/feeds/504.json",
 "id" : 7021,
 "status" : "frozen",
-"title" : "Cosm Office environment",
+"title" : "Xively Office environment",
 "website":"http://www.haque.co.uk/",
 "updated" : "2010-06-25T11:54:17.463771Z",
 "created" : "2010-05-03T23:43:01.238734Z",
 "version" : "1.0.0",
-"creator" : "https://cosm.com/users/hdr",
-"auto_feed_url" : "https://api.cosm.com/v2/feeds/7021",
+"creator" : "https://xively.com/users/hdr",
+"auto_feed_url" : "https://api.xively.com/v2/feeds/7021",
 "tags":[
     "Tag1",
     "Tag2"
@@ -91,18 +91,18 @@ GET_FEED_JSON = b'''
 GET_DEVICE_JSON = b'''
 {
 "description" : "test of manual feed snapshotting",
-"feed" : "http://api.cosm.com/v2/feeds/504.json",
+"feed" : "http://api.xively.com/v2/feeds/504.json",
 "id" : 7021,
 "status" : "frozen",
-"title" : "Cosm Office environment",
+"title" : "Xively Office environment",
 "website":"http://www.haque.co.uk/",
 "updated" : "2010-06-25T11:54:17.463771Z",
 "created" : "2010-05-03T23:43:01.238734Z",
 "version" : "1.0.0",
-"creator" : "https://cosm.com/users/hdr",
+"creator" : "https://xively.com/users/hdr",
 "product_id": "EK0JEccOD_cVJUeD2eNw",
 "device_serial": "ZEG9G6FAADJK",
-"auto_feed_url" : "https://api.cosm.com/v2/feeds/7021",
+"auto_feed_url" : "https://api.xively.com/v2/feeds/7021",
 "tags":[
     "Tag1",
     "Tag2"
@@ -136,7 +136,7 @@ GET_DEVICE_JSON = b'''
 
 UPDATE_FEED_JSON = b'''
 {
-  "title":"Cosm Office environment",
+  "title":"Xively Office environment",
   "website":"http://www.haque.co.uk/",
   "version":"1.0.0",
   "tags":[
@@ -175,12 +175,12 @@ LIST_FEEDS_JSON = b'''
   "totalResults":4299,
   "results":[
     {
-      "feed":"http://api.cosm.com/v2/feeds/5853.json",
+      "feed":"http://api.xively.com/v2/feeds/5853.json",
       "title":"bridge19",
       "status":"live",
       "version":"1.0.0",
       "creator":"me",
-      "website":"https://cosm.com/users/hdr",
+      "website":"https://xively.com/users/hdr",
       "updated":"2010-06-08T09:30:21.472927Z",
       "created":"2010-05-03T23:43:01.238734Z",
       "location":{"domain":"physical"},
@@ -410,14 +410,14 @@ HISTORY_FEED_JSON = b'''
   ],
   "description": "A test feed full of data for testing devices against.",
   "created": "2012-06-01T14:18:51.736718Z",
-  "feed": "https://api.cosm.com/v2/feeds/61916.json",
+  "feed": "https://api.xively.com/v2/feeds/61916.json",
   "title": "Test Data Generator",
   "location": {
     "domain": "physical"
   },
   "version": "1.0.0",
   "private": "false",
-  "creator": "https://cosm.com/users/paul",
+  "creator": "https://xively.com/users/paul",
   "updated": "2013-01-04T10:22:40.342290Z",
   "id": 61916
 }
@@ -427,7 +427,7 @@ MOBILE_FEED_JSON = b'''
 {
     "title": "Ship - HANJIN BELAWAN",
     "status": "live",
-    "creator": "https://cosm.com/users/dhunter",
+    "creator": "https://xively.com/users/dhunter",
     "location": {
         "waypoints": [
             {
@@ -524,7 +524,7 @@ MOBILE_FEED_JSON = b'''
         }
     ],
     "created": "2009-12-08T19:00:05.304995Z",
-    "feed": "https://api.cosm.com/v2/feeds/3819.json",
+    "feed": "https://api.xively.com/v2/feeds/3819.json",
     "private": "false",
     "id": 3819,
     "version": "1.0.0",
@@ -535,7 +535,7 @@ MOBILE_FEED_JSON = b'''
 GET_TRIGGER_JSON = b'''
 {
   "threshold_value":"15.0",
-  "user":"cosm",
+  "user":"xively",
   "notified_at":"",
   "url":"http:\/\/www.postbin.org\/1ijyltn",
   "trigger_type":"lt",
@@ -552,7 +552,7 @@ LIST_TRIGGERS_JSON = b'''
     "stream_id":"0",
     "url":"http:\/\/www.postbin.org\/1ijyltn",
     "environment_id":1233,
-    "user":"cosm",
+    "user":"xively",
     "threshold_value":"20.0",
     "notified_at":"",
     "id":13
@@ -563,7 +563,7 @@ LIST_TRIGGERS_JSON = b'''
     "stream_id":"0",
     "url":"http:\/\/www.postbin.org\/1ijyltn",
     "environment_id":1233,
-    "user":"cosm",
+    "user":"xively",
     "threshold_value":"15.0",
     "notified_at":"",
     "id":14
@@ -636,7 +636,7 @@ GET_KEY_JSON = b'''
 def handle_request(method, url, params=None, *args, **kwargs):
     response = requests.Response()
     response.status_code = 200
-    relative_url = url.replace("http://api.cosm.com/v2/", '')
+    relative_url = url.replace("http://api.xively.com/v2/", '')
     content = None
     if relative_url == 'feeds':
         response.headers['Location'] = url + '/7021'

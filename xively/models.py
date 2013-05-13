@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__title__ = 'cosm-python'
+__title__ = 'xively-python'
 __version__ = '0.1.0'
 
 
@@ -17,7 +17,7 @@ class Base(object):
     def __getstate__(self):
         """Returns the current state of the object.
 
-        This is the data that should be sent to the Cosm API.
+        This is the data that should be sent to the Xively API.
         """
         return {k: v for k, v in self._data.items() if v is not None}
 
@@ -39,7 +39,7 @@ class Base(object):
 
 
 class Feed(Base):
-    """Cosm Feed, which can contain a number of Datastreams.
+    """Xively Feed, which can contain a number of Datastreams.
 
     :param title: A descriptive name for the feed
     :param website: The URL of a website which is relevant to this feed e.g.
@@ -52,9 +52,9 @@ class Feed(Base):
 
     Usage::
 
-        >>> import cosm
-        >>> cosm.Feed(title="Cosm Office environment")
-        <cosm.Feed(None)>
+        >>> import xively
+        >>> xively.Feed(title="Xively Office environment")
+        <xively.Feed(None)>
 
     """
 
@@ -97,16 +97,16 @@ class Feed(Base):
 
         Usage::
 
-            >>> import cosm
-            >>> api = cosm.CosmAPIClient("API_KEY")
+            >>> import xively
+            >>> api = xively.XivelyAPIClient("API_KEY")
             >>> feed = api.feeds.get(7021)
             >>> feed.datastreams[0]  # doctest: +IGNORE_UNICODE
-            <cosm.Datastream('3')>
+            <xively.Datastream('3')>
 
         """
         if self._datastreams_manager is None:
-            import cosm.managers
-            self._datastreams_manager = cosm.managers.DatastreamsManager(self)
+            import xively.managers
+            self._datastreams_manager = xively.managers.DatastreamsManager(self)
         return self._datastreams_manager
 
     @datastreams.setter  # NOQA
@@ -122,7 +122,7 @@ class Feed(Base):
         """Updates feed and datastreams via the API.
 
         If successful, the current datastream values are stored and any changes
-        in feed metadata overwrite previous values. Cosm stores a server-side
+        in feed metadata overwrite previous values. Xively stores a server-side
         timestamp in the "updated" attribute and sets the feed to "live" if it
         wasn't before.
 
@@ -148,7 +148,7 @@ class Feed(Base):
 
 
 class Datastream(Base):
-    """Cosm Datastream containing current and historical values.
+    """Xively Datastream containing current and historical values.
 
     :param id: The ID of the datastream
     :param tags: Tagged metadata about the datastream
@@ -196,22 +196,22 @@ class Datastream(Base):
 
         Usage::
 
-            >>> import cosm
+            >>> import xively
             >>> import datetime
-            >>> api = cosm.CosmAPIClient("API_KEY")
+            >>> api = xively.XivelyAPIClient("API_KEY")
             >>> feed = api.feeds.get(7021)
             >>> datastream = feed.datastreams.get("random5",
             ...     start=datetime.datetime(2013, 1, 1, 14, 0, 0),
             ...     end=datetime.datetime(2013, 1, 1, 16, 0, 0))
             >>> datastream.datapoints[:2]
             ... # doctest: +IGNORE_UNICODE +NORMALIZE_WHITESPACE +ELLIPSIS
-            [cosm.Datapoint(datetime.datetime(...), '0.25741970'),
-             cosm.Datapoint(datetime.datetime(...), '0.86826886')]
+            [xively.Datapoint(datetime.datetime(...), '0.25741970'),
+             xively.Datapoint(datetime.datetime(...), '0.86826886')]
 
         """
         if self._datapoints_manager is None:
-            import cosm.managers
-            self._datapoints_manager = cosm.managers.DatapointsManager(self)
+            import xively.managers
+            self._datapoints_manager = xively.managers.DatapointsManager(self)
         return self._datapoints_manager
 
     @datapoints.setter  # NOQA
@@ -219,7 +219,7 @@ class Datastream(Base):
         self._data['datapoints'] = datapoints
 
     def update(self, fields=None):
-        """Sends the current state of this datastream to Cosm.
+        """Sends the current state of this datastream to Xively.
 
         This method updates just the single datastream.
 
@@ -234,7 +234,7 @@ class Datastream(Base):
         self._manager.update(self.id, **state)
 
     def delete(self):
-        """Delete this datastream from Cosm.
+        """Delete this datastream from Xively.
 
         .. warning:: This is final and cannot be undone.
 
@@ -257,7 +257,7 @@ class Datapoint(Base):
         self._data['value'] = value
 
     def __repr__(self):
-        classname = 'cosm.' + self.__class__.__name__
+        classname = 'xively.' + self.__class__.__name__
         return "{}({!r}, {!r})".format(classname, self.at, self.value)
 
     def update(self):
@@ -336,13 +336,13 @@ class Unit(Base):
 class Trigger(Base):
     """Triggers provide 'push' capabilities (aka notifications).
 
-    To create a new trigger, use the :class:`~cosm.api.TriggersManager` on a
-    :class:`~cosm.api.CosmAPIClient` instance.
+    To create a new trigger, use the :class:`~xively.api.TriggersManager` on a
+    :class:`~xively.api.XivelyAPIClient` instance.
 
-    >>> from cosm import CosmAPIClient
-    >>> api = CosmAPIClient("API_KEY")
+    >>> from xively import XivelyAPIClient
+    >>> api = XivelyAPIClient("API_KEY")
     >>> api.triggers.create(123, "temperature", "http://example.com", "frozen")
-    <cosm.Trigger(3)>
+    <xively.Trigger(3)>
 
     """
 

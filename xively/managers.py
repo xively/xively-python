@@ -8,7 +8,7 @@ try:
 except ImportError:
     from urllib.parse import urljoin  # NOQA
 
-from cosm.models import (
+from xively.models import (
     Datapoint,
     Datastream,
     Feed,
@@ -50,11 +50,11 @@ class ManagerBase(object):
         return url
 
     def _parse_datetime(self, value):
-        """Parse and return a datetime string from the Cosm API."""
+        """Parse and return a datetime string from the Xively API."""
         return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     def _prepare_params(self, params):
-        """Prepare parameters to be passed in query strings to the Cosm API."""
+        """Prepare parameters to be passed in query strings to the Xively API."""
         params = dict(params)
         for name, value in params.items():
             if isinstance(value, datetime):
@@ -65,19 +65,19 @@ class ManagerBase(object):
 class FeedsManager(ManagerBase):
     """Create, update and return Feed objects.
 
-    .. note:: This manager should live on a :class:`.CosmAPIClient` instance
+    .. note:: This manager should live on a :class:`.XivelyAPIClient` instance
         and not instantiated directly.
 
     :param client: Low level :class:`.Client` instance
 
     Usage::
 
-        >>> import cosm
-        >>> api = cosm.CosmAPIClient("API_KEY")
-        >>> api.feeds.create(title="Cosm Office environment")
-        <cosm.Feed(7021)>
+        >>> import xively
+        >>> api = xively.XivelyAPIClient("API_KEY")
+        >>> api.feeds.create(title="Xively Office environment")
+        <xively.Feed(7021)>
         >>> api.feeds.get(7021)
-        <cosm.Feed(7021)>
+        <xively.Feed(7021)>
         >>> api.feeds.update(7021, private=True)
         >>> api.feeds.delete(7021)
 
@@ -349,13 +349,13 @@ class DatastreamsManager(Sequence, ManagerBase):
 
     Usage::
 
-        >>> import cosm
-        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> import xively
+        >>> api = xively.XivelyAPIClient("API_KEY")
         >>> feed = api.feeds.get(7021)
         >>> list(feed.datastreams)  # doctest: +IGNORE_UNICODE
-        [<cosm.Datastream('3')>, <cosm.Datastream('4')>]
+        [<xively.Datastream('3')>, <xively.Datastream('4')>]
         >>> feed.datastreams.create("1")
-        <cosm.Datastream('1')>
+        <xively.Datastream('1')>
 
     """
 
@@ -591,16 +591,16 @@ class DatapointsManager(Sequence, ManagerBase):
         .. note:: You can use ISO8601 formatted strings instead of datetime
                   objects when dealing with the API.
 
-        >>> import cosm
-        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> import xively
+        >>> api = xively.XivelyAPIClient("API_KEY")
         >>> feed = api.feeds.get(7021)
         >>> datastream = feed.datastreams[0]
         >>> # First create the datapoints.
         >>> datastream.datapoints = [
-        ...     cosm.Datapoint(at="2010-05-20T11:01:43Z", value=294),
-        ...     cosm.Datapoint(at="2010-05-20T11:01:44Z", value=295),
-        ...     cosm.Datapoint(at="2010-05-20T11:01:45Z", value=296),
-        ...     cosm.Datapoint(at="2010-05-20T11:01:46Z", value=297),
+        ...     xively.Datapoint(at="2010-05-20T11:01:43Z", value=294),
+        ...     xively.Datapoint(at="2010-05-20T11:01:44Z", value=295),
+        ...     xively.Datapoint(at="2010-05-20T11:01:45Z", value=296),
+        ...     xively.Datapoint(at="2010-05-20T11:01:46Z", value=297),
         ... ]
         >>> # Then send them to the server.
         >>> datastream.update(fields='datapoints')
@@ -779,20 +779,20 @@ class DatapointsManager(Sequence, ManagerBase):
 class TriggersManager(ManagerBase):
     """Manage :class:`.Trigger`.
 
-    This manager should live on a :class:`.CosmAPIClient` instance and not
+    This manager should live on a :class:`.XivelyAPIClient` instance and not
     instantiated directly.
 
     :param client: Low level :class:`.Client` instance
 
     Usage::
 
-        >>> import cosm
-        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> import xively
+        >>> api = xively.XivelyAPIClient("API_KEY")
         >>> api.triggers.create(
         ...     environment_id=8470, stream_id="0",
         ...     url="http://www.postbin.org/1ijyltn",
         ...     trigger_type='lt', threshold_value="15.0")
-        <cosm.Trigger(3)>
+        <xively.Trigger(3)>
 
     """
 
@@ -926,28 +926,28 @@ class TriggersManager(ManagerBase):
 class KeysManager(ManagerBase):
     """Manage keys their permissions and restrict by resource.
 
-    This manager should live on a :class:`.CosmAPIClient` instance and not
+    This manager should live on a :class:`.XivelyAPIClient` instance and not
     instantiated directly.
 
     :param client: Low level :class:`.Client` instance
 
     Usage::
 
-        >>> import cosm
-        >>> api = cosm.CosmAPIClient("API_KEY")
+        >>> import xively
+        >>> api = xively.XivelyAPIClient("API_KEY")
         >>> api.keys.create(
         ...     label="sharing key",
         ...     private_access=True,
         ...     permissions=[
-        ...         cosm.Permission(
+        ...         xively.Permission(
         ...             access_methods=["put"],
         ...             source_ip="128.44.98.129",
         ...             resources=[
-        ...                 cosm.Resource(feed_id=504),
+        ...                 xively.Resource(feed_id=504),
         ...             ]),
-        ...         cosm.Permission(access_methods=["get"])
+        ...         xively.Permission(access_methods=["get"])
         ...     ])
-        <cosm.Key('sharing key')>
+        <xively.Key('sharing key')>
 
     """
 
@@ -1063,7 +1063,7 @@ class KeysManager(ManagerBase):
 def _id_from_url(url):
     """Return the last part or a url
 
-    >>> _id_from_url('http://api.cosm.com/v2/feeds/1234')
+    >>> _id_from_url('http://api.xively.com/v2/feeds/1234')
     '1234'
 
     """

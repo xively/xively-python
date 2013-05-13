@@ -5,19 +5,19 @@ try:
 except ImportError:
     from urllib.parse import urljoin  # NOQA
 
-from cosm.client import Client
-from cosm.managers import FeedsManager, KeysManager, TriggersManager
+from xively.client import Client
+from xively.managers import FeedsManager, KeysManager, TriggersManager
 
 
-__all__ = ['CosmAPIClient']
+__all__ = ['XivelyAPIClient']
 
 
-class CosmAPIClient(object):
-    """An instance of an authenticated Cosm API Client.
+class XivelyAPIClient(object):
+    """An instance of an authenticated Xively API Client.
 
     The root object from which the user can manage feeds, keys and triggers.
 
-    :param key: A Cosm API Key
+    :param key: A Xively API Key
     :type key: str
     :param use_ssl: Use https for all connections instead of http
     :type use_ssl: bool [False]
@@ -25,17 +25,17 @@ class CosmAPIClient(object):
 
     Usage::
 
-        >>> import cosm
-        >>> cosm.CosmAPIClient("API_KEY")
-        <cosm.CosmAPIClient()>
+        >>> import xively
+        >>> xively.XivelyAPIClient("API_KEY")
+        <xively.XivelyAPIClient()>
 
-        >>> api = cosm.CosmAPIClient("API_KEY", use_ssl=True)
+        >>> api = xively.XivelyAPIClient("API_KEY", use_ssl=True)
         >>> api.feeds.base_url
-        'https://api.cosm.com/v2/feeds'
+        'https://api.xively.com/v2/feeds'
         >>> api.triggers.base_url
-        'https://api.cosm.com/v2/triggers'
+        'https://api.xively.com/v2/triggers'
         >>> api.keys.base_url
-        'https://api.cosm.com/v2/keys'
+        'https://api.xively.com/v2/keys'
 
     """
     api_version = 'v2'
