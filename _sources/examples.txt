@@ -9,5 +9,5 @@ used to find the temperature, watts and time of day. The script assumes a feed
 and two datastreams labelled 'tmpr' and 'watts' have already been created,
 a key generated with permissions to upload values for these datastreams.
 
-.. literalinclude:: ../examples/currentcost2cosm.py
+.. literalinclude:: ../examples/currentcost2xively.py
     :language: python

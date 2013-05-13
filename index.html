@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to Cosm Python’s documentation &mdash; Cosm Python 0.1.0 documentation</title>
+    <title>Welcome to Xively Python’s documentation &mdash; Xively Python 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Cosm Python 0.1.0 documentation" href="#" />
+    <link rel="top" title="Xively Python 0.1.0 documentation" href="#" />
     <link rel="next" title="API Reference" href="reference.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="reference.html" title="API Reference"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Cosm Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">Xively Python 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,13 +48,13 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="welcome-to-cosm-python-s-documentation">
-<h1>Welcome to Cosm Python&#8217;s documentation<a class="headerlink" href="#welcome-to-cosm-python-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>cosm-python is a wrapper around Cosm&#8217;s REST API to make working with the
+  <div class="section" id="welcome-to-xively-python-s-documentation">
+<h1>Welcome to Xively Python&#8217;s documentation<a class="headerlink" href="#welcome-to-xively-python-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>xively-python is a wrapper around Xively&#8217;s REST API to make working with the
 connected object cloud easy and pythonic.</p>
 <p>Example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">7021</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -64,15 +64,15 @@ connected object cloud easy and pythonic.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">points</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">datapoints</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="s">&#39;1second&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>  
-<span class="go">[cosm.Datapoint(datetime.datetime(2013, 1, 1, 14, 14, 55, 118845), &#39;0.25741970&#39;), ...]</span>
+<span class="go">[xively.Datapoint(datetime.datetime(2013, 1, 1, 14, 14, 55, 118845), &#39;0.25741970&#39;), ...]</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Uploading new points</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">random</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">randompoints</span> <span class="o">=</span> <span class="p">[</span>
-<span class="gp">... </span>    <span class="n">cosm</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()),</span>
-<span class="gp">... </span>    <span class="n">cosm</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()),</span>
-<span class="gp">... </span>    <span class="n">cosm</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()),</span>
 <span class="gp">... </span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">datapoints</span> <span class="o">=</span> <span class="n">randompoints</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="s">&#39;datapoints&#39;</span><span class="p">)</span>
@@ -116,7 +116,7 @@ connected object cloud easy and pythonic.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to Cosm Python&#8217;s documentation</a><ul>
+<li><a class="reference internal" href="#">Welcome to Xively Python&#8217;s documentation</a><ul>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
@@ -159,13 +159,12 @@ connected object cloud easy and pythonic.</p>
         <li class="right" >
           <a href="reference.html" title="API Reference"
              >next</a> |</li>
-        <li><a href="#">Cosm Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">Xively Python 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Cosm Ltd.
+        &copy; Copyright 2013, Xively Ltd.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>
->>>>>>> andy/gh-pages

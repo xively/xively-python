@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Examples &mdash; Cosm Python 0.1.0 documentation</title>
+    <title>Examples &mdash; Xively Python 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Cosm Python 0.1.0 documentation" href="index.html" />
+    <link rel="top" title="Xively Python 0.1.0 documentation" href="index.html" />
     <link rel="prev" title="API Reference" href="reference.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="reference.html" title="API Reference"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Cosm Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Xively Python 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -56,14 +56,14 @@
 used to find the temperature, watts and time of day. The script assumes a feed
 and two datastreams labelled &#8216;tmpr&#8217; and &#8216;watts&#8217; have already been created,
 a key generated with permissions to upload values for these datastreams.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">cosm</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">xively</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">as</span> <span class="nn">etree</span>
 
-<span class="n">COSM_API_KEY</span> <span class="o">=</span> <span class="s">&quot;YOUR_API_KEY&quot;</span>
-<span class="n">COSM_FEED_ID</span> <span class="o">=</span> <span class="mi">12345</span>
+<span class="n">XIVELY_API_KEY</span> <span class="o">=</span> <span class="s">&quot;YOUR_API_KEY&quot;</span>
+<span class="n">XIVELY_FEED_ID</span> <span class="o">=</span> <span class="mi">12345</span>
 
 
 <span class="k">def</span> <span class="nf">read_data</span><span class="p">(</span><span class="n">stream</span><span class="p">):</span>
@@ -86,8 +86,8 @@ a key generated with permissions to upload values for these datastreams.</p>
 
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="s">&#39;/dev/ttyUSB0&#39;</span><span class="p">):</span>
-    <span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="n">COSM_API_KEY</span><span class="p">)</span>
-    <span class="n">feed</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">COSM_FEED_ID</span><span class="p">)</span>
+    <span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="n">XIVELY_API_KEY</span><span class="p">)</span>
+    <span class="n">feed</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">XIVELY_FEED_ID</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">at</span><span class="p">,</span> <span class="n">watts</span><span class="p">,</span> <span class="n">tmpr</span> <span class="ow">in</span> <span class="n">read_data</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">)):</span>
         <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
         <span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span> <span class="o">=</span> <span class="p">[</span>
@@ -160,11 +160,11 @@ a key generated with permissions to upload values for these datastreams.</p>
         <li class="right" >
           <a href="reference.html" title="API Reference"
              >previous</a> |</li>
-        <li><a href="index.html">Cosm Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Xively Python 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Cosm Ltd.
+        &copy; Copyright 2013, Xively Ltd.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>

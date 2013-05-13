@@ -2,97 +2,97 @@
 API Reference
 =============
 
-.. module:: cosm
+.. module:: xively
 
-The cosm-python library consists of two layers. The top layer uses the
-:class:`CosmAPIClient` and object wrappers.  The lower layer via
+The xively-python library consists of two layers. The top layer uses the
+:class:`XivelyAPIClient` and object wrappers.  The lower layer via
 :class:`Client` gives access directly to sending native python types and
 accessing the response.
 
 API Client
 ==========
 
-.. autoclass:: cosm.CosmAPIClient
+.. autoclass:: xively.XivelyAPIClient
     :members:
     :undoc-members:
 
 Feeds, Datastreams and Datapoints
 ---------------------------------
 
-.. autoclass:: cosm.managers.FeedsManager
+.. autoclass:: xively.managers.FeedsManager
     :members:
     :undoc-members:
     :exclude-members: resource
 
-.. autoclass:: cosm.Feed
+.. autoclass:: xively.Feed
     :members:
     :undoc-members:
     :exclude-members: id, feed
 
-.. autoclass:: cosm.managers.DatastreamsManager
+.. autoclass:: xively.managers.DatastreamsManager
     :members:
     :undoc-members:
     :exclude-members: resource
 
-.. autoclass:: cosm.Datastream
+.. autoclass:: xively.Datastream
     :members:
     :undoc-members:
 
-.. autoclass:: cosm.managers.DatapointsManager
+.. autoclass:: xively.managers.DatapointsManager
     :members:
     :undoc-members:
     :exclude-members: resource
 
-.. autoclass:: cosm.Datapoint
+.. autoclass:: xively.Datapoint
     :members:
     :undoc-members:
 
 Location and Waypoints
 ----------------------
 
-.. autoclass:: cosm.Location
+.. autoclass:: xively.Location
     :members:
     :undoc-members:
 
-.. autoclass:: cosm.Waypoint
+.. autoclass:: xively.Waypoint
     :members:
     :undoc-members:
 
 API Keys
 --------
 
-.. autoclass:: cosm.managers.KeysManager
+.. autoclass:: xively.managers.KeysManager
     :members:
     :undoc-members:
 
-.. autoclass:: cosm.Key
+.. autoclass:: xively.Key
     :members:
     :undoc-members:
 
-.. autoclass:: cosm.Permission
+.. autoclass:: xively.Permission
     :members:
     :undoc-members:
 
-.. autoclass:: cosm.Resource
+.. autoclass:: xively.Resource
     :members:
     :undoc-members:
 
 Triggers
 --------
 
-.. autoclass:: cosm.managers.TriggersManager
+.. autoclass:: xively.managers.TriggersManager
     :members:
     :undoc-members:
     :exclude-members: resource
 
-.. autoclass:: cosm.Trigger
+.. autoclass:: xively.Trigger
     :members:
     :undoc-members:
 
 Low Level Client
 ================
 
-.. autoclass:: cosm.Client
+.. autoclass:: xively.Client
     :members:
     :undoc-members:
     :show-inheritance:

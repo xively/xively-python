@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API Reference &mdash; Cosm Python 0.1.0 documentation</title>
+    <title>API Reference &mdash; Xively Python 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Cosm Python 0.1.0 documentation" href="index.html" />
+    <link rel="top" title="Xively Python 0.1.0 documentation" href="index.html" />
     <link rel="next" title="Examples" href="examples.html" />
-    <link rel="prev" title="Welcome to Cosm Python’s documentation" href="index.html" /> 
+    <link rel="prev" title="Welcome to Xively Python’s documentation" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -41,9 +41,9 @@
           <a href="examples.html" title="Examples"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to Cosm Python’s documentation"
+          <a href="index.html" title="Welcome to Xively Python’s documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Cosm Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Xively Python 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,25 +52,25 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-cosm">
-<span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-cosm" title="Permalink to this headline">¶</a></h1>
-<p>The cosm-python library consists of two layers. The top layer uses the
-<a class="reference internal" href="#cosm.CosmAPIClient" title="cosm.CosmAPIClient"><tt class="xref py py-class docutils literal"><span class="pre">CosmAPIClient</span></tt></a> and object wrappers.  The lower layer via
-<a class="reference internal" href="#cosm.Client" title="cosm.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a> gives access directly to sending native python types and
+  <div class="section" id="module-xively">
+<span id="api-reference"></span><h1>API Reference<a class="headerlink" href="#module-xively" title="Permalink to this headline">¶</a></h1>
+<p>The xively-python library consists of two layers. The top layer uses the
+<a class="reference internal" href="#xively.XivelyAPIClient" title="xively.XivelyAPIClient"><tt class="xref py py-class docutils literal"><span class="pre">XivelyAPIClient</span></tt></a> and object wrappers.  The lower layer via
+<a class="reference internal" href="#xively.Client" title="xively.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a> gives access directly to sending native python types and
 accessing the response.</p>
 <div class="section" id="api-client">
 <h2>API Client<a class="headerlink" href="#api-client" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="cosm.CosmAPIClient">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">CosmAPIClient</tt><big>(</big><em>key</em>, <em>use_ssl=False</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#cosm.CosmAPIClient" title="Permalink to this definition">¶</a></dt>
-<dd><p>An instance of an authenticated Cosm API Client.</p>
+<dt id="xively.XivelyAPIClient">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">XivelyAPIClient</tt><big>(</big><em>key</em>, <em>use_ssl=False</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#xively.XivelyAPIClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>An instance of an authenticated Xively API Client.</p>
 <p>The root object from which the user can manage feeds, keys and triggers.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>str</em>) &#8211; A Cosm API Key</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; A Xively API Key</li>
 <li><strong>use_ssl</strong> (<em>bool [False]</em>) &#8211; Use https for all connections instead of http</li>
 <li><strong>kwargs</strong> &#8211; Other additional keyword arguments to pass to client</li>
 </ul>
@@ -79,46 +79,46 @@ accessing the response.</p>
 </tbody>
 </table>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
-<span class="go">&lt;cosm.CosmAPIClient()&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<span class="go">&lt;xively.XivelyAPIClient()&gt;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">,</span> <span class="n">use_ssl</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">,</span> <span class="n">use_ssl</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">base_url</span>
-<span class="go">&#39;https://api.cosm.com/v2/feeds&#39;</span>
+<span class="go">&#39;https://api.xively.com/v2/feeds&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">base_url</span>
-<span class="go">&#39;https://api.cosm.com/v2/triggers&#39;</span>
+<span class="go">&#39;https://api.xively.com/v2/triggers&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">base_url</span>
-<span class="go">&#39;https://api.cosm.com/v2/keys&#39;</span>
+<span class="go">&#39;https://api.xively.com/v2/keys&#39;</span>
 </pre></div>
 </div>
 <dl class="attribute">
-<dt id="cosm.CosmAPIClient.api_version">
-<tt class="descname">api_version</tt><em class="property"> = 'v2'</em><a class="headerlink" href="#cosm.CosmAPIClient.api_version" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.XivelyAPIClient.api_version">
+<tt class="descname">api_version</tt><em class="property"> = 'v2'</em><a class="headerlink" href="#xively.XivelyAPIClient.api_version" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="cosm.CosmAPIClient.client_class">
-<tt class="descname">client_class</tt><a class="headerlink" href="#cosm.CosmAPIClient.client_class" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <a class="reference internal" href="#cosm.Client" title="cosm.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a></p>
+<dt id="xively.XivelyAPIClient.client_class">
+<tt class="descname">client_class</tt><a class="headerlink" href="#xively.XivelyAPIClient.client_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#xively.Client" title="xively.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a></p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="cosm.CosmAPIClient.feeds">
-<tt class="descname">feeds</tt><a class="headerlink" href="#cosm.CosmAPIClient.feeds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Access <a class="reference internal" href="#cosm.Feed" title="cosm.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a> objects through a <a class="reference internal" href="#cosm.managers.FeedsManager" title="cosm.managers.FeedsManager"><tt class="xref py py-class docutils literal"><span class="pre">FeedsManager</span></tt></a>.</p>
+<dt id="xively.XivelyAPIClient.feeds">
+<tt class="descname">feeds</tt><a class="headerlink" href="#xively.XivelyAPIClient.feeds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access <a class="reference internal" href="#xively.Feed" title="xively.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a> objects through a <a class="reference internal" href="#xively.managers.FeedsManager" title="xively.managers.FeedsManager"><tt class="xref py py-class docutils literal"><span class="pre">FeedsManager</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="cosm.CosmAPIClient.keys">
-<tt class="descname">keys</tt><a class="headerlink" href="#cosm.CosmAPIClient.keys" title="Permalink to this definition">¶</a></dt>
-<dd><p>Access <a class="reference internal" href="#cosm.Key" title="cosm.Key"><tt class="xref py py-class docutils literal"><span class="pre">Key</span></tt></a> objects through a <a class="reference internal" href="#cosm.managers.KeysManager" title="cosm.managers.KeysManager"><tt class="xref py py-class docutils literal"><span class="pre">KeysManager</span></tt></a>.</p>
+<dt id="xively.XivelyAPIClient.keys">
+<tt class="descname">keys</tt><a class="headerlink" href="#xively.XivelyAPIClient.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access <a class="reference internal" href="#xively.Key" title="xively.Key"><tt class="xref py py-class docutils literal"><span class="pre">Key</span></tt></a> objects through a <a class="reference internal" href="#xively.managers.KeysManager" title="xively.managers.KeysManager"><tt class="xref py py-class docutils literal"><span class="pre">KeysManager</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="cosm.CosmAPIClient.triggers">
-<tt class="descname">triggers</tt><a class="headerlink" href="#cosm.CosmAPIClient.triggers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Access <a class="reference internal" href="#cosm.Trigger" title="cosm.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a> objects through a <a class="reference internal" href="#cosm.managers.TriggersManager" title="cosm.managers.TriggersManager"><tt class="xref py py-class docutils literal"><span class="pre">TriggersManager</span></tt></a>.</p>
+<dt id="xively.XivelyAPIClient.triggers">
+<tt class="descname">triggers</tt><a class="headerlink" href="#xively.XivelyAPIClient.triggers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access <a class="reference internal" href="#xively.Trigger" title="xively.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a> objects through a <a class="reference internal" href="#xively.managers.TriggersManager" title="xively.managers.TriggersManager"><tt class="xref py py-class docutils literal"><span class="pre">TriggersManager</span></tt></a>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -126,36 +126,36 @@ accessing the response.</p>
 <div class="section" id="feeds-datastreams-and-datapoints">
 <h3>Feeds, Datastreams and Datapoints<a class="headerlink" href="#feeds-datastreams-and-datapoints" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="cosm.managers.FeedsManager">
-<em class="property">class </em><tt class="descclassname">cosm.managers.</tt><tt class="descname">FeedsManager</tt><big>(</big><em>client</em><big>)</big><a class="headerlink" href="#cosm.managers.FeedsManager" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.FeedsManager">
+<em class="property">class </em><tt class="descclassname">xively.managers.</tt><tt class="descname">FeedsManager</tt><big>(</big><em>client</em><big>)</big><a class="headerlink" href="#xively.managers.FeedsManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create, update and return Feed objects.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This manager should live on a <a class="reference internal" href="#cosm.CosmAPIClient" title="cosm.CosmAPIClient"><tt class="xref py py-class docutils literal"><span class="pre">CosmAPIClient</span></tt></a> instance
+<p class="last">This manager should live on a <a class="reference internal" href="#xively.XivelyAPIClient" title="xively.XivelyAPIClient"><tt class="xref py py-class docutils literal"><span class="pre">XivelyAPIClient</span></tt></a> instance
 and not instantiated directly.</p>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>client</strong> &#8211; Low level <a class="reference internal" href="#cosm.Client" title="cosm.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a> instance</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>client</strong> &#8211; Low level <a class="reference internal" href="#xively.Client" title="xively.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a> instance</td>
 </tr>
 </tbody>
 </table>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Cosm Office environment&quot;</span><span class="p">)</span>
-<span class="go">&lt;cosm.Feed(7021)&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Xively Office environment&quot;</span><span class="p">)</span>
+<span class="go">&lt;xively.Feed(7021)&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">7021</span><span class="p">)</span>
-<span class="go">&lt;cosm.Feed(7021)&gt;</span>
+<span class="go">&lt;xively.Feed(7021)&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">7021</span><span class="p">,</span> <span class="n">private</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">7021</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="cosm.managers.FeedsManager.create">
-<tt class="descname">create</tt><big>(</big><em>title</em>, <em>website=None</em>, <em>tags=None</em>, <em>location=None</em>, <em>private=None</em>, <em>datastreams=None</em><big>)</big><a class="headerlink" href="#cosm.managers.FeedsManager.create" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.FeedsManager.create">
+<tt class="descname">create</tt><big>(</big><em>title</em>, <em>website=None</em>, <em>tags=None</em>, <em>location=None</em>, <em>private=None</em>, <em>datastreams=None</em><big>)</big><a class="headerlink" href="#xively.managers.FeedsManager.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new Feed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -167,7 +167,7 @@ and not instantiated directly.</p>
 e.g. home page</li>
 <li><strong>tags</strong> &#8211; Tagged metadata about the environment (characters &#8216; &#8221; and
 commas will be stripped out)</li>
-<li><strong>location</strong> &#8211; <a class="reference internal" href="#cosm.Location" title="cosm.Location"><tt class="xref py py-class docutils literal"><span class="pre">Location</span></tt></a> object for this feed</li>
+<li><strong>location</strong> &#8211; <a class="reference internal" href="#xively.Location" title="xively.Location"><tt class="xref py py-class docutils literal"><span class="pre">Location</span></tt></a> object for this feed</li>
 <li><strong>private</strong> &#8211; Whether the environment is private or not. Can be
 either True or False</li>
 </ul>
@@ -178,8 +178,8 @@ either True or False</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.FeedsManager.delete">
-<tt class="descname">delete</tt><big>(</big><em>id_or_url</em><big>)</big><a class="headerlink" href="#cosm.managers.FeedsManager.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.FeedsManager.delete">
+<tt class="descname">delete</tt><big>(</big><em>id_or_url</em><big>)</big><a class="headerlink" href="#xively.managers.FeedsManager.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a feed by id or url.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -196,8 +196,8 @@ either True or False</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.FeedsManager.get">
-<tt class="descname">get</tt><big>(</big><em>id_or_url</em>, <em>datastreams=None</em>, <em>show_user=None</em>, <em>start=None</em>, <em>end=None</em>, <em>duration=None</em>, <em>find_previous=None</em>, <em>limit=None</em>, <em>interval_type=None</em>, <em>interval=None</em><big>)</big><a class="headerlink" href="#cosm.managers.FeedsManager.get" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.FeedsManager.get">
+<tt class="descname">get</tt><big>(</big><em>id_or_url</em>, <em>datastreams=None</em>, <em>show_user=None</em>, <em>start=None</em>, <em>end=None</em>, <em>duration=None</em>, <em>find_previous=None</em>, <em>limit=None</em>, <em>interval_type=None</em>, <em>interval=None</em><big>)</big><a class="headerlink" href="#xively.managers.FeedsManager.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches and returns a feed by id or url.</p>
 <p>By default the most recent datastreams are returned. It is also
 possible to filter the datastreams returned with the feed by using the
@@ -227,12 +227,12 @@ not match one of these values, it is rounded up to the next value.</li>
 </tr>
 </tbody>
 </table>
-<p>See <a class="reference internal" href="#cosm.managers.DatapointsManager.history" title="cosm.managers.DatapointsManager.history"><tt class="xref py py-meth docutils literal"><span class="pre">history()</span></tt></a> for details.</p>
+<p>See <a class="reference internal" href="#xively.managers.DatapointsManager.history" title="xively.managers.DatapointsManager.history"><tt class="xref py py-meth docutils literal"><span class="pre">history()</span></tt></a> for details.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.FeedsManager.list">
-<tt class="descname">list</tt><big>(</big><em>page=None</em>, <em>per_page=None</em>, <em>content=None</em>, <em>q=None</em>, <em>tag=None</em>, <em>user=None</em>, <em>units=None</em>, <em>status=None</em>, <em>order=None</em>, <em>show_user=None</em>, <em>lat=None</em>, <em>lon=None</em>, <em>distance=None</em>, <em>distance_units=None</em><big>)</big><a class="headerlink" href="#cosm.managers.FeedsManager.list" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.FeedsManager.list">
+<tt class="descname">list</tt><big>(</big><em>page=None</em>, <em>per_page=None</em>, <em>content=None</em>, <em>q=None</em>, <em>tag=None</em>, <em>user=None</em>, <em>units=None</em>, <em>status=None</em>, <em>order=None</em>, <em>show_user=None</em>, <em>lat=None</em>, <em>lon=None</em>, <em>distance=None</em>, <em>distance_units=None</em><big>)</big><a class="headerlink" href="#xively.managers.FeedsManager.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a paged list of feeds.</p>
 <p>Only feeds that are viewable by the authenticated account will be
 returned. The following parameters can be applied to limit or refine
@@ -288,15 +288,15 @@ based searching of feeds:</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.FeedsManager.update">
-<tt class="descname">update</tt><big>(</big><em>id_or_url</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#cosm.managers.FeedsManager.update" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.FeedsManager.update">
+<tt class="descname">update</tt><big>(</big><em>id_or_url</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#xively.managers.FeedsManager.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates an existing feed by its id or url.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>id_or_url</strong> &#8211; The id of a <a class="reference internal" href="#cosm.Feed" title="cosm.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a> or its URL</li>
+<li><strong>id_or_url</strong> &#8211; The id of a <a class="reference internal" href="#xively.Feed" title="xively.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a> or its URL</li>
 <li><strong>kwargs</strong> &#8211; The fields to be updated</li>
 </ul>
 </td>
@@ -308,9 +308,9 @@ based searching of feeds:</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.Feed">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Feed</tt><big>(</big><em>title</em>, <em>website=None</em>, <em>tags=None</em>, <em>location=None</em>, <em>private=None</em>, <em>datastreams=None</em><big>)</big><a class="headerlink" href="#cosm.Feed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cosm Feed, which can contain a number of Datastreams.</p>
+<dt id="xively.Feed">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Feed</tt><big>(</big><em>title</em>, <em>website=None</em>, <em>tags=None</em>, <em>location=None</em>, <em>private=None</em>, <em>datastreams=None</em><big>)</big><a class="headerlink" href="#xively.Feed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Xively Feed, which can contain a number of Datastreams.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -321,7 +321,7 @@ based searching of feeds:</p>
 home page</li>
 <li><strong>tags</strong> &#8211; Tagged metadata about the environment (characters &#8216; &#8221; and
 commas will be stripped out)</li>
-<li><strong>location</strong> &#8211; <a class="reference internal" href="#cosm.Location" title="cosm.Location"><tt class="xref py py-class docutils literal"><span class="pre">Location</span></tt></a> object for this feed</li>
+<li><strong>location</strong> &#8211; <a class="reference internal" href="#xively.Location" title="xively.Location"><tt class="xref py py-class docutils literal"><span class="pre">Location</span></tt></a> object for this feed</li>
 <li><strong>private</strong> (<em>bool</em>) &#8211; Whether the environment is private or not.</li>
 </ul>
 </td>
@@ -329,37 +329,37 @@ commas will be stripped out)</li>
 </tbody>
 </table>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cosm</span><span class="o">.</span><span class="n">Feed</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Cosm Office environment&quot;</span><span class="p">)</span>
-<span class="go">&lt;cosm.Feed(None)&gt;</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xively</span><span class="o">.</span><span class="n">Feed</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;Xively Office environment&quot;</span><span class="p">)</span>
+<span class="go">&lt;xively.Feed(None)&gt;</span>
 </pre></div>
 </div>
 <dl class="attribute">
-<dt id="cosm.Feed.VERSION">
-<tt class="descname">VERSION</tt><em class="property"> = '1.0.0'</em><a class="headerlink" href="#cosm.Feed.VERSION" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Feed.VERSION">
+<tt class="descname">VERSION</tt><em class="property"> = '1.0.0'</em><a class="headerlink" href="#xively.Feed.VERSION" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
-<dt id="cosm.Feed.datastreams">
-<tt class="descname">datastreams</tt><a class="headerlink" href="#cosm.Feed.datastreams" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Feed.datastreams">
+<tt class="descname">datastreams</tt><a class="headerlink" href="#xively.Feed.datastreams" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manager for datastreams of this feed.</p>
 <p>When fetched from the API, datastreams behaves like a cache, populated
 with the most recently updated datastreams for this feed. The manager
 can also be used to create, update and delete datastreams for this
 feed.</p>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">7021</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  
-<span class="go">&lt;cosm.Datastream(&#39;3&#39;)&gt;</span>
+<span class="go">&lt;xively.Datastream(&#39;3&#39;)&gt;</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.Feed.delete">
-<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#cosm.Feed.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Feed.delete">
+<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#xively.Feed.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete this feed via the API.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -368,11 +368,11 @@ feed.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.Feed.update">
-<tt class="descname">update</tt><big>(</big><em>fields=None</em><big>)</big><a class="headerlink" href="#cosm.Feed.update" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Feed.update">
+<tt class="descname">update</tt><big>(</big><em>fields=None</em><big>)</big><a class="headerlink" href="#xively.Feed.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates feed and datastreams via the API.</p>
 <p>If successful, the current datastream values are stored and any changes
-in feed metadata overwrite previous values. Cosm stores a server-side
+in feed metadata overwrite previous values. Xively stores a server-side
 timestamp in the &#8220;updated&#8221; attribute and sets the feed to &#8220;live&#8221; if it
 wasn&#8217;t before.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -388,10 +388,10 @@ wasn&#8217;t before.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.managers.DatastreamsManager">
-<em class="property">class </em><tt class="descclassname">cosm.managers.</tt><tt class="descname">DatastreamsManager</tt><big>(</big><em>feed</em><big>)</big><a class="headerlink" href="#cosm.managers.DatastreamsManager" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatastreamsManager">
+<em class="property">class </em><tt class="descclassname">xively.managers.</tt><tt class="descname">DatastreamsManager</tt><big>(</big><em>feed</em><big>)</big><a class="headerlink" href="#xively.managers.DatastreamsManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create, update and return Datastream objects.</p>
-<p>Instances of this class hang off of <a class="reference internal" href="#cosm.Feed" title="cosm.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a> objects to manage
+<p>Instances of this class hang off of <a class="reference internal" href="#xively.Feed" title="xively.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a> objects to manage
 datastreams of that feed.</p>
 <p>A list of datastreams can be retrieved along with the feed which can be
 accessed via this instance as a sequence.</p>
@@ -399,23 +399,23 @@ accessed via this instance as a sequence.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>feed</strong> &#8211; A <a class="reference internal" href="#cosm.Feed" title="cosm.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a> instance.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>feed</strong> &#8211; A <a class="reference internal" href="#xively.Feed" title="xively.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a> instance.</td>
 </tr>
 </tbody>
 </table>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">7021</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span><span class="p">)</span>  
-<span class="go">[&lt;cosm.Datastream(&#39;3&#39;)&gt;, &lt;cosm.Datastream(&#39;4&#39;)&gt;]</span>
+<span class="go">[&lt;xively.Datastream(&#39;3&#39;)&gt;, &lt;xively.Datastream(&#39;4&#39;)&gt;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;1&quot;</span><span class="p">)</span>
-<span class="go">&lt;cosm.Datastream(&#39;1&#39;)&gt;</span>
+<span class="go">&lt;xively.Datastream(&#39;1&#39;)&gt;</span>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="cosm.managers.DatastreamsManager.create">
-<tt class="descname">create</tt><big>(</big><em>id</em>, <em>current_value=None</em>, <em>tags=None</em>, <em>unit=None</em>, <em>min_value=None</em>, <em>max_value=None</em><big>)</big><a class="headerlink" href="#cosm.managers.DatastreamsManager.create" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatastreamsManager.create">
+<tt class="descname">create</tt><big>(</big><em>id</em>, <em>current_value=None</em>, <em>tags=None</em>, <em>unit=None</em>, <em>min_value=None</em>, <em>max_value=None</em><big>)</big><a class="headerlink" href="#xively.managers.DatastreamsManager.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new datastream on a feed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -431,7 +431,7 @@ accessed via this instance as a sequence.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="#cosm.Datastream" title="cosm.Datastream"><tt class="xref py py-class docutils literal"><span class="pre">Datastream</span></tt></a> object</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A <a class="reference internal" href="#xively.Datastream" title="xively.Datastream"><tt class="xref py py-class docutils literal"><span class="pre">Datastream</span></tt></a> object</p>
 </td>
 </tr>
 </tbody>
@@ -439,8 +439,8 @@ accessed via this instance as a sequence.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.DatastreamsManager.delete">
-<tt class="descname">delete</tt><big>(</big><em>id_or_url</em><big>)</big><a class="headerlink" href="#cosm.managers.DatastreamsManager.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatastreamsManager.delete">
+<tt class="descname">delete</tt><big>(</big><em>id_or_url</em><big>)</big><a class="headerlink" href="#xively.managers.DatastreamsManager.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a datastream by id or url.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -457,8 +457,8 @@ accessed via this instance as a sequence.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.DatastreamsManager.get">
-<tt class="descname">get</tt><big>(</big><em>id_or_url</em>, <em>start=None</em>, <em>end=None</em>, <em>duration=None</em>, <em>find_previous=None</em>, <em>limit=None</em>, <em>interval_type=None</em>, <em>interval=None</em><big>)</big><a class="headerlink" href="#cosm.managers.DatastreamsManager.get" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatastreamsManager.get">
+<tt class="descname">get</tt><big>(</big><em>id_or_url</em>, <em>start=None</em>, <em>end=None</em>, <em>duration=None</em>, <em>find_previous=None</em>, <em>limit=None</em>, <em>interval_type=None</em>, <em>interval=None</em><big>)</big><a class="headerlink" href="#xively.managers.DatastreamsManager.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetches and returns a feed&#8217;s datastream by its id.</p>
 <p>If start, end or duration are given, also returns Datapoints for that
 period.</p>
@@ -486,12 +486,12 @@ not match one of these values, it is rounded up to the next value.</li>
 </tr>
 </tbody>
 </table>
-<p>See <a class="reference internal" href="#cosm.managers.DatapointsManager.history" title="cosm.managers.DatapointsManager.history"><tt class="xref py py-meth docutils literal"><span class="pre">history()</span></tt></a> for details.</p>
+<p>See <a class="reference internal" href="#xively.managers.DatapointsManager.history" title="xively.managers.DatapointsManager.history"><tt class="xref py py-meth docutils literal"><span class="pre">history()</span></tt></a> for details.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.DatastreamsManager.list">
-<tt class="descname">list</tt><big>(</big><em>datastreams=None</em>, <em>show_user=None</em><big>)</big><a class="headerlink" href="#cosm.managers.DatastreamsManager.list" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatastreamsManager.list">
+<tt class="descname">list</tt><big>(</big><em>datastreams=None</em>, <em>show_user=None</em><big>)</big><a class="headerlink" href="#xively.managers.DatastreamsManager.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of datastreams for the parent feed object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -508,8 +508,8 @@ not match one of these values, it is rounded up to the next value.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.DatastreamsManager.update">
-<tt class="descname">update</tt><big>(</big><em>datastream_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#cosm.managers.DatastreamsManager.update" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatastreamsManager.update">
+<tt class="descname">update</tt><big>(</big><em>datastream_id</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#xively.managers.DatastreamsManager.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates a feeds datastream by id.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -528,9 +528,9 @@ not match one of these values, it is rounded up to the next value.</li>
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.Datastream">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Datastream</tt><big>(</big><em>id</em>, <em>tags=None</em>, <em>unit=None</em>, <em>min_value=None</em>, <em>max_value=None</em>, <em>current_value=None</em>, <em>datapoints=None</em><big>)</big><a class="headerlink" href="#cosm.Datastream" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cosm Datastream containing current and historical values.</p>
+<dt id="xively.Datastream">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Datastream</tt><big>(</big><em>id</em>, <em>tags=None</em>, <em>unit=None</em>, <em>min_value=None</em>, <em>max_value=None</em>, <em>current_value=None</em>, <em>datapoints=None</em><big>)</big><a class="headerlink" href="#xively.Datastream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Xively Datastream containing current and historical values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -549,33 +549,33 @@ not match one of these values, it is rounded up to the next value.</li>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="cosm.Datastream.datapoints">
-<tt class="descname">datapoints</tt><a class="headerlink" href="#cosm.Datastream.datapoints" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Datastream.datapoints">
+<tt class="descname">datapoints</tt><a class="headerlink" href="#xively.Datastream.datapoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manager for datapoints of this datastream.</p>
 <p>When a datastream is fetched with history from the API, datapoints is
 a sequence of timestamped values for the period requested. The manger
 can also be used tocreate, update and delte datapoints for this
 datastream.</p>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">7021</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">datastream</span> <span class="o">=</span> <span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;random5&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">start</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
 <span class="gp">... </span>    <span class="n">end</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2013</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">datastream</span><span class="o">.</span><span class="n">datapoints</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
 <span class="gp">... </span>
-<span class="go">[cosm.Datapoint(datetime.datetime(...), &#39;0.25741970&#39;),</span>
-<span class="go"> cosm.Datapoint(datetime.datetime(...), &#39;0.86826886&#39;)]</span>
+<span class="go">[xively.Datapoint(datetime.datetime(...), &#39;0.25741970&#39;),</span>
+<span class="go"> xively.Datapoint(datetime.datetime(...), &#39;0.86826886&#39;)]</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.Datastream.delete">
-<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#cosm.Datastream.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete this datastream from Cosm.</p>
+<dt id="xively.Datastream.delete">
+<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#xively.Datastream.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete this datastream from Xively.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">This is final and cannot be undone.</p>
@@ -583,9 +583,9 @@ datastream.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.Datastream.update">
-<tt class="descname">update</tt><big>(</big><em>fields=None</em><big>)</big><a class="headerlink" href="#cosm.Datastream.update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends the current state of this datastream to Cosm.</p>
+<dt id="xively.Datastream.update">
+<tt class="descname">update</tt><big>(</big><em>fields=None</em><big>)</big><a class="headerlink" href="#xively.Datastream.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends the current state of this datastream to Xively.</p>
 <p>This method updates just the single datastream.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -600,23 +600,23 @@ datastream.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.managers.DatapointsManager">
-<em class="property">class </em><tt class="descclassname">cosm.managers.</tt><tt class="descname">DatapointsManager</tt><big>(</big><em>datastream</em><big>)</big><a class="headerlink" href="#cosm.managers.DatapointsManager" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatapointsManager">
+<em class="property">class </em><tt class="descclassname">xively.managers.</tt><tt class="descname">DatapointsManager</tt><big>(</big><em>datastream</em><big>)</big><a class="headerlink" href="#xively.managers.DatapointsManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manage datapoints of a datastream.</p>
-<p>A list of <a class="reference internal" href="#cosm.Datapoint" title="cosm.Datapoint"><tt class="xref py py-class docutils literal"><span class="pre">Datapoint</span></tt></a> objects can be retrieved along with the
-<a class="reference internal" href="#cosm.Datastream" title="cosm.Datastream"><tt class="xref py py-class docutils literal"><span class="pre">Datastream</span></tt></a> (or <a class="reference internal" href="#cosm.Feed" title="cosm.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a>) which can be accessed via this
+<p>A list of <a class="reference internal" href="#xively.Datapoint" title="xively.Datapoint"><tt class="xref py py-class docutils literal"><span class="pre">Datapoint</span></tt></a> objects can be retrieved along with the
+<a class="reference internal" href="#xively.Datastream" title="xively.Datastream"><tt class="xref py py-class docutils literal"><span class="pre">Datastream</span></tt></a> (or <a class="reference internal" href="#xively.Feed" title="xively.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a>) which can be accessed via this
 instance as a sequence.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>datastream</strong> &#8211; A <a class="reference internal" href="#cosm.Datastream" title="cosm.Datastream"><tt class="xref py py-class docutils literal"><span class="pre">Datastream</span></tt></a> instance.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>datastream</strong> &#8211; A <a class="reference internal" href="#xively.Datastream" title="xively.Datastream"><tt class="xref py py-class docutils literal"><span class="pre">Datastream</span></tt></a> instance.</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
-<dt id="cosm.managers.DatapointsManager.create">
-<tt class="descname">create</tt><big>(</big><em>value</em>, <em>at=None</em><big>)</big><a class="headerlink" href="#cosm.managers.DatapointsManager.create" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatapointsManager.create">
+<tt class="descname">create</tt><big>(</big><em>value</em>, <em>at=None</em><big>)</big><a class="headerlink" href="#xively.managers.DatapointsManager.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a single new datapoint for this datastream.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -637,16 +637,16 @@ instead:</p>
 <p class="last">You can use ISO8601 formatted strings instead of datetime
 objects when dealing with the API.</p>
 </div>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">feeds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">7021</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">datastream</span> <span class="o">=</span> <span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># First create the datapoints.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">datastream</span><span class="o">.</span><span class="n">datapoints</span> <span class="o">=</span> <span class="p">[</span>
-<span class="gp">... </span>    <span class="n">cosm</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="s">&quot;2010-05-20T11:01:43Z&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">294</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">cosm</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="s">&quot;2010-05-20T11:01:44Z&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">295</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">cosm</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="s">&quot;2010-05-20T11:01:45Z&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">296</span><span class="p">),</span>
-<span class="gp">... </span>    <span class="n">cosm</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="s">&quot;2010-05-20T11:01:46Z&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">297</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="s">&quot;2010-05-20T11:01:43Z&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">294</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="s">&quot;2010-05-20T11:01:44Z&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">295</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="s">&quot;2010-05-20T11:01:45Z&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">296</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datapoint</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="s">&quot;2010-05-20T11:01:46Z&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">297</span><span class="p">),</span>
 <span class="gp">... </span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># Then send them to the server.</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">datastream</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="s">&#39;datapoints&#39;</span><span class="p">)</span>
@@ -655,8 +655,8 @@ objects when dealing with the API.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.DatapointsManager.delete">
-<tt class="descname">delete</tt><big>(</big><em>at=None</em>, <em>start=None</em>, <em>end=None</em>, <em>duration=None</em><big>)</big><a class="headerlink" href="#cosm.managers.DatapointsManager.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatapointsManager.delete">
+<tt class="descname">delete</tt><big>(</big><em>at=None</em>, <em>start=None</em>, <em>end=None</em>, <em>duration=None</em><big>)</big><a class="headerlink" href="#xively.managers.DatapointsManager.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a datapoint or a range of datapoints.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -682,13 +682,13 @@ prior to the supplied value.</p>
 delete all datapoints between the <cite>start</cite> and (<cite>start</cite> + <cite>duration</cite>).
 Providing <cite>end</cite> will delete all datapoints between (<cite>end</cite> - <cite>duration</cite>)
 and <cite>end</cite>. The formatting of the <cite>duration</cite> parameter is the same as is
-used in the <a class="reference internal" href="#cosm.managers.DatapointsManager.history" title="cosm.managers.DatapointsManager.history"><tt class="xref py py-meth docutils literal"><span class="pre">history()</span></tt></a> method.</p>
+used in the <a class="reference internal" href="#xively.managers.DatapointsManager.history" title="xively.managers.DatapointsManager.history"><tt class="xref py py-meth docutils literal"><span class="pre">history()</span></tt></a> method.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.DatapointsManager.get">
-<tt class="descname">get</tt><big>(</big><em>at</em><big>)</big><a class="headerlink" href="#cosm.managers.DatapointsManager.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetch and return a <a class="reference internal" href="#cosm.Datapoint" title="cosm.Datapoint"><tt class="xref py py-class docutils literal"><span class="pre">Datapoint</span></tt></a> at the given timestamp.</p>
+<dt id="xively.managers.DatapointsManager.get">
+<tt class="descname">get</tt><big>(</big><em>at</em><big>)</big><a class="headerlink" href="#xively.managers.DatapointsManager.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch and return a <a class="reference internal" href="#xively.Datapoint" title="xively.Datapoint"><tt class="xref py py-class docutils literal"><span class="pre">Datapoint</span></tt></a> at the given timestamp.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -700,8 +700,8 @@ used in the <a class="reference internal" href="#cosm.managers.DatapointsManager
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.DatapointsManager.history">
-<tt class="descname">history</tt><big>(</big><em>start=None</em>, <em>end=None</em>, <em>duration=None</em>, <em>find_previous=None</em>, <em>limit=None</em>, <em>interval_type=None</em>, <em>interval=None</em><big>)</big><a class="headerlink" href="#cosm.managers.DatapointsManager.history" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatapointsManager.history">
+<tt class="descname">history</tt><big>(</big><em>start=None</em>, <em>end=None</em>, <em>duration=None</em>, <em>find_previous=None</em>, <em>limit=None</em>, <em>interval_type=None</em>, <em>interval=None</em><big>)</big><a class="headerlink" href="#xively.managers.DatapointsManager.history" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch and return a list of datapoints in a given timerange.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -816,8 +816,8 @@ them up into smaller chunks.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.DatapointsManager.update">
-<tt class="descname">update</tt><big>(</big><em>at</em>, <em>value</em><big>)</big><a class="headerlink" href="#cosm.managers.DatapointsManager.update" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.DatapointsManager.update">
+<tt class="descname">update</tt><big>(</big><em>at</em>, <em>value</em><big>)</big><a class="headerlink" href="#xively.managers.DatapointsManager.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the value of a datapiont at a given timestamp.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -840,8 +840,8 @@ them up into smaller chunks.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.Datapoint">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Datapoint</tt><big>(</big><em>at</em>, <em>value</em><big>)</big><a class="headerlink" href="#cosm.Datapoint" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Datapoint">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Datapoint</tt><big>(</big><em>at</em>, <em>value</em><big>)</big><a class="headerlink" href="#xively.Datapoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>A Datapoint represents a value at a certain point in time.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -856,8 +856,8 @@ them up into smaller chunks.</p>
 </tbody>
 </table>
 <dl class="method">
-<dt id="cosm.Datapoint.delete">
-<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#cosm.Datapoint.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Datapoint.delete">
+<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#xively.Datapoint.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete this datapoint.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -866,8 +866,8 @@ them up into smaller chunks.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.Datapoint.update">
-<tt class="descname">update</tt><big>(</big><big>)</big><a class="headerlink" href="#cosm.Datapoint.update" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Datapoint.update">
+<tt class="descname">update</tt><big>(</big><big>)</big><a class="headerlink" href="#xively.Datapoint.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update this datapoint&#8217;s value.</p>
 </dd></dl>
 
@@ -877,8 +877,8 @@ them up into smaller chunks.</p>
 <div class="section" id="location-and-waypoints">
 <h3>Location and Waypoints<a class="headerlink" href="#location-and-waypoints" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="cosm.Location">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Location</tt><big>(</big><em>name=None</em>, <em>domain=None</em>, <em>exposure=None</em>, <em>disposition=None</em>, <em>lat=None</em>, <em>lon=None</em>, <em>ele=None</em>, <em>waypoints=None</em><big>)</big><a class="headerlink" href="#cosm.Location" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Location">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Location</tt><big>(</big><em>name=None</em>, <em>domain=None</em>, <em>exposure=None</em>, <em>disposition=None</em>, <em>lat=None</em>, <em>lon=None</em>, <em>ele=None</em>, <em>waypoints=None</em><big>)</big><a class="headerlink" href="#xively.Location" title="Permalink to this definition">¶</a></dt>
 <dd><p>The location and location type of a feed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -901,8 +901,8 @@ them up into smaller chunks.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.Waypoint">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Waypoint</tt><big>(</big><em>at</em>, <em>lat</em>, <em>lon</em><big>)</big><a class="headerlink" href="#cosm.Waypoint" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Waypoint">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Waypoint</tt><big>(</big><em>at</em>, <em>lat</em>, <em>lon</em><big>)</big><a class="headerlink" href="#xively.Waypoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>A waypoint represents where a mobile feed was at a particular time.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -923,40 +923,40 @@ them up into smaller chunks.</p>
 <div class="section" id="api-keys">
 <h3>API Keys<a class="headerlink" href="#api-keys" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="cosm.managers.KeysManager">
-<em class="property">class </em><tt class="descclassname">cosm.managers.</tt><tt class="descname">KeysManager</tt><big>(</big><em>client</em><big>)</big><a class="headerlink" href="#cosm.managers.KeysManager" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.KeysManager">
+<em class="property">class </em><tt class="descclassname">xively.managers.</tt><tt class="descname">KeysManager</tt><big>(</big><em>client</em><big>)</big><a class="headerlink" href="#xively.managers.KeysManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Manage keys their permissions and restrict by resource.</p>
-<p>This manager should live on a <a class="reference internal" href="#cosm.CosmAPIClient" title="cosm.CosmAPIClient"><tt class="xref py py-class docutils literal"><span class="pre">CosmAPIClient</span></tt></a> instance and not
+<p>This manager should live on a <a class="reference internal" href="#xively.XivelyAPIClient" title="xively.XivelyAPIClient"><tt class="xref py py-class docutils literal"><span class="pre">XivelyAPIClient</span></tt></a> instance and not
 instantiated directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>client</strong> &#8211; Low level <a class="reference internal" href="#cosm.Client" title="cosm.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a> instance</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>client</strong> &#8211; Low level <a class="reference internal" href="#xively.Client" title="xively.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a> instance</td>
 </tr>
 </tbody>
 </table>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">label</span><span class="o">=</span><span class="s">&quot;sharing key&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">private_access</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">permissions</span><span class="o">=</span><span class="p">[</span>
-<span class="gp">... </span>        <span class="n">cosm</span><span class="o">.</span><span class="n">Permission</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">xively</span><span class="o">.</span><span class="n">Permission</span><span class="p">(</span>
 <span class="gp">... </span>            <span class="n">access_methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;put&quot;</span><span class="p">],</span>
 <span class="gp">... </span>            <span class="n">source_ip</span><span class="o">=</span><span class="s">&quot;128.44.98.129&quot;</span><span class="p">,</span>
 <span class="gp">... </span>            <span class="n">resources</span><span class="o">=</span><span class="p">[</span>
-<span class="gp">... </span>                <span class="n">cosm</span><span class="o">.</span><span class="n">Resource</span><span class="p">(</span><span class="n">feed_id</span><span class="o">=</span><span class="mi">504</span><span class="p">),</span>
+<span class="gp">... </span>                <span class="n">xively</span><span class="o">.</span><span class="n">Resource</span><span class="p">(</span><span class="n">feed_id</span><span class="o">=</span><span class="mi">504</span><span class="p">),</span>
 <span class="gp">... </span>            <span class="p">]),</span>
-<span class="gp">... </span>        <span class="n">cosm</span><span class="o">.</span><span class="n">Permission</span><span class="p">(</span><span class="n">access_methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;get&quot;</span><span class="p">])</span>
+<span class="gp">... </span>        <span class="n">xively</span><span class="o">.</span><span class="n">Permission</span><span class="p">(</span><span class="n">access_methods</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;get&quot;</span><span class="p">])</span>
 <span class="gp">... </span>    <span class="p">])</span>
-<span class="go">&lt;cosm.Key(&#39;sharing key&#39;)&gt;</span>
+<span class="go">&lt;xively.Key(&#39;sharing key&#39;)&gt;</span>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="cosm.managers.KeysManager.create">
-<tt class="descname">create</tt><big>(</big><em>label</em>, <em>permissions</em>, <em>expires_at=None</em>, <em>private_access=None</em><big>)</big><a class="headerlink" href="#cosm.managers.KeysManager.create" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.KeysManager.create">
+<tt class="descname">create</tt><big>(</big><em>label</em>, <em>permissions</em>, <em>expires_at=None</em>, <em>private_access=None</em><big>)</big><a class="headerlink" href="#xively.managers.KeysManager.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new API key.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -977,8 +977,8 @@ private resources belonging to the user</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.KeysManager.delete">
-<tt class="descname">delete</tt><big>(</big><em>key_id</em><big>)</big><a class="headerlink" href="#cosm.managers.KeysManager.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.KeysManager.delete">
+<tt class="descname">delete</tt><big>(</big><em>key_id</em><big>)</big><a class="headerlink" href="#xively.managers.KeysManager.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete the specified key.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -991,8 +991,8 @@ private resources belonging to the user</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.KeysManager.get">
-<tt class="descname">get</tt><big>(</big><em>key_id</em><big>)</big><a class="headerlink" href="#cosm.managers.KeysManager.get" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.KeysManager.get">
+<tt class="descname">get</tt><big>(</big><em>key_id</em><big>)</big><a class="headerlink" href="#xively.managers.KeysManager.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch and return an API key by its id.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1005,8 +1005,8 @@ private resources belonging to the user</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.KeysManager.list">
-<tt class="descname">list</tt><big>(</big><em>feed_id=None</em><big>)</big><a class="headerlink" href="#cosm.managers.KeysManager.list" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.KeysManager.list">
+<tt class="descname">list</tt><big>(</big><em>feed_id=None</em><big>)</big><a class="headerlink" href="#xively.managers.KeysManager.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>List all API keys for this account or for the given feed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1020,15 +1020,15 @@ datastreams.</td>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="cosm.managers.KeysManager.resource">
-<tt class="descname">resource</tt><em class="property"> = 'keys'</em><a class="headerlink" href="#cosm.managers.KeysManager.resource" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.KeysManager.resource">
+<tt class="descname">resource</tt><em class="property"> = 'keys'</em><a class="headerlink" href="#xively.managers.KeysManager.resource" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.Key">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Key</tt><big>(</big><em>label</em>, <em>permissions</em>, <em>expires_at=None</em>, <em>private_access=False</em><big>)</big><a class="headerlink" href="#cosm.Key" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Key">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Key</tt><big>(</big><em>label</em>, <em>permissions</em>, <em>expires_at=None</em>, <em>private_access=False</em><big>)</big><a class="headerlink" href="#xively.Key" title="Permalink to this definition">¶</a></dt>
 <dd><p>Keys set which permissions are granted for certain resources.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1047,16 +1047,16 @@ private resources belonging to the user</li>
 </tbody>
 </table>
 <dl class="method">
-<dt id="cosm.Key.delete">
-<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#cosm.Key.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Key.delete">
+<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#xively.Key.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete this key.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.Permission">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Permission</tt><big>(</big><em>access_methods</em>, <em>source_ip=None</em>, <em>referer=None</em>, <em>minimum_interval=None</em>, <em>label=None</em>, <em>resources=None</em><big>)</big><a class="headerlink" href="#cosm.Permission" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Permission">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Permission</tt><big>(</big><em>access_methods</em>, <em>source_ip=None</em>, <em>referer=None</em>, <em>minimum_interval=None</em>, <em>label=None</em>, <em>resources=None</em><big>)</big><a class="headerlink" href="#xively.Permission" title="Permalink to this definition">¶</a></dt>
 <dd><p>Permissions restrict what can be done by a key.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1085,8 +1085,8 @@ feeds or datastreams</li>
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.Resource">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Resource</tt><big>(</big><em>feed_id</em>, <em>datastream_id=None</em><big>)</big><a class="headerlink" href="#cosm.Resource" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Resource">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Resource</tt><big>(</big><em>feed_id</em>, <em>datastream_id=None</em><big>)</big><a class="headerlink" href="#xively.Resource" title="Permalink to this definition">¶</a></dt>
 <dd><p>A Resource defines what an API key has access to.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1107,47 +1107,47 @@ the feed id must also be specified</li>
 <div class="section" id="triggers">
 <h3>Triggers<a class="headerlink" href="#triggers" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
-<dt id="cosm.managers.TriggersManager">
-<em class="property">class </em><tt class="descclassname">cosm.managers.</tt><tt class="descname">TriggersManager</tt><big>(</big><em>client</em><big>)</big><a class="headerlink" href="#cosm.managers.TriggersManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Manage <a class="reference internal" href="#cosm.Trigger" title="cosm.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a>.</p>
-<p>This manager should live on a <a class="reference internal" href="#cosm.CosmAPIClient" title="cosm.CosmAPIClient"><tt class="xref py py-class docutils literal"><span class="pre">CosmAPIClient</span></tt></a> instance and not
+<dt id="xively.managers.TriggersManager">
+<em class="property">class </em><tt class="descclassname">xively.managers.</tt><tt class="descname">TriggersManager</tt><big>(</big><em>client</em><big>)</big><a class="headerlink" href="#xively.managers.TriggersManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manage <a class="reference internal" href="#xively.Trigger" title="xively.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a>.</p>
+<p>This manager should live on a <a class="reference internal" href="#xively.XivelyAPIClient" title="xively.XivelyAPIClient"><tt class="xref py py-class docutils literal"><span class="pre">XivelyAPIClient</span></tt></a> instance and not
 instantiated directly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>client</strong> &#8211; Low level <a class="reference internal" href="#cosm.Client" title="cosm.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a> instance</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>client</strong> &#8211; Low level <a class="reference internal" href="#xively.Client" title="xively.Client"><tt class="xref py py-class docutils literal"><span class="pre">Client</span></tt></a> instance</td>
 </tr>
 </tbody>
 </table>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cosm</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">environment_id</span><span class="o">=</span><span class="mi">8470</span><span class="p">,</span> <span class="n">stream_id</span><span class="o">=</span><span class="s">&quot;0&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">url</span><span class="o">=</span><span class="s">&quot;http://www.postbin.org/1ijyltn&quot;</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="n">trigger_type</span><span class="o">=</span><span class="s">&#39;lt&#39;</span><span class="p">,</span> <span class="n">threshold_value</span><span class="o">=</span><span class="s">&quot;15.0&quot;</span><span class="p">)</span>
-<span class="go">&lt;cosm.Trigger(3)&gt;</span>
+<span class="go">&lt;xively.Trigger(3)&gt;</span>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="cosm.managers.TriggersManager.create">
-<tt class="descname">create</tt><big>(</big><em>environment_id</em>, <em>stream_id</em>, <em>url</em>, <em>trigger_type</em>, <em>threshold_value=None</em><big>)</big><a class="headerlink" href="#cosm.managers.TriggersManager.create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a new <a class="reference internal" href="#cosm.Trigger" title="cosm.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a>.</p>
+<dt id="xively.managers.TriggersManager.create">
+<tt class="descname">create</tt><big>(</big><em>environment_id</em>, <em>stream_id</em>, <em>url</em>, <em>trigger_type</em>, <em>threshold_value=None</em><big>)</big><a class="headerlink" href="#xively.managers.TriggersManager.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new <a class="reference internal" href="#xively.Trigger" title="xively.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>environment_id</strong> &#8211; An ID of a <a class="reference internal" href="#cosm.Feed" title="cosm.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a></li>
-<li><strong>stream_id</strong> &#8211; An ID of a <a class="reference internal" href="#cosm.Datastream" title="cosm.Datastream"><tt class="xref py py-class docutils literal"><span class="pre">Datastream</span></tt></a></li>
+<li><strong>environment_id</strong> &#8211; An ID of a <a class="reference internal" href="#xively.Feed" title="xively.Feed"><tt class="xref py py-class docutils literal"><span class="pre">Feed</span></tt></a></li>
+<li><strong>stream_id</strong> &#8211; An ID of a <a class="reference internal" href="#xively.Datastream" title="xively.Datastream"><tt class="xref py py-class docutils literal"><span class="pre">Datastream</span></tt></a></li>
 <li><strong>url</strong> &#8211; The URL to POST events to</li>
 <li><strong>trigger_type</strong> &#8211; The type of trigger (from below)</li>
 <li><strong>threshold_value</strong> &#8211; The threshold at which the trigger fires</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A new <a class="reference internal" href="#cosm.Trigger" title="cosm.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a> object.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A new <a class="reference internal" href="#xively.Trigger" title="xively.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a> object.</p>
 </td>
 </tr>
 </tbody>
@@ -1188,8 +1188,8 @@ instantiated directly.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.TriggersManager.delete">
-<tt class="descname">delete</tt><big>(</big><em>id_or_url</em><big>)</big><a class="headerlink" href="#cosm.managers.TriggersManager.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.TriggersManager.delete">
+<tt class="descname">delete</tt><big>(</big><em>id_or_url</em><big>)</big><a class="headerlink" href="#xively.managers.TriggersManager.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a trigger by id or url.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -1206,8 +1206,8 @@ instantiated directly.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.TriggersManager.get">
-<tt class="descname">get</tt><big>(</big><em>id_or_url</em><big>)</big><a class="headerlink" href="#cosm.managers.TriggersManager.get" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.TriggersManager.get">
+<tt class="descname">get</tt><big>(</big><em>id_or_url</em><big>)</big><a class="headerlink" href="#xively.managers.TriggersManager.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch and return an existing trigger.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1220,8 +1220,8 @@ instantiated directly.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.TriggersManager.list">
-<tt class="descname">list</tt><big>(</big><em>feed_id=None</em><big>)</big><a class="headerlink" href="#cosm.managers.TriggersManager.list" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.TriggersManager.list">
+<tt class="descname">list</tt><big>(</big><em>feed_id=None</em><big>)</big><a class="headerlink" href="#xively.managers.TriggersManager.list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of triggers.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1235,15 +1235,15 @@ datastreams of the specified feed.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.managers.TriggersManager.update">
-<tt class="descname">update</tt><big>(</big><em>id_or_url</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#cosm.managers.TriggersManager.update" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.managers.TriggersManager.update">
+<tt class="descname">update</tt><big>(</big><em>id_or_url</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#xively.managers.TriggersManager.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update an existing trigger.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>id_or_url</strong> &#8211; The ID of the <a class="reference internal" href="#cosm.Trigger" title="cosm.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a> to update or its URL</li>
+<li><strong>id_or_url</strong> &#8211; The ID of the <a class="reference internal" href="#xively.Trigger" title="xively.Trigger"><tt class="xref py py-class docutils literal"><span class="pre">Trigger</span></tt></a> to update or its URL</li>
 <li><strong>kwargs</strong> &#8211; The fields to be updated</li>
 </ul>
 </td>
@@ -1255,20 +1255,20 @@ datastreams of the specified feed.</td>
 </dd></dl>
 
 <dl class="class">
-<dt id="cosm.Trigger">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Trigger</tt><big>(</big><em>environment_id</em>, <em>stream_id</em>, <em>url</em>, <em>trigger_type</em>, <em>threshold_value=None</em><big>)</big><a class="headerlink" href="#cosm.Trigger" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Trigger">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Trigger</tt><big>(</big><em>environment_id</em>, <em>stream_id</em>, <em>url</em>, <em>trigger_type</em>, <em>threshold_value=None</em><big>)</big><a class="headerlink" href="#xively.Trigger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Triggers provide &#8216;push&#8217; capabilities (aka notifications).</p>
 <p>To create a new trigger, use the <tt class="xref py py-class docutils literal"><span class="pre">TriggersManager</span></tt> on a
-<tt class="xref py py-class docutils literal"><span class="pre">CosmAPIClient</span></tt> instance.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cosm</span> <span class="kn">import</span> <span class="n">CosmAPIClient</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">CosmAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
+<tt class="xref py py-class docutils literal"><span class="pre">XivelyAPIClient</span></tt> instance.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">xively</span> <span class="kn">import</span> <span class="n">XivelyAPIClient</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span><span class="o">.</span><span class="n">triggers</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="s">&quot;temperature&quot;</span><span class="p">,</span> <span class="s">&quot;http://example.com&quot;</span><span class="p">,</span> <span class="s">&quot;frozen&quot;</span><span class="p">)</span>
-<span class="go">&lt;cosm.Trigger(3)&gt;</span>
+<span class="go">&lt;xively.Trigger(3)&gt;</span>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="cosm.Trigger.delete">
-<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#cosm.Trigger.delete" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Trigger.delete">
+<tt class="descname">delete</tt><big>(</big><big>)</big><a class="headerlink" href="#xively.Trigger.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a trigger.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -1277,8 +1277,8 @@ datastreams of the specified feed.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="cosm.Trigger.update">
-<tt class="descname">update</tt><big>(</big><em>fields=None</em><big>)</big><a class="headerlink" href="#cosm.Trigger.update" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Trigger.update">
+<tt class="descname">update</tt><big>(</big><em>fields=None</em><big>)</big><a class="headerlink" href="#xively.Trigger.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update an existing trigger.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1297,19 +1297,19 @@ datastreams of the specified feed.</td>
 <div class="section" id="low-level-client">
 <h2>Low Level Client<a class="headerlink" href="#low-level-client" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="cosm.Client">
-<em class="property">class </em><tt class="descclassname">cosm.</tt><tt class="descname">Client</tt><big>(</big><em>key</em>, <em>use_ssl=False</em>, <em>verify=True</em><big>)</big><a class="headerlink" href="#cosm.Client" title="Permalink to this definition">¶</a></dt>
+<dt id="xively.Client">
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Client</tt><big>(</big><em>key</em>, <em>use_ssl=False</em>, <em>verify=True</em><big>)</big><a class="headerlink" href="#xively.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">requests.sessions.Session</span></tt></p>
-<p>A Cosm API Client object.</p>
+<p>A Xively API Client object.</p>
 <p>This is instantiated with an API key which is used for all requests to the
-Cosm API.  It also defines a BASE_URL so that we can specify relative urls
-when using the client (all requests via this client are going to Cosm).</p>
+Xively API.  It also defines a BASE_URL so that we can specify relative urls
+when using the client (all requests via this client are going to Xively).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>key</strong> (<em>str</em>) &#8211; A Cosm API Key</li>
+<li><strong>key</strong> (<em>str</em>) &#8211; A Xively API Key</li>
 <li><strong>use_ssl</strong> (<em>bool [False]</em>) &#8211; Use https for all connections instead of http</li>
 <li><strong>verify</strong> &#8211; Verify SSL certificates (default: True)</li>
 </ul>
@@ -1320,16 +1320,16 @@ when using the client (all requests via this client are going to Cosm).</p>
 <p>A Client instance can also be used when you want low level access to the
 API and can be used with CSV or XML instead of the default JSON.</p>
 <p>Usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">cosm</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">body</span> <span class="o">=</span> <span class="s">&quot;1,123</span><span class="se">\r\n</span><span class="s">2,456</span><span class="se">\r\n</span><span class="s">&quot;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s">&#39;/v2/feeds/1977.csv&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">body</span><span class="p">)</span>
 <span class="go">&lt;Response [200]&gt;</span>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="cosm.Client.request">
-<tt class="descname">request</tt><big>(</big><em>method</em>, <em>url</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#cosm.Client.request" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs and sends a Request to the Cosm API.</p>
+<dt id="xively.Client.request">
+<tt class="descname">request</tt><big>(</big><em>method</em>, <em>url</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#xively.Client.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs and sends a Request to the Xively API.</p>
 <p>Objects that implement __getstate__  will be serialised.</p>
 </dd></dl>
 
@@ -1361,7 +1361,7 @@ API and can be used with CSV or XML instead of the default JSON.</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to Cosm Python&#8217;s documentation</a></p>
+                        title="previous chapter">Welcome to Xively Python&#8217;s documentation</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="examples.html"
                         title="next chapter">Examples</a></p>
@@ -1400,13 +1400,13 @@ API and can be used with CSV or XML instead of the default JSON.</p>
           <a href="examples.html" title="Examples"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Welcome to Cosm Python’s documentation"
+          <a href="index.html" title="Welcome to Xively Python’s documentation"
              >previous</a> |</li>
-        <li><a href="index.html">Cosm Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Xively Python 0.1.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Cosm Ltd.
+        &copy; Copyright 2013, Xively Ltd.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
