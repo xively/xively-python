@@ -3,7 +3,7 @@ from setuptools import setup
 setup(name='xively-python',
       version='0.1.0-rc0',
       description="Xively API wrapper",
-      long_description=open("README.rst").read(),
+      long_description="This is the official pythonic wrapper library for the Xively V2 API.",
       url='http://github.com/xively/xively-python',
       packages=['xively'],
       install_requires=[
