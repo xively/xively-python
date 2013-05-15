@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='xively-python',
-      version='0.1',
+      version='0.1.0-rc0',
       description="Xively API wrapper",
       long_description=open("README.rst").read(),
       url='http://github.com/xively/xively-python',
