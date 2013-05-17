@@ -1,5 +1,4 @@
-xively-python
-===========
+xively-python ===========
 
 .. image:: https://travis-ci.org/xively/xively-python.png?branch=master
     :target: https://travis-ci.org/xively/xively-python
@@ -39,3 +38,7 @@ Without specifying the fields to update, all fields would be sent to the Xively
 API which would include the updated_at field with the time that the old value
 was updated. This is probably not what you want but is the intended behaviour
 of the API.
+
+.. image :: https://cruel-carlota.pagodabox.com/90b5c954d357acd2dc137d56f8354dd3
+    :alt: githalytics.com
+    :target: http://githalytics.com/xively/xively-python
