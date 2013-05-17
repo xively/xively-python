@@ -1,4 +1,5 @@
-xively-python ===========
+xively-python
+=============
 
 .. image:: https://travis-ci.org/xively/xively-python.png?branch=master
     :target: https://travis-ci.org/xively/xively-python
