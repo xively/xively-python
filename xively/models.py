@@ -164,7 +164,7 @@ class Datastream(Base):
     _datapoints_manager = None
 
     def __init__(self, id, tags=None, unit=None, min_value=None,
-        max_value=None, current_value=None, datapoints=None, at=None):
+                 max_value=None, current_value=None, datapoints=None, at=None):
         """Creates a new datastream object locally."""
         self._data = {
             'id': id,
