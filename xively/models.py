@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 __title__ = 'xively-python'
-__version__ = '0.1.0'
+__version__ = '0.1.0-rc1'
 
 
 __all__ = ['Feed', 'Datastream', 'Datapoint', 'Location', 'Waypoint',
