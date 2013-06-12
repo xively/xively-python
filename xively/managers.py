@@ -386,7 +386,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         return self.parent._data.setdefault('datastreams', [])
 
     def create(self, id, current_value=None, tags=None, unit=None,
-               min_value=None, max_value=None):
+               min_value=None, max_value=None, at=None):
         """Creates a new datastream on a feed.
 
         :param id: The ID of the datastream
@@ -395,6 +395,7 @@ class DatastreamsManager(Sequence, ManagerBase):
         :param unit: The :class:`.Unit` for this datastream
         :param min_value: The minimum value since the last reset
         :param max_value: The maximum value since the last reset
+        :param at: The timestamp of the current value
         :returns: A :class:`.Datastream` object
 
         """
@@ -404,7 +405,8 @@ class DatastreamsManager(Sequence, ManagerBase):
             tags=tags,
             unit=unit,
             min_value=min_value,
-            max_value=max_value)
+            max_value=max_value,
+            at=at)
         datastream = self._coerce_datastream(datastream_data)
         data = {
             'version': self.parent.version,

@@ -156,6 +156,7 @@ class Datastream(Base):
     :param min_value: The minimum value since the last reset
     :param max_value: The maximum value since the last reset
     :param current_value: The current value of the datastream
+    :param at: The timestamp of the current value
     :param datapoints: A collection of timestamped values
 
     """
@@ -163,7 +164,7 @@ class Datastream(Base):
     _datapoints_manager = None
 
     def __init__(self, id, tags=None, unit=None, min_value=None,
-                 max_value=None, current_value=None, datapoints=None):
+        max_value=None, current_value=None, datapoints=None, at=None):
         """Creates a new datastream object locally."""
         self._data = {
             'id': id,
@@ -172,6 +173,7 @@ class Datastream(Base):
             'min_value': min_value,
             'max_value': max_value,
             'current_value': current_value,
+            'at': at,
         }
         self.datapoints = datapoints or []
 
