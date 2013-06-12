@@ -314,8 +314,16 @@ class DatastreamTest(BaseTestCase):
         self.feed = self._create_feed(id=7021, title="Rother")
 
     def test_create_datastream(self):
-        datastream = xively.Datastream(id="energy")
+        datastream = xively.Datastream(id="energy", current_value="123")
         self.assertEqual(datastream.id, "energy")
+        self.assertEqual(datastream.current_value, "123")
+
+    def test_create_datastream_with_timestamp(self):
+        now = datetime.now()
+        datastream = xively.Datastream(id="energy", current_value="123", at=now)
+        self.assertEqual(datastream.id, "energy")
+        self.assertEqual(datastream.current_value, "123")
+        self.assertEqual(datastream.at, now)
 
     def test_update_datastream(self):
         datastream = self._create_datastream(id="energy", current_value=211)
@@ -326,6 +334,19 @@ class DatastreamTest(BaseTestCase):
             ('PUT', 'http://api.xively.com/v2/feeds/7021/datastreams/energy'))
         payload = json.loads(self.request.call_args[1]['data'])
         self.assertEqual(payload['current_value'], 294)
+
+    def test_update_datastream_with_timestamp(self):
+        now = datetime.now()
+        datastream = self._create_datastream(id="energy", current_value=211)
+        datastream.current_value = 294
+        datastream.at = now
+        datastream.update()
+        self.assertEqual(
+            self.request.call_args[0],
+            ('PUT', 'http://api.xively.com/v2/feeds/7021/datastreams/energy'))
+        payload = json.loads(self.request.call_args[1]['data'])
+        self.assertEqual(payload['current_value'], 294)
+        self.assertEqual(payload['at'], now.isoformat() + 'Z')
 
     def test_update_datastream_fields(self):
         datastream = self._create_datastream(id="energy", current_value=211)
@@ -360,6 +381,21 @@ class DatastreamsManagerTest(BaseTestCase):
         self.assertEqual(datastream.current_value, 34000)
         self.assertEqual(datastream.unit.symbol, 'l/s')
 
+    def test_create_datastream_with_timestamp(self):
+        now = datetime.now()
+        datastream = self.feed.datastreams.create(
+            id="flow",
+            current_value=34000,
+            unit=xively.Unit(symbol='l/s'),
+            at=now)
+        self.assertEqual(
+            self.request.call_args[0],
+            ('POST', 'http://api.xively.com/v2/feeds/7021/datastreams'))
+        self.assertEqual(datastream.id, "flow")
+        self.assertEqual(datastream.current_value, 34000)
+        self.assertEqual(datastream.unit.symbol, 'l/s')
+        self.assertEqual(datastream.at, now)
+
     def test_update_datastream(self):
         self.feed.datastreams.update('energy', current_value=294)
         self.assertEqual(
@@ -367,6 +403,16 @@ class DatastreamsManagerTest(BaseTestCase):
             ('PUT', 'http://api.xively.com/v2/feeds/7021/datastreams/energy'))
         payload = json.loads(self.request.call_args[1]['data'])
         self.assertEqual(payload['current_value'], 294)
+
+    def test_update_datastream_with_timestamp(self):
+        now = datetime.now()
+        self.feed.datastreams.update('energy', current_value=294, at=now)
+        self.assertEqual(
+            self.request.call_args[0],
+            ('PUT', 'http://api.xively.com/v2/feeds/7021/datastreams/energy'))
+        payload = json.loads(self.request.call_args[1]['data'])
+        self.assertEqual(payload['current_value'], 294)
+        self.assertEqual(payload['at'], now.isoformat() + 'Z')
 
     def test_list_datastreams(self):
         self.response.raw = BytesIO(fixtures.GET_FEED_JSON)
