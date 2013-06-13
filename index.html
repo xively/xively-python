@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to Xively Python’s documentation &mdash; Xively Python 0.1.0 documentation</title>
+    <title>Welcome to Xively Python’s documentation &mdash; Xively Python 0.1.0-rc1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0',
+        VERSION:     '0.1.0-rc1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Xively Python 0.1.0 documentation" href="#" />
+    <link rel="top" title="Xively Python 0.1.0-rc1 documentation" href="#" />
     <link rel="next" title="API Reference" href="reference.html" /> 
   </head>
   <body>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="reference.html" title="API Reference"
              accesskey="N">next</a> |</li>
-        <li><a href="#">Xively Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">Xively Python 0.1.0-rc1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,6 +52,8 @@
 <h1>Welcome to Xively Python&#8217;s documentation<a class="headerlink" href="#welcome-to-xively-python-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>xively-python is a wrapper around Xively&#8217;s REST API to make working with the
 connected object cloud easy and pythonic.</p>
+<p>The library has been published to PyPI, so installing it should be as simple as
+running <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">xively-python</span></tt> from your command prompt.</p>
 <p>Example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">xively</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">api</span> <span class="o">=</span> <span class="n">xively</span><span class="o">.</span><span class="n">XivelyAPIClient</span><span class="p">(</span><span class="s">&quot;YOUR_API_KEY&quot;</span><span class="p">)</span>
@@ -65,6 +67,17 @@ connected object cloud easy and pythonic.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">points</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">datapoints</span><span class="o">.</span><span class="n">history</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="s">&#39;1second&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>  
 <span class="go">[xively.Datapoint(datetime.datetime(2013, 1, 1, 14, 14, 55, 118845), &#39;0.25741970&#39;), ...]</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Updating a feed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span><span class="o">.</span><span class="n">datastreams</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datastream</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">&#39;sensor1&#39;</span><span class="p">,</span> <span class="n">current_value</span><span class="o">=</span><span class="mf">37.2</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="n">now</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datastream</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">&#39;sensor2&#39;</span><span class="p">,</span> <span class="n">current_value</span><span class="o">=</span><span class="s">&#39;normal&#39;</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="n">now</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">xively</span><span class="o">.</span><span class="n">Datastream</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s">&#39;sensor3&#39;</span><span class="p">,</span> <span class="n">current_value</span><span class="o">=</span><span class="mi">19</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="n">now</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Uploading new points</span>
@@ -159,7 +172,7 @@ connected object cloud easy and pythonic.</p>
         <li class="right" >
           <a href="reference.html" title="API Reference"
              >next</a> |</li>
-        <li><a href="#">Xively Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">Xively Python 0.1.0-rc1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

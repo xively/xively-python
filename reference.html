@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API Reference &mdash; Xively Python 0.1.0 documentation</title>
+    <title>API Reference &mdash; Xively Python 0.1.0-rc1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0',
+        VERSION:     '0.1.0-rc1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Xively Python 0.1.0 documentation" href="index.html" />
+    <link rel="top" title="Xively Python 0.1.0-rc1 documentation" href="index.html" />
     <link rel="next" title="Examples" href="examples.html" />
     <link rel="prev" title="Welcome to Xively Python’s documentation" href="index.html" /> 
   </head>
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to Xively Python’s documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Xively Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Xively Python 0.1.0-rc1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -415,7 +415,7 @@ accessed via this instance as a sequence.</p>
 </div>
 <dl class="method">
 <dt id="xively.managers.DatastreamsManager.create">
-<tt class="descname">create</tt><big>(</big><em>id</em>, <em>current_value=None</em>, <em>tags=None</em>, <em>unit=None</em>, <em>min_value=None</em>, <em>max_value=None</em><big>)</big><a class="headerlink" href="#xively.managers.DatastreamsManager.create" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">create</tt><big>(</big><em>id</em>, <em>current_value=None</em>, <em>tags=None</em>, <em>unit=None</em>, <em>min_value=None</em>, <em>max_value=None</em>, <em>at=None</em><big>)</big><a class="headerlink" href="#xively.managers.DatastreamsManager.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new datastream on a feed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -428,6 +428,7 @@ accessed via this instance as a sequence.</p>
 <li><strong>unit</strong> &#8211; The <tt class="xref py py-class docutils literal"><span class="pre">Unit</span></tt> for this datastream</li>
 <li><strong>min_value</strong> &#8211; The minimum value since the last reset</li>
 <li><strong>max_value</strong> &#8211; The maximum value since the last reset</li>
+<li><strong>at</strong> &#8211; The timestamp of the current value</li>
 </ul>
 </td>
 </tr>
@@ -529,7 +530,7 @@ not match one of these values, it is rounded up to the next value.</li>
 
 <dl class="class">
 <dt id="xively.Datastream">
-<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Datastream</tt><big>(</big><em>id</em>, <em>tags=None</em>, <em>unit=None</em>, <em>min_value=None</em>, <em>max_value=None</em>, <em>current_value=None</em>, <em>datapoints=None</em><big>)</big><a class="headerlink" href="#xively.Datastream" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Datastream</tt><big>(</big><em>id</em>, <em>tags=None</em>, <em>unit=None</em>, <em>min_value=None</em>, <em>max_value=None</em>, <em>current_value=None</em>, <em>datapoints=None</em>, <em>at=None</em><big>)</big><a class="headerlink" href="#xively.Datastream" title="Permalink to this definition">¶</a></dt>
 <dd><p>Xively Datastream containing current and historical values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -542,6 +543,7 @@ not match one of these values, it is rounded up to the next value.</li>
 <li><strong>min_value</strong> &#8211; The minimum value since the last reset</li>
 <li><strong>max_value</strong> &#8211; The maximum value since the last reset</li>
 <li><strong>current_value</strong> &#8211; The current value of the datastream</li>
+<li><strong>at</strong> &#8211; The timestamp of the current value</li>
 <li><strong>datapoints</strong> &#8211; A collection of timestamped values</li>
 </ul>
 </td>
@@ -1402,7 +1404,7 @@ API and can be used with CSV or XML instead of the default JSON.</p>
         <li class="right" >
           <a href="index.html" title="Welcome to Xively Python’s documentation"
              >previous</a> |</li>
-        <li><a href="index.html">Xively Python 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Xively Python 0.1.0-rc1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
