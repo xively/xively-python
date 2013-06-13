@@ -4,10 +4,13 @@
    contain the root `toctree` directive.
 
 Welcome to Xively Python's documentation
-======================================
+========================================
 
 xively-python is a wrapper around Xively's REST API to make working with the
 connected object cloud easy and pythonic.
+
+The library has been published to PyPI, so installing it should be as simple as
+running ``pip install xively-python`` from your command prompt.
 
 Example:
 
