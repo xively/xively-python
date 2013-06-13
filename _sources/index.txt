@@ -4,10 +4,13 @@
    contain the root `toctree` directive.
 
 Welcome to Xively Python's documentation
-======================================
+========================================
 
 xively-python is a wrapper around Xively's REST API to make working with the
 connected object cloud easy and pythonic.
+
+The library has been published to PyPI, so installing it should be as simple as
+running ``pip install xively-python`` from your command prompt.
 
 Example:
 
@@ -22,6 +25,16 @@ Example:
     >>> points = stream.datapoints.history(start=start, duration='1second')
     >>> list(points)  # doctest: +ELLIPSIS +IGNORE_UNICODE
     [xively.Datapoint(datetime.datetime(2013, 1, 1, 14, 14, 55, 118845), '0.25741970'), ...]
+
+    >>> # Updating a feed
+    >>> import datetime
+    >>> now = datetime.datetime.now()
+    >>> feed.datastreams = [
+    ...     xively.Datastream(id='sensor1', current_value=37.2, at=now),
+    ...     xively.Datastream(id='sensor2', current_value='normal', at=now),
+    ...     xively.Datastream(id='sensor3', current_value=19, at=now),
+    ... ]
+    >>> feed.update()
 
     >>> # Uploading new points
     >>> import random
