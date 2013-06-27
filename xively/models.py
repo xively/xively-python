@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 __title__ = 'xively-python'
-__version__ = '0.1.0-rc1'
+__version__ = '0.1.0-rc2'
 
 
 __all__ = ['Feed', 'Datastream', 'Datapoint', 'Location', 'Waypoint',
@@ -42,8 +42,10 @@ class Feed(Base):
     """Xively Feed, which can contain a number of Datastreams.
 
     :param title: A descriptive name for the feed
+    :param description: A longer text description of the feed
     :param website: The URL of a website which is relevant to this feed e.g.
         home page
+    :param email: A public contact email address for the provider of this feed
     :param tags: Tagged metadata about the environment (characters ' " and
         commas will be stripped out)
     :param location: :class:`.Location` object for this feed
@@ -68,13 +70,15 @@ class Feed(Base):
 
     _datastreams_manager = None
 
-    def __init__(self, title, website=None, tags=None, location=None,
-                 private=None, datastreams=None):
+    def __init__(self, title, description=None, website=None, email=None,
+                 tags=None, location=None, private=None, datastreams=None):
         """Creates a new Feed."""
         self._data = {
             'version': self.VERSION,
             'title': title,
+            'description': description,
             'website': website,
+            'email': email,
             'tags': tags,
             'location': location,
             'private': private,

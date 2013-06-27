@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 __title__ = 'xively-python'
-__version__ = '0.1.0-rc1'
+__version__ = '0.1.0-rc2'
 
 __all__ = ['Client', 'XivelyAPIClient', 'Datapoint', 'Datastream', 'Feed', 'Key',
            'Location', 'Permission', 'Resource', 'Trigger', 'Unit', 'Waypoint']

@@ -132,11 +132,11 @@ class ClientTest(BaseTestCase):
 class FeedTest(BaseTestCase):
 
     def test_create_feed(self):
-        feed = xively.Feed(title="Feed Test")
+        feed = xively.Feed(title="Feed Test", description="Feed description")
         self.client.post('/v2/feeds', data=feed)
         self.request.assert_called_with(
             'POST', 'http://api.xively.com/v2/feeds',
-            data='{"title": "Feed Test", "version": "1.0.0"}')
+            data='{"description": "Feed description", "title": "Feed Test", "version": "1.0.0"}')
 
     def test_update_feed(self):
         feed = self._create_feed(id='123', title="Office")
@@ -199,6 +199,7 @@ class FeedsManagerTest(BaseTestCase):
         feed = self.api.feeds.create(
             title="Xively Office environment",
             website="http://www.example.com/",
+            email="info@example.com",
             tags=["Tag1", "Tag2"],
             location=xively.Location(
                 name="office",
