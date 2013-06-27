@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>API Reference &mdash; Xively Python 0.1.0-rc1 documentation</title>
+    <title>API Reference &mdash; Xively Python 0.1.0-rc2 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.0-rc1',
+        VERSION:     '0.1.0-rc2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Xively Python 0.1.0-rc1 documentation" href="index.html" />
+    <link rel="top" title="Xively Python 0.1.0-rc2 documentation" href="index.html" />
     <link rel="next" title="Examples" href="examples.html" />
     <link rel="prev" title="Welcome to Xively Python’s documentation" href="index.html" /> 
   </head>
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to Xively Python’s documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Xively Python 0.1.0-rc1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Xively Python 0.1.0-rc2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -155,7 +155,7 @@ and not instantiated directly.</p>
 </div>
 <dl class="method">
 <dt id="xively.managers.FeedsManager.create">
-<tt class="descname">create</tt><big>(</big><em>title</em>, <em>website=None</em>, <em>tags=None</em>, <em>location=None</em>, <em>private=None</em>, <em>datastreams=None</em><big>)</big><a class="headerlink" href="#xively.managers.FeedsManager.create" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">create</tt><big>(</big><em>title</em>, <em>description=None</em>, <em>website=None</em>, <em>email=None</em>, <em>tags=None</em>, <em>location=None</em>, <em>private=None</em>, <em>datastreams=None</em><big>)</big><a class="headerlink" href="#xively.managers.FeedsManager.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a new Feed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -163,8 +163,11 @@ and not instantiated directly.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>title</strong> &#8211; A descriptive name for the feed</li>
+<li><strong>description</strong> &#8211; A longer text description of the feed</li>
 <li><strong>website</strong> &#8211; The URL of a website which is relevant to this feed
 e.g. home page</li>
+<li><strong>email</strong> &#8211; A public contact email address for the creator of this
+feed</li>
 <li><strong>tags</strong> &#8211; Tagged metadata about the environment (characters &#8216; &#8221; and
 commas will be stripped out)</li>
 <li><strong>location</strong> &#8211; <a class="reference internal" href="#xively.Location" title="xively.Location"><tt class="xref py py-class docutils literal"><span class="pre">Location</span></tt></a> object for this feed</li>
@@ -309,7 +312,7 @@ based searching of feeds:</p>
 
 <dl class="class">
 <dt id="xively.Feed">
-<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Feed</tt><big>(</big><em>title</em>, <em>website=None</em>, <em>tags=None</em>, <em>location=None</em>, <em>private=None</em>, <em>datastreams=None</em><big>)</big><a class="headerlink" href="#xively.Feed" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">xively.</tt><tt class="descname">Feed</tt><big>(</big><em>title</em>, <em>description=None</em>, <em>website=None</em>, <em>email=None</em>, <em>tags=None</em>, <em>location=None</em>, <em>private=None</em>, <em>datastreams=None</em><big>)</big><a class="headerlink" href="#xively.Feed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Xively Feed, which can contain a number of Datastreams.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -317,8 +320,10 @@ based searching of feeds:</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>title</strong> &#8211; A descriptive name for the feed</li>
+<li><strong>description</strong> &#8211; A longer text description of the feed</li>
 <li><strong>website</strong> &#8211; The URL of a website which is relevant to this feed e.g.
 home page</li>
+<li><strong>email</strong> &#8211; A public contact email address for the provider of this feed</li>
 <li><strong>tags</strong> &#8211; Tagged metadata about the environment (characters &#8216; &#8221; and
 commas will be stripped out)</li>
 <li><strong>location</strong> &#8211; <a class="reference internal" href="#xively.Location" title="xively.Location"><tt class="xref py py-class docutils literal"><span class="pre">Location</span></tt></a> object for this feed</li>
@@ -1404,7 +1409,7 @@ API and can be used with CSV or XML instead of the default JSON.</p>
         <li class="right" >
           <a href="index.html" title="Welcome to Xively Python’s documentation"
              >previous</a> |</li>
-        <li><a href="index.html">Xively Python 0.1.0-rc1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">Xively Python 0.1.0-rc2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
