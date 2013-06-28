@@ -11,6 +11,7 @@ CREATE_FEED_JSON = b'''
 {
   "title":"Xively Office environment",
   "website":"http://www.example.com/",
+  "email":"info@example.com",
   "version":"1.0.0",
   "tags":[
       "Tag1",
@@ -52,6 +53,7 @@ GET_FEED_JSON = b'''
 "status" : "frozen",
 "title" : "Xively Office environment",
 "website":"http://www.haque.co.uk/",
+"email":"info@example.com",
 "updated" : "2010-06-25T11:54:17.463771Z",
 "created" : "2010-05-03T23:43:01.238734Z",
 "version" : "1.0.0",

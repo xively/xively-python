@@ -89,7 +89,6 @@ class FeedsManager(ManagerBase):
     _readonly_fields = (
         'id',
         'feed',
-        'description',
         'status',
         'creator',
         'created',
@@ -104,13 +103,16 @@ class FeedsManager(ManagerBase):
         self.client = client
         self.base_url = client.base_url + self.resource
 
-    def create(self, title, website=None, tags=None, location=None,
-               private=None, datastreams=None):
+    def create(self, title, description=None, website=None, email=None,
+               tags=None, location=None, private=None, datastreams=None):
         """Creates a new Feed.
 
         :param title: A descriptive name for the feed
+        :param description: A longer text description of the feed
         :param website: The URL of a website which is relevant to this feed
             e.g. home page
+        :param email: A public contact email address for the creator of this
+            feed
         :param tags: Tagged metadata about the environment (characters ' " and
             commas will be stripped out)
         :param location: :class:`.Location` object for this feed
@@ -121,7 +123,9 @@ class FeedsManager(ManagerBase):
         data = {
             'version': Feed.VERSION,
             'title': title,
+            'description': description,
             'website': website,
+            'email': email,
             'tags': tags,
             'location': location,
             'private': private,
