@@ -28,7 +28,7 @@ Example:
 
     >>> # Updating a feed
     >>> import datetime
-    >>> now = datetime.datetime.now()
+    >>> now = datetime.datetime.utcnow()
     >>> feed.datastreams = [
     ...     xively.Datastream(id='sensor1', current_value=37.2, at=now),
     ...     xively.Datastream(id='sensor2', current_value='normal', at=now),
@@ -39,9 +39,9 @@ Example:
     >>> # Uploading new points
     >>> import random
     >>> randompoints = [
-    ...     xively.Datapoint(datetime.datetime.now(), random.random()),
-    ...     xively.Datapoint(datetime.datetime.now(), random.random()),
-    ...     xively.Datapoint(datetime.datetime.now(), random.random()),
+    ...     xively.Datapoint(datetime.datetime.utcnow(), random.random()),
+    ...     xively.Datapoint(datetime.datetime.utcnow(), random.random()),
+    ...     xively.Datapoint(datetime.datetime.utcnow(), random.random()),
     ... ]
     >>> stream.datapoints = randompoints
     >>> stream.update(fields='datapoints')

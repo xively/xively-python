@@ -29,7 +29,7 @@ We only create one datastream at a time.
 Datapoints
 ----------
 
-    >>> now = datetime.now()
+    >>> now = datetime.utcnow()
     >>> datapoints = datastream.datapoints.create([
     ...     {'at': now - timedelta(seconds=1), 'value': 42},
     ...     {'at': now, 'value': 43},
@@ -44,15 +44,15 @@ Historical Queries
 
 Fetching history of a datastream:
 
-    >>> datapoints = datastream.datapoints.history(end=datetime.now(), duration=1800)
+    >>> datapoints = datastream.datapoints.history(end=datetime.utcnow(), duration=1800)
 
 Retrieving a datastream with historical datapoints:
 
-    >>> datastream = feed.datastreams.get("energy", end=datetime.now(), duration="30minutes")
+    >>> datastream = feed.datastreams.get("energy", end=datetime.utcnow(), duration="30minutes")
     >>> datapoints = list(datastream.datapoints)
 
 Retrieving a feed and its datastreams with historical datapoints:
 
-    >>> feed = client.feeds.get(feed.id, end=datetime.now(), duration=3600, datastreams=[...])
+    >>> feed = client.feeds.get(feed.id, end=datetime.utcnow(), duration=3600, datastreams=[...])
     >>> print list(feed.datastreams[0].datapoints)
     [Datapoint(...), Datapoint(...), ...]
