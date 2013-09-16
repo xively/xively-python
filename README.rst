@@ -7,6 +7,12 @@ xively-python
 
 This is the official pythonic wrapper library for the Xively V2 API.
 
+Requirements
+------------
+
+* Python 2.7, 3.3 or PyPy
+* `Requests <http://docs.python-requests.org/en/latest/>`_ 1.1.0 (or greater)
+
 
 Create a Feed
 -------------
