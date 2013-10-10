@@ -31,10 +31,10 @@ def main(device='/dev/ttyUSB0'):
     api = xively.XivelyAPIClient(XIVELY_API_KEY)
     feed = api.feeds.get(XIVELY_FEED_ID)
     for at, watts, tmpr in read_data(open(device, errors='ignore')):
-        now = datetime.datetime.now()
+        now = datetime.datetime.utcnow()
         feed.datastreams = [
-            Datastream(id='tmpr', current_value=tmpr, at=now),
-            Datastream(id='watts', current_value=watts, at=now),
+            xively.Datastream(id='tmpr', current_value=tmpr, at=now),
+            xively.Datastream(id='watts', current_value=watts, at=now),
         ]
         feed.update()
         print(at, watts, tmpr)
