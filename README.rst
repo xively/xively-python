@@ -1,3 +1,8 @@
+Warning
+------------
+This library is for an older, deprecated version of Xively.  For the current version of Xively, please refere to www.xively.com
+
+
 xively-python
 =============
 
